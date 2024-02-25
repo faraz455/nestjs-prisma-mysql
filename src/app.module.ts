@@ -1,14 +1,41 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+
+import { CommonModule } from './common/common.module';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaModule } from './prisma/prisma.module';
-import { ArticlesModule } from './articles/articles.module';
+
 import { MultiTenantMiddleware } from './multi-tenant/multi-tenant.middleware';
+import {
+  MultiTenantModule,
+  TENANT_CONFIG,
+} from './multi-tenant/multi-tenant.module';
+import multiTenantConfig, {
+  TenantConfig,
+} from './multi-tenant/multi-tenant.config';
+import { RequestResponseInterceptor } from './logger/request-response.interceptor';
+import { ArticlesModule } from './articles/articles.module';
 
 @Module({
-  imports: [PrismaModule, ArticlesModule],
+  imports: [
+    CommonModule,
+    ArticlesModule,
+    MultiTenantModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [multiTenantConfig],
+    }),
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestResponseInterceptor,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

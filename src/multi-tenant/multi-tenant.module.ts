@@ -5,7 +5,7 @@ import { Request } from 'express';
 
 import { TenantConfig } from './multi-tenant.config';
 import { MultiTenantMiddleware } from './multi-tenant.middleware';
-import { getHost } from 'src/common/common.helper';
+import { getHost } from '../common/common.helper';
 
 export const PRISMA_SERVICE = 'PRISMA_SERVICE';
 export const TENANT_CONFIG = 'TENANT_CONFIG';

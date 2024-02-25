@@ -1,22 +1,47 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import * as bodyParser from 'body-parser';
+
+import { AppModule } from './app.module';
+
+import { applyMigrations } from './utilities/parse-tenants';
 
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
 };
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  if (process.env.RUN_MIGRATIONS == '1') {
+    applyMigrations();
+  }
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // app.setGlobalPrefix('invph/api', {
+  //   exclude: ['invph/auth/login', 'invph/auth/logout'],
+  // });
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+
+  app.use(bodyParser.json({ limit: '2mb' }));
+  app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }));
+
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('hbs');
 
   const config = new DocumentBuilder()
-    .setTitle('Median')
-    .setDescription('The Median API description')
+    .setTitle('NEST - JS')
+    .setDescription('The NEST JS API description')
     .setVersion('0.1')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('swagger', app, document);
+  SwaggerModule.setup('swagger', app, document, {
+    swaggerOptions: { displayRequestDuration: true },
+  });
 
   await app.listen(3000);
 }

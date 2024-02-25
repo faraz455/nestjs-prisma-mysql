@@ -7,11 +7,13 @@ import { PRISMA_SERVICE } from 'src/multi-tenant/multi-tenant.module';
 @Injectable()
 export class ArticlesService {
   constructor(@Inject(PRISMA_SERVICE) private readonly prisma: PrismaService) {}
-  create(createArticleDto: CreateArticleDto) {
+  async create(createArticleDto: CreateArticleDto) {
+    await this.prisma.article.create({ data: { body: 'sdf', title: 'sdf' } });
     return 'This action adds a new article';
   }
 
-  findAll() {
+  async findAll() {
+    return await this.prisma.article.findMany();
     return `This action returns all articles`;
   }
 

@@ -6,11 +6,6 @@ export type PrismaServiceOptions = {
   logQueries: boolean;
 };
 
-export type PrismaTransaction = Omit<
-  PrismaClient<Prisma.PrismaClientOptions, never>,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
->;
-
 export class PrismaService extends PrismaClient {
   constructor(private options: PrismaServiceOptions) {
     super({
@@ -54,7 +49,6 @@ export class PrismaService extends PrismaClient {
   }
 
   // async enableShutdownHooks(app: INestApplication) {
-  //   // @ts-ignore
   //   this.$on('beforeExit', async () => {
   //     await app.close();
   //   });
