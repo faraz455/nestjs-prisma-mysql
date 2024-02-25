@@ -26,11 +26,110 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Installation](#installation)
+  - [Prisma Migrations](#prisma-migrations)
+    - [Baselining your database](#baselining-your-database)
+    - [Applying a new migration](#applying-a-new-migration)
+    - [Applying all migrations](#applying-all-migrations)
+    - [Merge all migrations](#merge-all-migrations)
 ## Installation
 
 ```bash
 $ yarn install
 ```
+
+## Prisma Migrations
+
+Prisma migration tools are used to manage the database for this repository. This requires prisma to maintain a record of past migrations, which must be in sync with the database.
+
+### Baselining your database
+
+The following command is used to baseline a database.
+
+```bash
+$ yarn prisma migrate resolve --applied <migration-name>
+```
+
+This step is not required to work in this repository, and has been left in purely for educational purposes.
+
+### Applying a new migration
+
+To make any modification to the database after having baselined it, simply update the prisma schema as desired. Next, stage your migration using:
+
+```bash
+$ yarn prisma migrate dev --name <migration-name> --create-only
+```
+
+For logging database:
+
+```bash
+$ yarn logging:migrate:dev --name <migration-name>
+```
+
+This will generate the appropriate migration files and sql required, but will **not** apply the migration to your database. If you wish, you can inspect and edit the generate files at this point (in case you need to insert data into a new column, for example). Finally, once you are satisfied that this is the migration you wish to apply, use the following command:
+
+```bash
+$ yarn prisma migrate dev
+```
+
+See [Prisma's custom migration instructions](https://www.prisma.io/docs/guides/database/developing-with-prisma-migrate/customizing-migrations) for more information.
+
+### Applying all migrations
+
+When deploying to production/making a new deployment, you will want
+to deploy all migrations created uptil now after successfully
+baselining your database. To do this, run the following command:
+
+```bash
+$ yarn prisma migrate deploy
+```
+
+To baseline both the databases (rms and logging).
+
+```bash
+$ yarn deploy:all
+```
+
+### Merge all Migrations
+
+#### Preferred Way
+
+For the preferred method, refer to the [Prisma Documentation on squashing migrations](https://www.prisma.io/docs/orm/prisma-migrate/workflows/squashing-migrations#how-to-squash-migrations).
+
+You will need to `truncate _prisma_migration;` table at start of this process.
+
+#### Another Way to Consolidate Migrations
+
+To consolidate all migrations into a single file, follow these steps:
+
+1. **Delete Prisma migration folder.**
+
+2. **Empty `_prisma_migrations` table from the database.**
+
+   ```sql
+   TRUNCATE _prisma_migrations; -- Apply this in the database
+   ```
+
+3. **Create `init` migration (single migration).**
+
+   ```bash
+   $ yarn prisma migrate dev --create-only
+   ```
+
+   When prompted, provide a name for the migration, such as `init`.
+
+4. **Mark the created migration as resolved.**
+   ```bash
+   $ yarn prisma migrate resolve --applied 20230822120011_init
+   ```
+   This step will generate a single migration file for all migrations.
+
+**Note:**
+`Please ensure there is no seeding data in the migration files before following these steps; otherwise, seeding data may be lost.`
+
 
 ## Running the app
 
