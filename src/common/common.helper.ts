@@ -1,5 +1,8 @@
 import { Request } from 'express';
 
+import CryptoJS from 'crypto-js';
+const CryptoJS1: typeof CryptoJS = require('crypto-js');
+
 function timeStampMilliseconds(): number {
   return new Date().getTime();
 }
@@ -61,4 +64,27 @@ export function getHost(req: Request) {
 
   // check 127.0.0.1 to support tests
   return host.includes('127.0.0.1:') ? 'localhost:3000' : host;
+}
+
+export function decryptText(text: string) {
+  const secret = 'k0gn!tea!veHE@lTeAachK@rE';
+  const salt = 'cha@r@em$';
+
+  const bytes = CryptoJS1.PBKDF2(secret, salt, {
+    keySize: 48,
+    iterations: 128,
+  });
+  const iv = CryptoJS1.enc.Hex.parse(bytes.toString().slice(0, 32));
+  const key = CryptoJS1.enc.Hex.parse(bytes.toString().slice(32, 96));
+
+  try {
+    const cipher = CryptoJS1.AES.decrypt(text, key, {
+      iv,
+      mode: CryptoJS1.mode.CBC,
+    });
+    return cipher.toString(CryptoJS1.enc.Utf8);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
