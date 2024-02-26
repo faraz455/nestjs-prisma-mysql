@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Article {
-  id          Int      @id @default(autoincrement())
+  articleId          String      @id @db.Char(40)
   title       String   @unique
   description String?
   body        String
