@@ -16,7 +16,7 @@ import { IDDto, PaginationQueryDto } from 'src/common/dto';
 import { ApiPaginatedResponse } from 'src/common/responses';
 import { ArticleEntity } from './entities';
 
-@ApiTags('ArticlesS')
+@ApiTags('Articles')
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
