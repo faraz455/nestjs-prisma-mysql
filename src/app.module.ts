@@ -8,13 +8,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { MultiTenantMiddleware } from './multi-tenant/multi-tenant.middleware';
-import {
-  MultiTenantModule,
-  TENANT_CONFIG,
-} from './multi-tenant/multi-tenant.module';
-import multiTenantConfig, {
-  TenantConfig,
-} from './multi-tenant/multi-tenant.config';
+import { MultiTenantModule } from './multi-tenant/multi-tenant.module';
+import multiTenantConfig from './multi-tenant/multi-tenant.config';
 import { RequestResponseInterceptor } from './logger/request-response.interceptor';
 import { ArticlesModule } from './articles/articles.module';
 

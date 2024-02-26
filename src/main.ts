@@ -7,17 +7,11 @@ import * as bodyParser from 'body-parser';
 
 import { AppModule } from './app.module';
 
-import { applyMigrations } from './utilities/parse-tenants';
-
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
 };
 
 async function bootstrap() {
-  if (process.env.RUN_MIGRATIONS == '1') {
-    applyMigrations();
-  }
-
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   // app.setGlobalPrefix('invph/api', {
   //   exclude: ['invph/auth/login', 'invph/auth/logout'],
