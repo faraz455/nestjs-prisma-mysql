@@ -14,11 +14,69 @@ datasource db {
 }
 
 model Article {
-  articleId          String      @id @db.Char(40)
+  articleId   String   @id @db.Char(40)
   title       String   @unique
   description String?
   body        String
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model User {
+  userId   String @id @db.Char(40)
+  username String @unique
+  password String
+
+  firstName  String
+  middleName String?
+  lastName   String?
+  fullName   String
+
+  gender          Gender?
+  birthDateString String? @default("-")
+
+  email   String? @unique @db.VarChar(100) /// {"dropdown": true}
+  mobile  String  @unique
+  address String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userRoles UserRole[]
+}
+
+model UserRole {
+  userRoleId String @id @db.Char(40) /// {"size": 40}
+
+  User   User   @relation(fields: [userId], references: [userId])
+  userId String @db.Char(40)
+
+  role   Role   @relation(fields: [roleId], references: [roleId])
+  roleId String @db.Char(40)
+}
+
+model Role {
+  roleId   String @id @default(uuid()) @db.Char(40)
+  roleName String @unique
+
+  userRoles           UserRole[]
+  resourcePermissions ResourcePermission[]
+}
+
+model ResourcePermission {
+  resourcePermissionId String @id @db.Char(40)
+
+  resourceName String // Name of the Resource
+  create       Boolean @default(false)
+  view         Boolean @default(false)
+
+  role   Role   @relation(fields: [roleId], references: [roleId])
+  roleId String @db.Char(40)
 }
