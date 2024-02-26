@@ -33,15 +33,16 @@ export class ArticlesService {
   async findAll(
     query: PaginationQueryDto,
   ): Promise<PaginatedResponseDto<ArticleEntity>> {
-    const offset: number = getOffset(query.page, query.per_page);
+    const offset: number = getOffset(query.page, query.perPage);
 
     const where: Prisma.ArticleWhereInput = {
-      OR: query.search
-        ? [
-            { body: { contains: query.search } },
-            { title: { contains: query.search } },
-          ]
-        : undefined,
+      OR:
+        query.search !== ''
+          ? [
+              { body: { contains: query.search } },
+              { title: { contains: query.search } },
+            ]
+          : undefined,
     };
 
     const count = await this.prisma.article.count({ where });
@@ -57,11 +58,11 @@ export class ArticlesService {
         updatedAt: true,
       },
       where,
-      take: query.per_page,
+      take: query.perPage,
       skip: offset,
     });
 
-    const pages = getPages(count, query.per_page);
+    const pages = getPages(count, query.perPage);
 
     return { pages, count, records };
   }
