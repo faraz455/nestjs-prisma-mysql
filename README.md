@@ -20,29 +20,29 @@ Welcome to the NestJS repository that serves as a comprehensive boilerplate for 
 
 ## Key Concepts:
 
-- **Middleware**: Implemenation middleware to process requests and responses. [NestJS Middleware Documentation](https://docs.nestjs.com/middleware)
+- **Middleware**: Implement middleware to process requests and responses. [NestJS Middleware Documentation](https://docs.nestjs.com/middleware)
 
-- **Interceptor**: Implement manipulation of HTTP requests and responses. [NestJS Interceptor](https://docs.nestjs.com/interceptors)
+- **Interceptor**: Implement the manipulation of HTTP requests and responses. [NestJS Interceptor Documentation](https://docs.nestjs.com/interceptors)
 
-- **Validation Pipes**: Implement and understand the usage of validation pipes for request payload validation. [NestJS Validation ](https://docs.nestjs.com/pipes#validation)
+- **Validation Pipes**: Implement and understand the usage of validation pipes for request payload validation. [NestJS Validation Documentation](https://docs.nestjs.com/pipes#validation)
 
-- **Swagger for API Documentation**: Automatically generate API documentation using Swagger. [NestJS Swagger](https://docs.nestjs.com/openapi/introduction)
+- **Swagger for API Documentation**: Automatically generate API documentation using Swagger. [NestJS Swagger Documentation](https://docs.nestjs.com/openapi/introduction)
 
-- **Prisma ORM**: Utilize Prisma ORM for database interactions along with managing database schema changes through migrations. [Prisma ](https://www.prisma.io/docs/)
+- **Prisma ORM**: Utilize Prisma ORM for database interactions along with managing database schema changes through migrations. [Prisma Documentation](https://www.prisma.io/docs/)
 
 - **Multi-tenant**: Implement multi-tenancy to support multiple users or entities. [NestJS Multi-Tenancy Example](https://docs.nestjs.com/techniques/multi-tenancy)
 
-- **Custom Decorators**: Implement custom decorators to extend functionality. [NestJS Custom Decorators](https://docs.nestjs.com/custom-decorators)
+- **Custom Decorators**: Implement custom decorators to extend functionality. [NestJS Custom Decorators Documentation](https://docs.nestjs.com/custom-decorators)
 
-- **Common Responses and Query DTOs**: Defined consistent response structures and Data Transfer Objects (DTOs). [NestJS DTOs](https://docs.nestjs.com/controllers#request-payloads)
+- **Common Responses and Query DTOs**: Define consistent response structures and Data Transfer Objects (DTOs). [NestJS DTOs Documentation](https://docs.nestjs.com/controllers#request-payloads)
 
-- **Logger for Request**: Set up logging for better request/response tracing. [NestJS Logger](https://docs.nestjs.com/techniques/logger)
+- **Logger for Request**: Set up logging for better request/response tracing. [NestJS Logger Documentation](https://docs.nestjs.com/techniques/logger)
 
-- **Exception Filters**: Handle exceptions gracefully using custom exception filters. [NestJS Exception Filters ](https://docs.nestjs.com/exception-filters)
+- **Exception Filters**: Handle exceptions gracefully using custom exception filters. [NestJS Exception Filters Documentation](https://docs.nestjs.com/exception-filters)
 
-- **Simple Prisma CRUDs**: Build basic CRUD operations using Prisma ORM. [Prisma CRUD Operations](https://www.prisma.io/docs/concepts/components/prisma-client/crud)
+- **Simple Prisma CRUDs**: Build basic CRUD operations using Prisma ORM. [Prisma CRUD Operations Documentation](https://www.prisma.io/docs/concepts/components/prisma-client/crud)
 
-Feel free to clone this repository and use it as a starting point for your NestJS projects. Happy coding!
+Feel free to clone this repository and use it as a starting point for your NestJS projects.
 
 # Table of Contents
 
