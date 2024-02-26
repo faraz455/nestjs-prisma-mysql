@@ -1,7 +1,4 @@
-import { Body, Controller, Get, Render, Res, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
-import { Response } from 'express';
-
+import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -11,9 +8,4 @@ export class AppController {
   healthCheck() {
     return 'Ok';
   }
-
-  // @Get('test')
-  // callReturnEpxiredItems() {
-  //   return this.appService.expiredProductsReturnService();
-  // }
 }
