@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  },
+  "docwriter.progress.trackClasses": false,
+  "docwriter.progress.trackTypes": false,
+  "docwriter.progress.trackMethods": false
+}
