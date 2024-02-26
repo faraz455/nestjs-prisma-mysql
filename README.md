@@ -82,7 +82,7 @@ PRODUCTION=<0 or 1>
 E.g.
 
 ```
-DATABASE_URL=mysql://root:1234@localhost:3306/rms-backend
+DATABASE_URL=mysql://root:1234@localhost:3306/databaseName
 TIMEZONE=0
 
 LOG_QUERIES=0
@@ -127,7 +127,7 @@ AUTH_COOKIE_NAME=_qa_
 DB_HOST_MAIN=localhost:3306
 DB_USER=root
 DB_PASSWORD=1234
-DB_NAME=rms-backend
+DB_NAME=databaseName
 DB_DEBUG=0
 ```
 
