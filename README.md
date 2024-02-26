@@ -30,16 +30,90 @@
 
 - [Table of Contents](#table-of-contents)
 - [Installation](#installation)
+  - [Setting up environment variables](#setting-up-environment-variables)
+    - [Basic Environment](#basic-environment)
+    - [Tenant Configuration](#tenant-configuration)
   - [Prisma Migrations](#prisma-migrations)
     - [Baselining your database](#baselining-your-database)
     - [Applying a new migration](#applying-a-new-migration)
     - [Applying all migrations](#applying-all-migrations)
     - [Merge all migrations](#merge-all-migrations)
+- [Running the app](#running-the-app)
+
 ## Installation
 
 ```bash
 $ yarn install
 ```
+
+## Setting up environment variables
+
+### Basic Environment
+
+Create a `.env` file in the root directory of the repository and add the following lines:
+
+```
+DATABASE_URL=mysql://<username>:<password>@<host-address:port>/<db-name>
+TIMEZONE=<0>
+
+LOG_QUERIES=<0 or 1>
+LOG_REQUESTS=<0 or 1>
+PRODUCTION=<0 or 1>
+```
+
+E.g.
+
+```
+DATABASE_URL=mysql://root:1234@localhost:3306/rms-backend
+TIMEZONE=0
+
+LOG_QUERIES=0
+LOG_REQUESTS=1
+PRODUCTION=0
+```
+
+Remember, the `DATABASE_URL` environment variable should refer to your dev database and is only present for use with the Prisma CLI. To see how to configure the database(s) you wish to use when running the server, see Tenant Configuration below.
+
+
+### Tenant Configuration
+
+This application is designed to be multi-tenant. That is, multiple users will use a single deployment, with the services provided being distinguished by the host address.
+
+A tenant configuration file needs to be added for this. Create `env.conf` in the root directory of the repository as follows:
+
+```
+[<host-address>]
+
+SITE_CODE=qa
+BASE_URL=http://<host-address>
+AUTH_COOKIE_NAME=<cookie-name>
+
+# DATABASE
+DB_HOST_MAIN=<db-host>:<db-port>
+DB_USER=<db-user>
+DB_PASSWORD=<db-password>
+DB_NAME=<db-name>
+DB_DEBUG=0 or 1
+```
+
+E.g.
+
+```
+[localhost:3000]
+
+SITE_CODE=qa
+BASE_URL=http://localhost:3000
+AUTH_COOKIE_NAME=_qa_
+
+# DATABASE
+DB_HOST_MAIN=localhost:3306
+DB_USER=root
+DB_PASSWORD=1234
+DB_NAME=rms-backend
+DB_DEBUG=0
+```
+
+Copy paste the above as many times as you wish to serve multiple tenants. Make sure to update their host addresses and environment details accordingly.
 
 ## Prisma Migrations
 
@@ -63,12 +137,6 @@ To make any modification to the database after having baselined it, simply updat
 $ yarn prisma migrate dev --name <migration-name> --create-only
 ```
 
-For logging database:
-
-```bash
-$ yarn logging:migrate:dev --name <migration-name>
-```
-
 This will generate the appropriate migration files and sql required, but will **not** apply the migration to your database. If you wish, you can inspect and edit the generate files at this point (in case you need to insert data into a new column, for example). Finally, once you are satisfied that this is the migration you wish to apply, use the following command:
 
 ```bash
@@ -85,12 +153,6 @@ baselining your database. To do this, run the following command:
 
 ```bash
 $ yarn prisma migrate deploy
-```
-
-To baseline both the databases (rms and logging).
-
-```bash
-$ yarn deploy:all
 ```
 
 ### Merge all Migrations
