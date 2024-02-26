@@ -66,15 +66,39 @@ export class ArticlesService {
     return { pages, count, records };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} article`;
+  async findOne(articleId: string): Promise<ArticleEntity> {
+    const record = await this.prisma.article.findUniqueOrThrow({
+      select: {
+        articleId: true,
+        title: true,
+        body: true,
+        description: true,
+        published: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      where: { articleId },
+    });
+    return record;
   }
 
-  update(id: number, updateArticleDto: UpdateArticleDto) {
-    return `This action updates a #${id} article`;
+  async update(
+    articleId: string,
+    updateArticleDto: UpdateArticleDto,
+  ): Promise<IDDto> {
+    await this.prisma.article.update({
+      data: { ...updateArticleDto },
+      where: { articleId },
+    });
+
+    return { id: articleId };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} article`;
+  async remove(articleId: string): Promise<IDDto> {
+    await this.prisma.article.delete({
+      where: { articleId },
+    });
+
+    return { id: articleId };
   }
 }
