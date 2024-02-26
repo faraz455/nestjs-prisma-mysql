@@ -5,7 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Request, Response, NextFunction } from 'express';
+import { Request } from 'express';
 
 import { Observable, tap } from 'rxjs';
 
