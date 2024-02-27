@@ -21,9 +21,9 @@ import {
 import { IDDto, PaginationQueryDto } from 'src/common/dto';
 import { ApiPaginatedResponse } from 'src/common/responses';
 import { ArticleEntity } from './entities';
-import { NewJwtGuard } from 'src/auth/guards/new-jwt.guard';
+import { CustomJwtGuard } from 'src/auth/guards/new-jwt.guard';
 
-@UseGuards(NewJwtGuard)
+@UseGuards(CustomJwtGuard)
 @ApiTags('Articles')
 @ApiBearerAuth()
 @Controller('articles')

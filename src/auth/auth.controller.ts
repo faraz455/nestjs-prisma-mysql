@@ -21,9 +21,9 @@ import { GetUser, Public } from './decorators';
 import { LoginGuard } from './guards/login.guard';
 
 import { LoginEntity } from './entities';
-import { NewJwtGuard } from './guards/new-jwt.guard';
+import { CustomJwtGuard } from './guards/new-jwt.guard';
 
-@UseGuards(NewJwtGuard)
+@UseGuards(CustomJwtGuard)
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {

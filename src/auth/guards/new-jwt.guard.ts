@@ -28,7 +28,7 @@ export type ReqUserObj = {
 };
 
 @Injectable()
-export class NewJwtGuard implements CanActivate {
+export class CustomJwtGuard implements CanActivate {
   private jwtService: JwtService;
 
   constructor(
