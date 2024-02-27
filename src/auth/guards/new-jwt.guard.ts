@@ -17,7 +17,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVars } from 'src/common/common.types';
 import { TenantConfig } from 'src/multi-tenant/multi-tenant.config';
-import { getHost } from 'src/common/common.helper';
+import { getHost, unixTimestamp } from 'src/common/common.helper';
 import * as cookieParser from 'cookie-parser';
 import { Profile } from '../dto';
 
@@ -59,6 +59,10 @@ export class NewJwtGuard implements CanActivate {
     }
 
     const decodedToken = this.jwtService.decode(token);
+    if (decodedToken.exp < unixTimestamp()) {
+      // check exp of token
+      throw new UnauthorizedException();
+    }
     const user = this.constructUserObj(decodedToken);
 
     if (await this.checkUserSessions(user.profile.userId)) {
@@ -114,7 +118,6 @@ export class NewJwtGuard implements CanActivate {
 
   private async checkUserSessions(userId: string) {
     const sessionCount = 1;
-    console.log(sessionCount);
     return sessionCount > 0 ? true : false;
   }
 }

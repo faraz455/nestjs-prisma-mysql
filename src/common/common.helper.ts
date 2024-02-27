@@ -7,7 +7,7 @@ function timeStampMilliseconds(): number {
   return new Date().getTime();
 }
 
-export function unix_timestamp(): number {
+export function unixTimestamp(): number {
   return Math.round(timeStampMilliseconds() / 1000);
 }
 
@@ -45,11 +45,6 @@ export function getPages(count: number, per_page: number) {
     pages = Math.ceil(count / per_page);
   }
   return pages;
-}
-
-export function datesForCreate() {
-  const timestamp: number = unix_timestamp();
-  return { date_added: timestamp, date_updated: timestamp };
 }
 
 export function getHost(req: Request) {

@@ -88,7 +88,6 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 
       case 'P2003':
         colName = exception.meta.field_name as string;
-        console.log(`${colName} foreign key constraint failed`);
         message = `${colName} cannot be changed!`;
         break;
 
