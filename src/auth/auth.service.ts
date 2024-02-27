@@ -15,13 +15,6 @@ import { decryptText } from 'src/common/common.helper';
 import { PRISMA_SERVICE } from '../multi-tenant/multi-tenant.module';
 import { Profile, ResoucePermissionType, ResourceName } from './dto';
 
-interface DeviceInfo {
-  deviceId: string;
-  deviceName: string;
-  deviceType: string;
-  deviceModel: string;
-}
-
 @Injectable()
 export class AuthService {
   constructor(

@@ -17,44 +17,12 @@ export class LoginDto {
   })
   password: string;
 
-  @IsChiString({ optional: true })
-  @ApiProperty({
-    required: false,
-    default: '9789KqX7LEoQgbHe/HSiqQ==.I9KhRQF1lFypGalmMsYbjg==',
-  })
-  enc_password: string;
-
-  @IsChiString({ optional: false })
-  @ApiProperty({ required: true })
-  fcmToken: string;
-
-  @IsString()
-  @ApiProperty({
-    required: true,
-  })
-  @IsOptional()
-  deviceId?: string;
-
-  @IsString()
-  @IsOptional()
-  @ApiProperty({
-    required: false,
-  })
-  deviceName?: string;
-
-  @IsString()
-  @IsOptional()
-  @ApiProperty({
-    required: false,
-  })
-  deviceModel?: string;
-
-  @IsString()
-  @IsOptional()
-  @ApiProperty({
-    required: false,
-  })
-  deviceType?: string;
+  // @IsChiString({ optional: true })
+  // @ApiProperty({
+  //   required: false,
+  //   default: '9789KqX7LEoQgbHe/HSiqQ==.I9KhRQF1lFypGalmMsYbjg==',
+  // })
+  // enc_password: string;
 
   @ApiProperty({
     required: true,

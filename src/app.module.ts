@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
 import { CommonModule } from './common/common.module';
@@ -12,6 +12,9 @@ import { MultiTenantModule } from './multi-tenant/multi-tenant.module';
 import multiTenantConfig from './multi-tenant/multi-tenant.config';
 import { RequestResponseInterceptor } from './logger/request-response.interceptor';
 import { ArticlesModule } from './articles/articles.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+import { EnvironmentVars } from './common/common.types';
 
 @Module({
   imports: [
@@ -21,6 +24,15 @@ import { ArticlesModule } from './articles/articles.module';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [multiTenantConfig],
+    }),
+    AuthModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>(EnvironmentVars.JWT_SECRET),
+        signOptions: { expiresIn: '86400s' },
+      }),
     }),
   ],
   controllers: [AppController],
