@@ -37,7 +37,6 @@
     "configparser": "^0.3.10",
     "cookie-parser": "^1.4.6",
     "crypto-js": "^4.2.0",
-    "md5": "^2.3.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",

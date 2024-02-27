@@ -8,7 +8,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { Request } from 'express';
-import * as md5 from 'md5';
 
 import { MakeTimedIDUnique, decryptText } from 'src/common/common.helper';
 
