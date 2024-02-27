@@ -1,4 +1,18 @@
 -- CreateTable
+CREATE TABLE `Article` (
+    `articleId` CHAR(40) NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
+    `description` VARCHAR(191) NULL,
+    `body` VARCHAR(191) NOT NULL,
+    `published` BOOLEAN NOT NULL DEFAULT false,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `Article_title_key`(`title`),
+    PRIMARY KEY (`articleId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `User` (
     `userId` CHAR(40) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
@@ -7,8 +21,8 @@ CREATE TABLE `User` (
     `middleName` VARCHAR(191) NULL,
     `lastName` VARCHAR(191) NULL,
     `fullName` VARCHAR(191) NOT NULL,
-    `gender` ENUM('MALE', 'FEMALE', 'OTHER') NULL,
-    `birthDateString` VARCHAR(191) NULL DEFAULT '-',
+    `gender` ENUM('MALE', 'FEMALE', 'OTHER') NOT NULL,
+    `birthDateString` VARCHAR(191) NOT NULL DEFAULT '-',
     `email` VARCHAR(100) NULL,
     `mobile` VARCHAR(191) NOT NULL,
     `address` VARCHAR(191) NULL,
