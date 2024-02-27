@@ -81,8 +81,8 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         break;
 
       case 'P2002':
-        const col = exception.meta.column_name as string;
-        colName = col;
+        const col = exception.meta.target as string;
+        colName = col.split('_')[1];
         message = `${colName} is already used`;
         break;
 

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from '@prisma/client';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class SignupDto {
   @ApiProperty({
@@ -40,16 +40,6 @@ export class SignupDto {
   @IsOptional()
   @IsString()
   lastName?: string;
-
-  @ApiProperty({ required: true })
-  @IsString()
-  fullName: string;
-
-  constructor(data: SignupDto) {
-    this.firstName = data.firstName;
-    this.lastName = data.lastName;
-    this.fullName = `${data.firstName} ${data.lastName || ''}`.trim();
-  }
 
   @ApiProperty({
     required: false,

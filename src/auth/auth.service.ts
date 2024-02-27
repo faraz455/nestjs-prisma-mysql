@@ -26,21 +26,13 @@ export class AuthService {
   ) {}
 
   async validateUser(req: Request) {
-    const encPassword: string | undefined = req.body.enc_password;
     let mobile: string = req.body.mobile;
     let pass: string = req.body.password;
-
-    if (!!encPassword) {
-      const parts = req.body.enc_password.split('.');
-      mobile = decryptText(parts[0]);
-      pass = decryptText(parts[1]);
-    }
 
     if (!mobile || !pass) {
       throw new BadRequestException('Login request malformed');
     }
 
-    const hashPassword = md5(pass);
     const user = await this.prisma.user.findFirst({
       select: {
         userId: true,
@@ -58,9 +50,8 @@ export class AuthService {
       where: { mobile: mobile },
     });
 
-    if (!user || hashPassword != user?.password) {
+    if (!user || !(await bcrypt.compare(pass, user.password))) {
       throw new UnauthorizedException({
-        deviceVerificationRequired: false,
         message: `Phone no. and password mismatch `,
       });
     }
@@ -170,11 +161,18 @@ export class AuthService {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(signupDto.password, salt);
 
+    const fullName = [
+      signupDto.firstName,
+      signupDto.middleName,
+      signupDto.lastName,
+    ].join(' ');
+
     const rec = await this.prisma.user.create({
       data: {
         userId: MakeTimedIDUnique(),
-        ...restDto,
+        fullName,
         password: hashedPassword,
+        ...restDto,
       },
     });
 
