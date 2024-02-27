@@ -25,7 +25,6 @@ export type ReqUserObj = {
   userId: string;
   userEmail: string;
   profile: Profile;
-  userDeviceId: string;
 };
 
 @Injectable()
@@ -39,7 +38,6 @@ export class NewJwtGuard implements CanActivate {
     @Inject(TENANT_CONFIG) tConfig: TenantConfig,
   ) {
     this.jwtService = new JwtService({
-      verifyOptions: { ignoreExpiration: true },
       secret: this.configService.getOrThrow(EnvironmentVars.JWT_SECRET),
     });
   }
@@ -76,7 +74,6 @@ export class NewJwtGuard implements CanActivate {
       userId: payload.sub,
       userEmail: payload.userEmail,
       profile: payload.profile,
-      userDeviceId: payload.userDeviceId,
     };
   }
 

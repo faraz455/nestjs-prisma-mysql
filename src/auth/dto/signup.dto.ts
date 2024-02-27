@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class SignupDto {
   @ApiProperty({ required: true })
@@ -10,19 +10,39 @@ export class SignupDto {
   @IsString()
   password: string;
 
+  @ApiProperty({
+    required: true,
+    example: 'firstName',
+    description: 'The firstName of the User',
+  })
+  @IsString()
+  firstName: string;
+
+  @ApiProperty({
+    required: false,
+    example: 'middleName',
+    description: 'The middleName of the User',
+  })
+  @IsOptional()
+  @IsString()
+  middleName?: string;
+
+  @ApiProperty({
+    required: false,
+    example: 'lastName',
+    description: 'The lastName of the User',
+  })
+  @IsString()
+  lastName?: string;
+
   @ApiProperty({ required: true })
+  @IsOptional()
   @IsString()
   full_name: string;
 
-  @ApiProperty({ required: true })
-  @IsString()
-  company_name: string;
-
-  @ApiProperty({ required: true })
-  @IsString()
-  company_type_id: string;
-
-  @ApiProperty({ required: true })
-  @IsString()
-  industry_type_id: string;
+  constructor(data: SignupDto) {
+    this.firstName = data.firstName;
+    this.lastName = data.lastName;
+    this.full_name = `${data.firstName} ${data.lastName || ''}`.trim();
+  }
 }

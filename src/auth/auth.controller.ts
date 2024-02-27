@@ -54,25 +54,12 @@ export class AuthController {
 
   @Public()
   @ApiOkResponse()
-  @Get('logout')
-  async logout(
-    @Query('fcmToken') fcmToken: string,
-    @Res({ passthrough: true })
-    res: Response,
-  ) {
-    await this.authService.logout(fcmToken);
-    res.clearCookie(this.tConfig.AUTH_COOKIE_NAME, { signed: true });
-  }
-
-  @Public()
-  @ApiOkResponse()
   @Post('logout')
   async PostLogout(
-    @Query('fcmToken') fcmToken: string,
     @Res({ passthrough: true })
     res: Response,
   ) {
-    await this.authService.logout(fcmToken);
+    await this.authService.logout();
     res.clearCookie(this.tConfig.AUTH_COOKIE_NAME, { signed: true });
   }
 }

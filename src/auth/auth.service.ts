@@ -162,7 +162,5 @@ export class AuthService {
     return load;
   }
 
-  async logout(fcmToken: string) {
-    const server_name = 'auth/logout';
-  }
+  async logout() {}
 }

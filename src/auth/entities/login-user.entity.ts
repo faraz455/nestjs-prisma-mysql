@@ -80,20 +80,6 @@ class LoginUserEntity {
     description: 'The email of the User',
   })
   email?: string;
-
-  @ApiProperty({
-    required: false,
-    example: 'title',
-    description: 'The title of the User',
-  })
-  title?: string;
-
-  @ApiProperty({
-    required: false,
-    example: 101,
-    description: 'The height of the User,',
-  })
-  height?: number;
 }
 
 export class LoginEntity {
