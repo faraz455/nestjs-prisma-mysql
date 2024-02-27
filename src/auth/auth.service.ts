@@ -10,10 +10,13 @@ import { User } from '@prisma/client';
 import { Request } from 'express';
 import * as md5 from 'md5';
 
-import { decryptText } from 'src/common/common.helper';
+import { MakeTimedIDUnique, decryptText } from 'src/common/common.helper';
 
 import { PRISMA_SERVICE } from '../multi-tenant/multi-tenant.module';
 import { Profile, ResoucePermissionType, ResourceName } from './dto';
+import { SignupDto } from './dto/signup.dto';
+import * as bcrypt from 'bcrypt';
+import { IDDto } from 'src/common/dto';
 
 @Injectable()
 export class AuthService {
@@ -160,6 +163,22 @@ export class AuthService {
     };
 
     return load;
+  }
+
+  async signup(signupDto: SignupDto): Promise<IDDto> {
+    const { password, ...restDto } = signupDto;
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(signupDto.password, salt);
+
+    const rec = await this.prisma.user.create({
+      data: {
+        userId: MakeTimedIDUnique(),
+        ...restDto,
+        password: hashedPassword,
+      },
+    });
+
+    return { id: rec.userId };
   }
 
   async logout() {}

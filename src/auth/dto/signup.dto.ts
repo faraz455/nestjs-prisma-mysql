@@ -1,10 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { Gender } from '@prisma/client';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class SignupDto {
-  @ApiProperty({ required: true })
+  @ApiProperty({
+    required: true,
+    example: 'username',
+    description: 'The username of the User',
+  })
   @IsString()
-  email: string;
+  username: string;
 
   @ApiProperty({ required: true })
   @IsString()
@@ -32,17 +37,43 @@ export class SignupDto {
     example: 'lastName',
     description: 'The lastName of the User',
   })
+  @IsOptional()
   @IsString()
   lastName?: string;
 
   @ApiProperty({ required: true })
-  @IsOptional()
   @IsString()
-  full_name: string;
+  fullName: string;
 
   constructor(data: SignupDto) {
     this.firstName = data.firstName;
     this.lastName = data.lastName;
-    this.full_name = `${data.firstName} ${data.lastName || ''}`.trim();
+    this.fullName = `${data.firstName} ${data.lastName || ''}`.trim();
   }
+
+  @ApiProperty({
+    required: false,
+    example: 'gender',
+    description: 'The gender of the User',
+  })
+  @IsEnum(Gender)
+  gender: Gender;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  birthDateString: string;
+
+  @ApiProperty({ required: true })
+  @IsOptional()
+  @IsString()
+  email: string;
+
+  @ApiProperty({ required: true })
+  @IsString()
+  mobile: string;
+
+  @ApiProperty({ required: true })
+  @IsString()
+  @IsOptional()
+  address: string;
 }

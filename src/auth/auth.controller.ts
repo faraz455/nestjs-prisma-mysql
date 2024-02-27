@@ -22,6 +22,8 @@ import { LoginGuard } from './guards/login.guard';
 
 import { LoginEntity } from './entities';
 import { CustomJwtGuard } from './guards/new-jwt.guard';
+import { SignupDto } from './dto/signup.dto';
+import { IDDto } from 'src/common/dto';
 
 @UseGuards(CustomJwtGuard)
 @Controller('auth')
@@ -41,13 +43,22 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @GetUser() user: any,
     @Res({ passthrough: true }) res: Response,
-    @GetUser('profile') profile: Profile,
   ) {
     const payload = await this.authService.login(user, loginDto.tzOffset);
 
     res.cookie(this.tConfig.AUTH_COOKIE_NAME, payload.auth_token, {
       signed: true,
     });
+
+    return payload;
+  }
+
+  @Public()
+  @ApiOkResponse({ type: IDDto })
+  @HttpCode(HttpStatus.CREATED)
+  @Post('signup')
+  async signup(@Body() signupDto: SignupDto) {
+    const payload = await this.authService.signup(signupDto);
 
     return payload;
   }
