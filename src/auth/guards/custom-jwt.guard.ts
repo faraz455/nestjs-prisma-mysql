@@ -62,7 +62,6 @@ export class CustomJwtGuard implements CanActivate {
     const decodedAccessToken = this.jwtService.decode(accessToken);
 
     if (decodedAccessToken.exp < currentTime) {
-      // check exp of token
       const decodedRefreshToken: {
         exp: number;
         userId: string;
@@ -70,6 +69,20 @@ export class CustomJwtGuard implements CanActivate {
       } = this.jwtService.decode(refreshToken);
 
       if (decodedRefreshToken.exp < currentTime) {
+        throw new UnauthorizedException();
+      }
+
+      const userRefreshToken =
+        await this.prisma.userRefreshToken.findUniqueOrThrow({
+          select: { revoked: true },
+          where: {
+            userRefreshTokenId: decodedRefreshToken.userRefreshTokenId,
+            OR: [{ revoked: true }, { expiresAt: { lte: new Date() } }],
+          },
+        });
+
+      // If is already revoked
+      if (userRefreshToken) {
         throw new UnauthorizedException();
       }
 
@@ -85,8 +98,12 @@ export class CustomJwtGuard implements CanActivate {
 
       await authService.login(user);
 
-      // TODO: NEED TO MAKE NEW ACCESS TOKEN
+      await this.prisma.userRefreshToken.update({
+        data: { revoked: true },
+        where: { userRefreshTokenId: decodedRefreshToken.userRefreshTokenId },
+      });
     }
+
     const user = this.constructUserObj(decodedAccessToken);
 
     if (await this.checkUserSessions(user.profile.userId)) {
@@ -145,6 +162,7 @@ export class CustomJwtGuard implements CanActivate {
           EnvironmentVars.AUTH_COOKIE_SECRET,
         ),
       );
+
       if (!accessToken || !refreshToken) {
         return null;
       }
