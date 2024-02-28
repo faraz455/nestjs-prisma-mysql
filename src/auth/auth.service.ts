@@ -9,19 +9,26 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { Request } from 'express';
 
-import { MakeTimedIDUnique, decryptText } from 'src/common/common.helper';
+import {
+  MakeTimedIDUnique,
+  decryptText,
+  unixTimestamp,
+} from 'src/common/common.helper';
 
 import { PRISMA_SERVICE } from '../multi-tenant/multi-tenant.module';
 import { Profile, ResoucePermissionType, ResourceName } from './dto';
 import { SignupDto } from './dto/signup.dto';
 import * as bcrypt from 'bcrypt';
 import { IDDto } from 'src/common/dto';
+import { ConfigService } from '@nestjs/config';
+import { EnvironmentVars } from 'src/common/common.types';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(PRISMA_SERVICE) private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async validateUser(req: Request) {
@@ -100,41 +107,57 @@ export class AuthService {
     return permissions;
   }
 
-  async login(userInfo: User, tzOffset: number = 0) {
+  async login(user: User, tzOffset: number = 0) {
     const userRoles = await this.prisma.userRole.findMany({
       select: { role: { select: { roleName: true } } },
-      where: { userId: userInfo.userId },
+      where: { userId: user.userId },
     });
 
-    let roles: {
-      role: string;
-    }[] = userRoles.map((role) => {
-      return {
-        role: role.role.roleName,
-      };
-    });
+    let roles: string[] = userRoles.map((role) => role.role.roleName);
 
     const profile = new Profile(
-      userInfo.userId,
-      userInfo.fullName,
-      userInfo.firstName,
-      userInfo.middleName,
-      userInfo.lastName,
-      userInfo.mobile,
+      user.userId,
+      user.fullName,
+      user.firstName,
+      user.middleName,
+      user.lastName,
+      user.mobile,
       roles,
       tzOffset,
     );
-
-    const user = {
-      ...userInfo,
-    };
 
     const payload = {
       user,
       profile,
     };
 
-    const encodedJWT = this.jwtService.sign(payload);
+    const authToken = this.jwtService.sign(payload, {
+      secret: this.configService.getOrThrow<string>(EnvironmentVars.JWT_SECRET),
+    });
+
+    const userRefreshTokenId = MakeTimedIDUnique();
+
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+
+    const refreshTokenPayload = {
+      userId: user.userId,
+      userRefreshTokenId,
+    };
+
+    const refreshToken = this.jwtService.sign(refreshTokenPayload, {
+      secret: this.configService.getOrThrow<string>(EnvironmentVars.JWT_SECRET),
+      expiresIn: '1h',
+    });
+
+    await this.prisma.userRefreshToken.create({
+      data: {
+        userRefreshTokenId,
+        refreshToken,
+        user: { connect: { userId: user.userId } },
+        expiresAt,
+      },
+    });
 
     const permissions = await this.getUserPermissions(profile.userId);
 
@@ -142,7 +165,8 @@ export class AuthService {
       user,
       profile,
       permissions,
-      auth_token: encodedJWT,
+      authToken,
+      refreshToken,
     };
 
     return load;

@@ -44,7 +44,7 @@ export class AuthController {
   ) {
     const payload = await this.authService.login(user, loginDto.tzOffset);
 
-    res.cookie(this.tConfig.AUTH_COOKIE_NAME, payload.auth_token, {
+    res.cookie(this.tConfig.AUTH_COOKIE_NAME, payload.authToken, {
       signed: true,
     });
 

@@ -52,18 +52,23 @@ export class CustomJwtGuard implements CanActivate {
     }
 
     const req: Request = context.switchToHttp().getRequest();
-    const token = this.extractJwtTokenFromRequest(req);
+    const { accessToken, refreshToken } = this.extractJwtTokenFromRequest(req);
 
-    if (!token) {
+    if (!accessToken) {
       throw new UnauthorizedException();
     }
 
-    const decodedToken = this.jwtService.decode(token);
-    if (decodedToken.exp < unixTimestamp()) {
+    const decodedAccessToken = this.jwtService.decode(accessToken);
+
+    if (decodedAccessToken.exp < unixTimestamp()) {
       // check exp of token
+      const decodedRefreshToken = this.jwtService.decode(refreshToken);
+      console.log(decodedRefreshToken, 'THIS IS REFRESH TOKEN');
+
+      // TODO: NEED TO MAKE NEW ACCESS TOKEN
       throw new UnauthorizedException();
     }
-    const user = this.constructUserObj(decodedToken);
+    const user = this.constructUserObj(decodedAccessToken);
 
     if (await this.checkUserSessions(user.profile.userId)) {
       req.user = user;
@@ -81,36 +86,51 @@ export class CustomJwtGuard implements CanActivate {
     };
   }
 
-  private extractJwtTokenFromRequest(req: Request) {
-    let token: string = this.extractJwtTokenFromCookies(req);
+  private extractJwtTokenFromRequest(req: Request): {
+    accessToken: string;
+    refreshToken: string;
+  } {
+    let { accessToken, refreshToken } =
+      this.extJwtAndRefreshTokenFromCookies(req);
 
-    if (!token) {
+    if (!accessToken) {
       // extract as bearer token
-      token = req.headers.authorization?.split(' ')[1];
+      accessToken = req.headers.authorization?.split(' ')[1];
     }
-    if (!token) {
+    if (!accessToken) {
       // extract as auth header
-      token = req.headers.authorization;
+      accessToken = req.headers.authorization;
     }
 
-    return token;
+    return { accessToken, refreshToken };
   }
 
-  private extractJwtTokenFromCookies(req: Request) {
+  private extJwtAndRefreshTokenFromCookies(req: Request): {
+    accessToken: string;
+    refreshToken: string;
+  } {
     const tConfig: TenantConfig =
       this.configService.get('multiTenant')[getHost(req)];
 
     try {
-      const data = cookieParser.signedCookie(
+      const accessToken = cookieParser.signedCookie(
         req.signedCookies[tConfig.AUTH_COOKIE_NAME],
         this.configService.getOrThrow<string>(
           EnvironmentVars.AUTH_COOKIE_SECRET,
         ),
       );
-      if (!data) {
+
+      const refreshToken = cookieParser.signedCookie(
+        req.signedCookies[tConfig.REFRESH_COOKIE_NAME],
+        this.configService.getOrThrow<string>(
+          EnvironmentVars.AUTH_COOKIE_SECRET,
+        ),
+      );
+      if (!accessToken || !refreshToken) {
         return null;
       }
-      return data;
+
+      return { accessToken, refreshToken };
     } catch (error) {
       return null;
     }
