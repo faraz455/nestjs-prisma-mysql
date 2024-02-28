@@ -44,7 +44,7 @@ export class AuthController {
     @GetUser() user: any,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const payload = await this.authService.login(user, loginDto.tzOffset);
+    const payload = await this.authService.login(user);
 
     res.cookie(this.tConfig.AUTH_COOKIE_NAME, payload.authToken, {
       signed: true,

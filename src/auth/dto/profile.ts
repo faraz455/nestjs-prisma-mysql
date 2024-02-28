@@ -22,9 +22,6 @@ export class Profile {
   @ApiProperty({ required: true, example: 'list of roles', isArray: true })
   roles: string[];
 
-  @ApiProperty({ required: true })
-  tzOffset: number;
-
   constructor(
     userId: string,
     fullName: string,
@@ -33,7 +30,6 @@ export class Profile {
     lastName: string | null,
     mobile: string | null,
     roles: string[],
-    tzOffset: number | null,
   ) {
     this.userId = userId;
     this.fullName = fullName;
@@ -42,6 +38,5 @@ export class Profile {
     this.lastName = lastName;
     this.mobile = mobile;
     this.roles = roles;
-    this.tzOffset = tzOffset;
   }
 }

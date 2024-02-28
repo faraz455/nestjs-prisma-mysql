@@ -103,7 +103,7 @@ export class AuthService {
     return permissions;
   }
 
-  async login(user: User, tzOffset: number = 0) {
+  async login(user: User) {
     const userRoles = await this.prisma.userRole.findMany({
       select: { role: { select: { roleName: true } } },
       where: { userId: user.userId },
@@ -119,7 +119,6 @@ export class AuthService {
       user.lastName,
       user.mobile,
       roles,
-      tzOffset,
     );
 
     const payload = {
