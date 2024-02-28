@@ -23,13 +23,4 @@ export class LoginDto {
   //   default: '9789KqX7LEoQgbHe/HSiqQ==.I9KhRQF1lFypGalmMsYbjg==',
   // })
   // enc_password: string;
-
-  @ApiProperty({
-    required: true,
-    example: '18000',
-    description: 'This is time zone where user login',
-  })
-  @IsOptional()
-  @IsNumber()
-  tzOffset?: number;
 }
