@@ -69,13 +69,12 @@ export class CustomJwtGuard implements CanActivate {
         userRefreshTokenId: string;
       } = this.jwtService.decode(refreshToken);
 
-      console.log(decodedRefreshToken, 'THIS IS REFRESH TOKEN');
       if (decodedRefreshToken.exp < currentTime) {
         throw new UnauthorizedException();
       }
 
       const user = await this.prisma.user.findUniqueOrThrow({
-        where: { userId: decodedAccessToken.userId },
+        where: { userId: decodedRefreshToken.userId },
       });
 
       const authService = new AuthService(
