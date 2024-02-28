@@ -50,6 +50,10 @@ export class AuthController {
       signed: true,
     });
 
+    res.cookie(this.tConfig.REFRESH_COOKIE_NAME, payload.refreshToken, {
+      signed: true,
+    });
+
     return payload;
   }
 
