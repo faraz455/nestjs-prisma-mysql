@@ -20,6 +20,7 @@ import { TenantConfig } from 'src/multi-tenant/multi-tenant.config';
 import { getHost, unixTimestamp } from 'src/common/common.helper';
 import * as cookieParser from 'cookie-parser';
 import { Profile } from '../dto';
+import { AuthService } from '../auth.service';
 
 export type ReqUserObj = {
   userId: string;
@@ -35,7 +36,6 @@ export class CustomJwtGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly configService: ConfigService,
     @Inject(PRISMA_SERVICE) private readonly prisma: PrismaService,
-    @Inject(TENANT_CONFIG) tConfig: TenantConfig,
   ) {
     this.jwtService = new JwtService({
       secret: this.configService.getOrThrow(EnvironmentVars.JWT_SECRET),
@@ -58,15 +58,35 @@ export class CustomJwtGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
+    const currentTime = unixTimestamp();
     const decodedAccessToken = this.jwtService.decode(accessToken);
 
-    if (decodedAccessToken.exp < unixTimestamp()) {
+    if (decodedAccessToken.exp < currentTime) {
       // check exp of token
-      const decodedRefreshToken = this.jwtService.decode(refreshToken);
+      const decodedRefreshToken: {
+        exp: number;
+        userId: string;
+        userRefreshTokenId: string;
+      } = this.jwtService.decode(refreshToken);
+
       console.log(decodedRefreshToken, 'THIS IS REFRESH TOKEN');
+      if (decodedRefreshToken.exp < currentTime) {
+        throw new UnauthorizedException();
+      }
+
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: { userId: decodedAccessToken.userId },
+      });
+
+      const authService = new AuthService(
+        this.prisma,
+        this.jwtService,
+        this.configService,
+      );
+
+      await authService.login(user);
 
       // TODO: NEED TO MAKE NEW ACCESS TOKEN
-      throw new UnauthorizedException();
     }
     const user = this.constructUserObj(decodedAccessToken);
 

@@ -142,7 +142,7 @@ export class AuthService {
 
     const refreshToken = this.jwtService.sign(refreshTokenPayload, {
       secret: this.configService.getOrThrow<string>(EnvironmentVars.JWT_SECRET),
-      expiresIn: '1h',
+      expiresIn: '25h',
     });
 
     await this.prisma.userRefreshToken.create({
