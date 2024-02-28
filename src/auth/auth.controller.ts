@@ -19,7 +19,7 @@ import { AuthService } from './auth.service';
 
 import { GetUser, Public } from './decorators';
 import { LoginGuard } from './guards/login.guard';
-import { CustomJwtGuard } from './guards/new-jwt.guard';
+import { CustomJwtGuard } from './guards/custom-jwt.guard';
 
 import { IDDto } from 'src/common/dto';
 import { LoginEntity } from './entities';

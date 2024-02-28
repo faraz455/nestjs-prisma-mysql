@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { ReqUserObj } from '../guards/new-jwt.guard';
+import { ReqUserObj } from '../guards/custom-jwt.guard';
 
 export const GetUser = createParamDecorator(
   (key: keyof ReqUserObj | undefined, ctx: ExecutionContext) => {

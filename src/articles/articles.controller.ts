@@ -23,7 +23,7 @@ import { IDDto, PaginationQueryDto } from 'src/common/dto';
 import { CreateArticleDto, UpdateArticleDto } from './dto';
 import { ArticleEntity } from './entities';
 
-import { CustomJwtGuard } from 'src/auth/guards/new-jwt.guard';
+import { CustomJwtGuard } from 'src/auth/guards/custom-jwt.guard';
 
 @UseGuards(CustomJwtGuard)
 @ApiTags('Articles')
