@@ -60,16 +60,9 @@ export class AuthService {
   }
 
   async validateSession(req: Request) {
-    const encPassword: string | undefined = req.body.enc_password;
-    let mobile: string = req?.body?.mobile;
-
-    if (!!encPassword) {
-      const parts = req.body.enc_password.split('.');
-      mobile = decryptText(parts[0]);
-    }
+    const mobile: string = req?.body?.mobile;
 
     const sessionCount = 1;
-
     return sessionCount > 0 ? true : false;
   }
 

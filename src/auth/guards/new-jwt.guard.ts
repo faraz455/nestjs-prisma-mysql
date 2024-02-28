@@ -117,6 +117,7 @@ export class CustomJwtGuard implements CanActivate {
   }
 
   private async checkUserSessions(userId: string) {
+    // Need to implement refresh token
     const sessionCount = 1;
     return sessionCount > 0 ? true : false;
   }

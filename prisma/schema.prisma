@@ -49,11 +49,28 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userRoles UserRole[]
+  userRoles        UserRole[]
+  UserRefreshToken UserRefreshToken[]
+}
+
+model UserRefreshToken {
+  userRefreshToken String @id @db.Char(40)
+
+  userId String @db.Char(40)
+  user   User   @relation(fields: [userId], references: [userId])
+
+  refreshToken String   @unique()
+  ExpiresAt    DateTime
+  revoked      Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model UserRole {
-  userRoleId String @id @db.Char(40) /// {"size": 40}
+  userRoleId String @id @db.Char(40)
 
   User   User   @relation(fields: [userId], references: [userId])
   userId String @db.Char(40)
