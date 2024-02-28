@@ -7,21 +7,17 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import { Request } from 'express';
+import { ConfigService } from '@nestjs/config';
 
-import {
-  MakeTimedIDUnique,
-  decryptText,
-  unixTimestamp,
-} from 'src/common/common.helper';
+import { Request } from 'express';
+import * as bcrypt from 'bcrypt';
 
 import { PRISMA_SERVICE } from '../multi-tenant/multi-tenant.module';
-import { Profile, ResoucePermissionType, ResourceName } from './dto';
-import { SignupDto } from './dto/signup.dto';
-import * as bcrypt from 'bcrypt';
-import { IDDto } from 'src/common/dto';
-import { ConfigService } from '@nestjs/config';
+
+import { MakeTimedIDUnique } from 'src/common/common.helper';
 import { EnvironmentVars } from 'src/common/common.types';
+import { IDDto } from 'src/common/dto';
+import { Profile, ResoucePermissionType, ResourceName, SignupDto } from './dto';
 
 @Injectable()
 export class AuthService {

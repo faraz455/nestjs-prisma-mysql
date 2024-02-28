@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
+import { Prisma } from '@prisma/client';
+
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PRISMA_SERVICE } from 'src/multi-tenant/multi-tenant.module';
+
 import {
   MakeTimedIDUnique,
   getOffset,
@@ -13,7 +14,7 @@ import {
   PaginatedResponseDto,
   PaginationQueryDto,
 } from 'src/common/dto';
-import { Prisma } from '@prisma/client';
+import { CreateArticleDto, UpdateArticleDto } from './dto';
 import { ArticleEntity } from './entities';
 
 @Injectable()

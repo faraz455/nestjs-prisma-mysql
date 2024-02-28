@@ -9,19 +9,21 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+
 import { Response } from 'express';
 
 import { TenantConfig } from '../multi-tenant/multi-tenant.config';
 import { TENANT_CONFIG } from '../multi-tenant/multi-tenant.module';
-import { LoginDto, Profile } from './dto';
+
 import { AuthService } from './auth.service';
+
 import { GetUser, Public } from './decorators';
 import { LoginGuard } from './guards/login.guard';
-
-import { LoginEntity } from './entities';
 import { CustomJwtGuard } from './guards/new-jwt.guard';
-import { SignupDto } from './dto/signup.dto';
+
 import { IDDto } from 'src/common/dto';
+import { LoginEntity } from './entities';
+import { LoginDto, SignupDto } from './dto';
 
 @UseGuards(CustomJwtGuard)
 @Controller('auth')

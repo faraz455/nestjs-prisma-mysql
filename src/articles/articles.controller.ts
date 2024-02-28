@@ -9,18 +9,20 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ArticlesService } from './articles.service';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { IDDto, PaginationQueryDto } from 'src/common/dto';
+
+import { ArticlesService } from './articles.service';
+
 import { ApiPaginatedResponse } from 'src/common/responses';
+import { IDDto, PaginationQueryDto } from 'src/common/dto';
+import { CreateArticleDto, UpdateArticleDto } from './dto';
 import { ArticleEntity } from './entities';
+
 import { CustomJwtGuard } from 'src/auth/guards/new-jwt.guard';
 
 @UseGuards(CustomJwtGuard)
