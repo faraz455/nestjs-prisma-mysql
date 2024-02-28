@@ -54,13 +54,13 @@ model User {
 }
 
 model UserRefreshToken {
-  userRefreshToken String @id @db.Char(40)
+  userRefreshTokenId String @id @db.Char(40)
 
   userId String @db.Char(40)
   user   User   @relation(fields: [userId], references: [userId])
 
-  refreshToken String   @unique()
-  ExpiresAt    DateTime
+  refreshToken String   @unique() @db.VarChar(256)
+  expiresAt    DateTime
   revoked      Boolean  @default(false)
 
   createdAt DateTime @default(now())
