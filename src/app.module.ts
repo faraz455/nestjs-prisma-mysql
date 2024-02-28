@@ -26,14 +26,6 @@ import { EnvironmentVars } from './common/common.types';
       load: [multiTenantConfig],
     }),
     AuthModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>(EnvironmentVars.JWT_SECRET),
-        signOptions: { expiresIn: '86400s' },
-      }),
-    }),
   ],
   controllers: [AppController],
   providers: [
