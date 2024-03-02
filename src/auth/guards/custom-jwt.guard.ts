@@ -126,8 +126,9 @@ export class CustomJwtGuard implements CanActivate {
     accessToken: string;
     refreshToken: string;
   } {
-    let { accessToken, refreshToken } =
-      this.extJwtAndRefreshTokenFromCookies(req);
+    let { accessToken, refreshToken } = this.extJwtAndRefreshTokenFromCookies(
+      req,
+    ) ?? { accessToken: null, refreshToken: null };
 
     if (!accessToken) {
       // extract as bearer token
