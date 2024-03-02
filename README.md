@@ -14,55 +14,77 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Nest](https://github.com/nestjs/nest) Framework -  A Public Template Repository
 
-Welcome to the NestJS repository that serves as a comprehensive boilerplate for building robust web applications using NestJS, Prisma ORM, and MySQL. This repository encompasses various essential concepts and features to accelerate your development process.
-
-## Key Concepts:
-
-- **Middleware**: Implement middleware to process requests and responses. [NestJS Middleware Documentation](https://docs.nestjs.com/middleware)
-
-- **Interceptor**: Implement the manipulation of HTTP requests and responses. [NestJS Interceptor Documentation](https://docs.nestjs.com/interceptors)
-
-- **Validation Pipes**: Implement and understand the usage of validation pipes for request payload validation. [NestJS Validation Documentation](https://docs.nestjs.com/pipes#validation)
-
-- **Swagger for API Documentation**: Automatically generate API documentation using Swagger. [NestJS Swagger Documentation](https://docs.nestjs.com/openapi/introduction)
-
-- **Prisma ORM**: Utilize Prisma ORM for database interactions along with managing database schema changes through migrations. [Prisma Documentation](https://www.prisma.io/docs/)
-
-- **Multi-tenant**: Implement multi-tenancy to support multiple users or entities. [NestJS Multi-Tenancy Example](https://docs.nestjs.com/techniques/multi-tenancy)
-
-- **Custom Decorators**: Implement custom decorators to extend functionality. [NestJS Custom Decorators Documentation](https://docs.nestjs.com/custom-decorators)
-
-- **Common Responses and Query DTOs**: Define consistent response structures and Data Transfer Objects (DTOs). [NestJS DTOs Documentation](https://docs.nestjs.com/controllers#request-payloads)
-
-- **Logger for Request**: Set up logging for better request/response tracing. [NestJS Logger Documentation](https://docs.nestjs.com/techniques/logger)
-
-- **Exception Filters**: Handle exceptions gracefully using custom exception filters. [NestJS Exception Filters Documentation](https://docs.nestjs.com/exception-filters)
-
-- **Simple Prisma CRUDs**: Build basic CRUD operations using Prisma ORM. [Prisma CRUD Operations Documentation](https://www.prisma.io/docs/concepts/components/prisma-client/crud)
+This repository provides a comprehensive and production-ready foundation for building scalable backend applications with NestJS, Prisma ORM, and MySQL. It offers a well-structured codebase with essential features and best practices to jumpstart your development journey.
 
 Feel free to clone this repository and use it as a starting point for your NestJS projects.
 
 # Table of Contents
 
-- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+  - [Project Overview](#project-overview)
+  - [Key Features](#key-features)
+
 - [Installation](#installation)
+  - [Prerequistes](#prerequisites)
+
   - [Setting up environment variables](#setting-up-environment-variables)
     - [Basic Environment](#basic-environment)
     - [Tenant Configuration](#tenant-configuration)
-  - [Prisma Migrations](#prisma-migrations)
-    - [Baselining your database](#baselining-your-database)
-    - [Applying a new migration](#applying-a-new-migration)
-    - [Applying all migrations](#applying-all-migrations)
-    - [Merge all migrations](#merge-all-migrations)
+
+  - [Prisma Integration](#prisma-integration)
+    - [Key benefits of Prisma](#key-benefits-of-prisma)
+    - [Prisma Setup](#prisma-setup)
+
 - [Running the app](#running-the-app)
 
+- [Prisma Migrations](#prisma-migrations)
+  - [Baselining your database](#baselining-your-database)
+  - [Applying a new migration](#applying-a-new-migration)
+  - [Applying all migrations](#applying-all-migrations)
+  - [Merge all migrations](#merge-all-migrations)
+
+
+## Introduction
+
+### Project Overview
+- This repository provides a foundation for building robust **NestJS** applications utilizing **Prisma** as the ORM and **MySQL** as the underlying database. It streamlines the initial setup process, offering essential features commonly required in NestJS projects.
+
+
+### Key Features
+
+- **Multitenancy Support**: Implement a multi-tenant environment using environment variables and configuration files, enabling data segregation and customized functionalities for different tenants.
+
+- **Efficient Data Management**: Leverage Prisma ORM as an abstraction layer for seamless interaction with your MySQL database, reducing boilerplate code and simplifying data manipulation.
+
+- **Reusable Components**: Utilize common response entities and data transfer objects (DTOs) to ensure consistent data structures and streamline data handling across your application.
+
+- **Enhanced Debugging**: Implement a custom NestJS interceptor to log request details and Prisma queries, providing valuable insights for troubleshooting and monitoring purposes.
+
+- **Interactive API Documentation**: Integrate Swagger documentation to generate clear API descriptions and facilitate user interaction with the application through an interactive interface.
+
+- **Data Validation**: Enforce data integrity and consistency using NestJS validation pipes, ensuring that incoming requests adhere to predefined data structures.
+
+- **Comprehensive Documentation**: Benefit from clear and detailed documentation, including comments and relevant references, to guide you through the codebase and understand its functionality.
+
+
 ## Installation
+
+### Prerequisites
+Before proceeding with the setup, ensure that your development system has the following prerequisites installed:
+
+**Node.js**: This project relies on Node.js for its functionality. If you haven't installed it yet, you can download and install the latest version from the [ official Node website](https://nodejs.org/en).
+
+**Yarn**: Yarn is used for efficient dependency management in this project. Make sure Yarn is installed on your system. If not, you can install it by following the instructions on the [official Yarn website.](https://yarnpkg.com/).
+
+To install all the required dependencies, run the following command in your terminal:
 
 ```bash
 $ yarn install
 ```
+This command will handle the installation of all necessary dependencies for the project.
+
 
 ## Setting up environment variables
 
@@ -133,6 +155,69 @@ DB_DEBUG=0
 
 Copy paste the above as many times as you wish to serve multiple tenants. Make sure to update their host addresses and environment details accordingly.
 
+
+## Prisma Integration
+Prisma is a next-generation object-relational mapper (ORM) designed specifically for Node.js and TypeScript. It offers a streamlined and intuitive approach to interacting with databases, making your development experience more efficient and enjoyable.
+
+### Key Benefits of Prisma
+
+- **Intuitive data model**: Define your database schema using a concise and human-readable syntax.
+- **Automated migrations**: Effortlessly manage database schema changes through automated migrations.
+- **Type-safety and auto-completion**: Benefit from TypeScript's inherent type-safety and auto-completion features, simplifying query development and reducing errors.
+
+### Prisma Setup
+
+This project utilizes yarn to manage dependencies. Running `yarn install` will automatically install both Prisma and its client library as defined in the package.json file. However, if you prefer manual installation, you can use the following commands:
+
+``` bash
+$ yarn add prisma@latest
+$ yarn add @prisma/client@latest
+```
+
+To apply all the current migrations located in the prisma/migrations folder to your MySQL database.
+
+```bash
+$ yarn prisma migrate deploy
+```
+This ensures that the database schema reflects the latest changes defined in your Prisma models.
+
+Execute below command to generate the Prisma client. This client serves as an interface for interacting with your database, allowing you to perform queries and data manipulation operations.
+
+```bash
+$ yarn prisma generate
+``` 
+
+By following these steps, you'll successfully set up Prisma and its client, enabling you to seamlessly interact with your MySQL database within the project.
+
+### Aditional Resources
+- [Prisma playground](https://playground.prisma.io/) - Practice your Prisma queries and migrations in an interactive environment.
+- [Primsa Documentation](https://www.prisma.io/docs/orm/overview/introduction/what-is-prisma) - Dive deeper into Prisma functionalities with the comprehensive official documentation. 
+
+## Running the app
+
+```bash
+# development
+$ yarn start
+
+# watch mode
+$ yarn start:dev
+
+# production mode
+$ yarn start:prod
+```
+
+```bash
+# unit tests
+$ yarn test
+
+# e2e tests
+$ yarn test:e2e
+
+# test coverage
+$ yarn test:cov
+```
+
+
 ## Prisma Migrations
 
 Prisma migration tools are used to manage the database for this repository. This requires prisma to maintain a record of past migrations, which must be in sync with the database.
@@ -175,17 +260,12 @@ $ yarn prisma migrate deploy
 
 ### Merge all Migrations
 
-#### Preferred Way
-
-For the preferred method, refer to the [Prisma Documentation on squashing migrations](https://www.prisma.io/docs/orm/prisma-migrate/workflows/squashing-migrations#how-to-squash-migrations).
-
-You will need to `truncate _prisma_migration;` table at start of this process.
-
-#### Another Way to Consolidate Migrations
-
 To consolidate all migrations into a single file, follow these steps:
 
-1. **Delete Prisma migration folder.**
+1. **Delete folders of Prisma migration folder.**
+    ```bash
+    $ rm -rf prisma/migrations/*
+    ```
 
 2. **Empty `_prisma_migrations` table from the database.**
 
@@ -193,49 +273,26 @@ To consolidate all migrations into a single file, follow these steps:
    TRUNCATE _prisma_migrations; -- Apply this in the database
    ```
 
-3. **Create `init` migration (single migration).**
+3. **Create `squashed_migrations` migration (single migration).**
 
    ```bash
-   $ yarn prisma migrate dev --create-only
+   $ yarn prisma migrate dev --name squashed_migrations
    ```
 
-   When prompted, provide a name for the migration, such as `init`.
+   When prompted, provide a name for the migration, such as `squashed_migrations` or `init` or anything you like.
 
 4. **Mark the created migration as resolved.**
    ```bash
-   $ yarn prisma migrate resolve --applied 20230822120011_init
+   $ yarn prisma migrate resolve --applied <Migration name>
    ```
+   Migration name will be same as created in migration folder.
+
    This step will generate a single migration file for all migrations.
+
+You can refer to the [Prisma Documentation on squashing migrations](https://www.prisma.io/docs/orm/prisma-migrate/workflows/squashing-migrations#how-to-squash-migrations).
 
 **Note:**
 `Please ensure there is no seeding data in the migration files before following these steps; otherwise, seeding data may be lost.`
-
-
-## Running the app
-
-```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
 
 ## Stay in touch
 
