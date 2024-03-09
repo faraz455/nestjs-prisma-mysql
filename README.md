@@ -26,6 +26,7 @@ Feel free to clone this repository and use it as a starting point for your NestJ
   - [Project Overview](#project-overview)
   - [Key Features](#key-features)
 
+- [Quick Start](#quick-start)
 - [Installation](#installation)
   - [Prerequistes](#prerequisites)
 
@@ -67,6 +68,95 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 - **Data Validation**: Enforce data integrity and consistency using NestJS validation pipes, ensuring that incoming requests adhere to predefined data structures.
 
 - **Comprehensive Documentation**: Benefit from clear and detailed documentation, including comments and relevant references, to guide you through the codebase and understand its functionality.
+
+
+## Quick Start
+
+### 1. MySQL 8 Docker Setup
+
+If you have already set up MySQL 8, you can skip this step. Otherwise, you can use the following instructions to set up MySQL 8 using Docker.
+
+```yaml
+version: "3.5"
+services:
+  mysql8:
+    container_name: mysql8
+    hostname: mysql8
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database:/var/lib/mysql
+    networks:
+      - net-db
+
+networks:
+    net-db:
+        external: true
+```
+Save the file and run the following command in your terminal:
+```bash
+$ docker-compose up -d
+```
+This command will start the MySQL 8 database container.
+
+### 2. Environment Configuration
+
+Create a `.env` file at the root directory of your project with the following content:
+
+```bash
+DATABASE_URL=mysql://root:1234@localhost:3306/nestdb
+TIMEZONE=0
+LOG_QUERIES=0
+LOG_REQUESTS=1
+PRODUCTION=0
+```
+
+Create an `env.conf` file at the root directory of your project with the following content:
+
+```
+[localhost:3000]
+
+SITE_CODE=qa
+BASE_URL=http://localhost:3000
+AUTH_COOKIE_NAME=_qa_
+
+# DATABASE
+DB_HOST_MAIN=localhost:3306
+DB_USER=root
+DB_PASSWORD=1234
+DB_NAME=nestdb
+DB_DEBUG=0
+```
+
+### 3. Install Dependencies
+
+To install all the required dependencies, run the following command in your terminal:
+
+```bash
+$ yarn install
+```
+
+### 4. Prisma Setup
+
+Generate Prisma client and apply migrations:
+
+```bash
+$ yarn prisma generate
+$ yarn prisma migrate deploy
+```
+
+### 5. Start the Server
+
+Run the following command to start the server in development mode:
+
+```bash
+$ yarn start:dev
+```
+
 
 
 ## Installation
