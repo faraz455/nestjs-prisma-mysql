@@ -2,10 +2,10 @@ import { applyDecorators } from '@nestjs/common';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-function buildOptionsWithDefaults(options: ChiStringOptions) {
-  const usedOptions = new ChiStringOptions();
+function buildOptionsWithDefaults(options: StringOptions) {
+  const usedOptions = new StringOptions();
   if (options) {
-    let key: keyof ChiStringOptions;
+    let key: keyof StringOptions;
     for (key in usedOptions) {
       if (options[key]) {
         usedOptions[key] = options[key];
@@ -15,7 +15,7 @@ function buildOptionsWithDefaults(options: ChiStringOptions) {
   return usedOptions;
 }
 
-export class ChiStringOptions {
+export class StringOptions {
   optional?: boolean = false;
   trim?: boolean = true;
 }
@@ -29,7 +29,7 @@ export class ChiStringOptions {
  * @param optional - Apply the IsOptional validator, default `false`
  * default `false`
  */
-export const IsChiString = (options?: ChiStringOptions) => {
+export const IsCustomString = (options?: StringOptions) => {
   options = buildOptionsWithDefaults(options);
 
   let decorators: PropertyDecorator[] = [IsString(), IsNotEmpty()];
