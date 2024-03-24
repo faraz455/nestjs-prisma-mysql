@@ -23,7 +23,8 @@ import { CustomJwtGuard } from './guards/custom-jwt.guard';
 
 import { IDDto } from 'src/common/dto';
 import { LoginEntity } from './entities';
-import { LoginDto, SignupDto } from './dto';
+import { LoginDto, RefreshTokenDto, SignupDto } from './dto';
+import { User } from '@prisma/client';
 
 @UseGuards(CustomJwtGuard)
 @Controller('auth')
@@ -41,10 +42,31 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() loginDto: LoginDto,
-    @GetUser() user: any,
+    @GetUser() user: User,
     @Res({ passthrough: true }) res: Response,
   ) {
     const payload = await this.authService.login(user);
+
+    res.cookie(this.tConfig.AUTH_COOKIE_NAME, payload.authToken, {
+      signed: true,
+    });
+
+    res.cookie(this.tConfig.REFRESH_COOKIE_NAME, payload.refreshToken, {
+      signed: true,
+    });
+
+    return payload;
+  }
+
+  @Public()
+  @ApiOkResponse({ type: LoginEntity })
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh-token')
+  async refreshToken(
+    @Body() data: RefreshTokenDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const payload = await this.authService.refreshToken(data.refreshToken);
 
     res.cookie(this.tConfig.AUTH_COOKIE_NAME, payload.authToken, {
       signed: true,

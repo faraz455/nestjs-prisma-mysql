@@ -103,6 +103,25 @@ export class AuthService {
     return permissions;
   }
 
+  async refreshToken(refreshToken: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { UserRefreshToken: { some: { refreshToken, revoked: false } } },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'Refresh token is not valid. Please log in again',
+      );
+    }
+
+    await this.prisma.userRefreshToken.update({
+      data: { revoked: true },
+      where: { refreshToken },
+    });
+
+    return await this.login(user);
+  }
+
   async login(user: User) {
     const userRoles = await this.prisma.userRole.findMany({
       select: { role: { select: { roleName: true } } },
@@ -145,6 +164,8 @@ export class AuthService {
       expiresIn: '25h',
     });
 
+    const permissions = await this.getUserPermissions(profile.userId);
+
     await this.prisma.userRefreshToken.create({
       data: {
         userRefreshTokenId,
@@ -153,8 +174,6 @@ export class AuthService {
         expiresAt,
       },
     });
-
-    const permissions = await this.getUserPermissions(profile.userId);
 
     const load = {
       user,

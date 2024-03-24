@@ -61,6 +61,7 @@ export class CustomJwtGuard implements CanActivate {
     const currentTime = unixTimestamp();
     const decodedAccessToken = this.jwtService.decode(accessToken);
 
+    // Access Token is expired
     if (decodedAccessToken.exp < currentTime) {
       const decodedRefreshToken: {
         exp: number;
@@ -72,36 +73,24 @@ export class CustomJwtGuard implements CanActivate {
         throw new UnauthorizedException();
       }
 
-      const userRefreshToken =
-        await this.prisma.userRefreshToken.findUniqueOrThrow({
-          select: { revoked: true },
-          where: {
-            userRefreshTokenId: decodedRefreshToken.userRefreshTokenId,
-            OR: [{ revoked: true }, { expiresAt: { lte: new Date() } }],
-          },
-        });
+      const userRefreshToken = await this.prisma.userRefreshToken.findUnique({
+        select: { revoked: true },
+        where: {
+          userRefreshTokenId: decodedRefreshToken.userRefreshTokenId,
+          OR: [{ revoked: true }, { expiresAt: { lte: new Date() } }],
+        },
+      });
 
       // If is already revoked
       if (userRefreshToken) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException(
+          'Both access token and refresh token have expired. Please log in again',
+        );
       }
 
-      const user = await this.prisma.user.findUniqueOrThrow({
-        where: { userId: decodedRefreshToken.userId },
-      });
-
-      const authService = new AuthService(
-        this.prisma,
-        this.jwtService,
-        this.configService,
+      throw new UnauthorizedException(
+        'Access token expired. Please refresh your token.',
       );
-
-      await authService.login(user);
-
-      await this.prisma.userRefreshToken.update({
-        data: { revoked: true },
-        where: { userRefreshTokenId: decodedRefreshToken.userRefreshTokenId },
-      });
     }
 
     const user = this.constructUserObj(decodedAccessToken);
