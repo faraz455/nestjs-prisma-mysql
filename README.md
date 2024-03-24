@@ -109,10 +109,17 @@ Create a `.env` file at the root directory of your project with the following co
 
 ```bash
 DATABASE_URL=mysql://root:1234@localhost:3306/nestdb
-TIMEZONE=0
 LOG_QUERIES=0
 LOG_REQUESTS=1
+
 PRODUCTION=0
+TIMEZONE=0
+
+JWT_SECRET=secret
+AUTH_COOKIE_SECRET=mycookiesecret
+
+THROTTLE_LIMIT=20
+THROTTLE_TTL=60000
 ```
 
 Create an `env.conf` file at the root directory of your project with the following content:
@@ -189,17 +196,29 @@ TIMEZONE=<0>
 LOG_QUERIES=<0 or 1>
 LOG_REQUESTS=<0 or 1>
 PRODUCTION=<0 or 1>
+
+JWT_SECRET=<secret>
+AUTH_COOKIE_SECRET=<mycookiesecret>
+
+THROTTLE_LIMIT=20 # limit to request
+THROTTLE_TTL=60000 # duration in milliseconds
 ```
 
 E.g.
 
 ```
 DATABASE_URL=mysql://root:1234@localhost:3306/databaseName
-TIMEZONE=0
-
 LOG_QUERIES=0
 LOG_REQUESTS=1
+
+TIMEZONE=0
 PRODUCTION=0
+
+JWT_SECRET=secret
+AUTH_COOKIE_SECRET=mycookiesecret
+
+THROTTLE_LIMIT=20
+THROTTLE_TTL=60000 
 ```
 
 Remember, the `DATABASE_URL` environment variable should refer to your dev database and is only present for use with the Prisma CLI. To see how to configure the database(s) you wish to use when running the server, see Tenant Configuration below.

@@ -25,7 +25,9 @@ import { IDDto } from 'src/common/dto';
 import { LoginEntity } from './entities';
 import { LoginDto, RefreshTokenDto, SignupDto } from './dto';
 import { User } from '@prisma/client';
+import { ThrottlerBehindProxyGuard } from './guards/throttler-behind-proxy.guard';
 
+// @UseGuards(ThrottlerBehindProxyGuard)
 @UseGuards(CustomJwtGuard)
 @Controller('auth')
 @ApiTags('auth')

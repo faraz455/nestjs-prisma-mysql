@@ -9,10 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { IS_PUBLIC_KEY } from '../decorators';
-import {
-  PRISMA_SERVICE,
-  TENANT_CONFIG,
-} from 'src/multi-tenant/multi-tenant.module';
+import { PRISMA_SERVICE } from 'src/multi-tenant/multi-tenant.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVars } from 'src/common/common.types';
@@ -20,7 +17,6 @@ import { TenantConfig } from 'src/multi-tenant/multi-tenant.config';
 import { getHost, unixTimestamp } from 'src/common/common.helper';
 import * as cookieParser from 'cookie-parser';
 import { Profile } from '../dto';
-import { AuthService } from '../auth.service';
 
 export type ReqUserObj = {
   userId: string;

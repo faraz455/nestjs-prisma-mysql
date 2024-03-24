@@ -8,6 +8,8 @@ export const EnvironmentVars = {
   DATABASE_URL: 'DATABASE_URL',
   TIMEZONE: 'TIMEZONE',
   PRODUCTION: 'PRODUCTION',
+  THROTTLE_TTL: 'THROTTLE_TTL',
+  THROTTLE_LIMIT: 'THROTTLE_LIMIT',
 } as const;
 
 export type EnvironmentVars = keyof typeof EnvironmentVars;
