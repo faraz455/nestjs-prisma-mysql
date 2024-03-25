@@ -46,6 +46,10 @@ Feel free to clone this repository and use it as a starting point for your NestJ
   - [Applying all migrations](#applying-all-migrations)
   - [Merge all migrations](#merge-all-migrations)
 
+- [Security](#security)
+  - [JWT-Based Authentication](#jwt-authentication)
+  - [Role and Permission Authorization](#role-and-permission-authorization)
+  - [Throttled Rate Limiting](#throttled-rate-limiting)
 
 ## Introduction
 
@@ -403,6 +407,104 @@ You can refer to the [Prisma Documentation on squashing migrations](https://www.
 
 **Note:**
 `Please ensure there is no seeding data in the migration files before following these steps; otherwise, seeding data may be lost.`
+
+## Security
+
+This module provides robust authentication and authorization mechanisms to secure access to your NestJS application's endpoints.
+
+## Jwt Authentication
+
+#### Login Guard and Strategy
+
+- **Login Guard**: The login guard validates user credentials and generates access and refresh tokens upon successful authentication.
+- **Login Strategy**: After validating the user, the login strategy retrieves required user information such as user info, roles and permissions. It then creates an access token and a refresh token.
+
+#### Token Management
+
+- **Access Token**: Used for authentication in subsequent requests to protected endpoints. 
+- **Refresh Token**: Allows users to obtain a new access token without re-entering credentials if the access token expires.
+
+#### Cookie Management
+
+- Upon successful login, the access token and refresh token are set in cookies with specific names (`AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`).
+  
+#### Custom JWT Guard
+
+- The custom JWT guard validates the access token for requests to protected endpoints. 
+- If the access token is expired, it checks the refresh token. If the refresh token is still valid, a new access token is generated using the `refresh-token` endpoint.
+
+#### Token Revocation
+
+- Refresh tokens are securely managed in `UserRefreshToken` table and revoked only once to maintain security.
+
+#### Endpoints
+
+- **Signup**: Allows users to register for an account.
+- **Login**: Authenticates users and generates access and refresh tokens.
+- **Refresh Token**: Generates a new access token using a valid refresh token.
+- **Logout**: Clears user authentication cookies.
+- **Protected Endpoints**: Any endpoint requiring authentication, such as article-related endpoints, demonstrates the authentication workflow.
+  
+This authentication mechanism ensures secure access to protected endpoints while maintaining user tokens and adhering to best practices.
+
+## Role and Permission Authorization
+
+### Role-Based Authorization
+
+- **User-Role Relationship**: Users are associated with roles through a many-to-many relationship facilitated by the `UserRole` table.
+- **Role-Resource Permission Relationship**: Roles have a one-to-many relationship with resource permissions, allowing them to define access rights to various resources.
+
+### Permission-Based Authorization
+
+- **Resource Permissions**: Resource permissions dictate the actions a role can perform on specific resources.
+- **Permission Granularity**: Permissions can be highly granular, allowing for precise control over user access to resources and actions such as `create` or `view`.
+  
+### Role Guard
+
+The Role Guard (`RolesGuard`) ensures role-based authorization by verifying if the user possesses the required role(s) to access a particular endpoint. If the user's role matches the required role(s) specified in the endpoint's metadata, access is granted; otherwise, the request is denied.
+
+### Permission Guard
+
+The Permission Guard (`PermissionsGuard`) offers more intricate authorization capabilities by evaluating complex permission structures. It enables the specification of intricate permission requirements using a recursive structure. For example, a permission might demand that a user has permission to create a resource and either view or edit it. The Permission Guard evaluates these conditions and grants access if the user meets the specified permission criteria.
+
+#### Usage Example:
+
+```typescript
+// Specify the required permissions using a structured object
+const permissionRequired: PermsObject = {
+  AND: ['ResourceName.create', { OR: ['ResourceName.create', 'ResourceName.view'] ],
+};
+
+// Apply the @Permissions decorator with the required permissions
+@Permissions(permissionRequired)
+```
+
+By leveraging both role-based and permission-based authorization mechanisms, the application ensures robust access control, granting users the appropriate privileges based on their roles and permissions.
+
+
+## Throttled Rate Limiting
+
+Rate limiting is a crucial security measure employed to protect applications from malicious activities such as brute-force attacks. It restricts the number of requests a client can make within a specific timeframe, thus mitigating the risk of server overload and abuse.
+
+### Implementation Details
+
+- **NestJS Throttler Package**: Rate limiting is implemented using the `@nestjs/throttler` package, which provides convenient middleware for defining rate-limiting policies.
+  
+- **Global Configuration**: Rate limiting is configured globally in the application, meaning it applies to all endpoints. This global setting ensures consistent protection across the entire application.
+
+- **Environment-Specific Configuration**: Rate limiting is enabled only in the production environment (`production=1`). This ensures that rate limiting is active only in the live deployment environment where it's most critical for security.
+
+- **Throttle Limit and Throttle TTL**: Rate limits are defined by the `THROTTLE_LIMIT` and `THROTTLE_TTL` environment variables. 
+  - `THROTTLE_LIMIT`: Specifies the maximum number of requests allowed within the defined time frame.
+  - `THROTTLE_TTL`: Defines the duration for which the rate limit applies, measured in milliseconds.
+
+## Usage and Customization
+
+- **Controller-Level Rate Limiting**: While the global configuration suffices for most cases, you have the flexibility to apply rate limiting at the controller level or even specific endpoints as needed.
+
+- **Testing and Customization**: During development or testing, you can modify the `production` environment variable to observe and adjust rate-limiting behavior. This allows for thorough testing and fine-tuning of rate-limiting policies.
+
+For more detailed information on rate limiting in NestJS and how to customize it further, refer to the official [NestJS documentation on rate limiting](https://docs.nestjs.com/security/rate-limiting).
 
 ## Stay in touch
 

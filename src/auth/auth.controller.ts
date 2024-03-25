@@ -100,5 +100,6 @@ export class AuthController {
   ) {
     await this.authService.logout();
     res.clearCookie(this.tConfig.AUTH_COOKIE_NAME, { signed: true });
+    res.clearCookie(this.tConfig.REFRESH_COOKIE_NAME, { signed: true });
   }
 }
