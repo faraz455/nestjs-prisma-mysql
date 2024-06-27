@@ -39,11 +39,11 @@ Feel free to clone this repository and use it as a starting point for your NestJ
     - [Basic Environment](#basic-environment)
     - [Tenant Configuration](#tenant-configuration)
 
-  - [Prisma Integration](./docs/prisma-integration.docs.md)
+  - [Prisma Integration](./docs/PRISMA_INTEGRATION.md)
 
 - [Running the app](#running-the-app)
 
-- [Prisma Migrations](./docs/prisma-migrations.docs.md)
+- [Prisma Migrations](./docs/PRISMA_MIGRATIONS.md)
 
 ## Introduction
 
@@ -243,7 +243,7 @@ DB_DEBUG=0
 
 Copy paste the above as many times as you wish to serve multiple tenants. Make sure to update their host addresses and environment details accordingly.
 
-For more detailed information on multi-tenancy, please visit - [docs - multitendancy](./docs/multi-tendancy.docs.md)
+For more detailed information on multi-tenancy, please visit - [docs - multitendancy](./docs/MULTI_TENANCY.md)
 
 ## Running the app
 
