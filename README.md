@@ -14,7 +14,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) Framework -  A Public Template Repository
+[Nest](https://github.com/nestjs/nest) Framework - A Public Template Repository
 
 This repository provides a comprehensive and production-ready foundation for building scalable backend applications with NestJS, Prisma ORM, and MySQL. It offers a well-structured codebase with essential features and best practices to jumpstart your development journey.
 
@@ -25,35 +25,31 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 # Table of Contents
 
 - [Introduction](#introduction)
+
   - [Project Overview](#project-overview)
   - [Key Features](#key-features)
 
 - [Quick Start](#quick-start)
 - [Installation](#installation)
+
   - [Prerequistes](#prerequisites)
 
   - [Setting up environment variables](#setting-up-environment-variables)
+
     - [Basic Environment](#basic-environment)
     - [Tenant Configuration](#tenant-configuration)
 
-  - [Prisma Integration](#prisma-integration)
-    - [Key benefits of Prisma](#key-benefits-of-prisma)
-    - [Prisma Setup](#prisma-setup)
+  - [Prisma Integration](./docs/prisma-integration.docs.md)
 
 - [Running the app](#running-the-app)
 
-- [Prisma Migrations](#prisma-migrations)
-  - [Baselining your database](#baselining-your-database)
-  - [Applying a new migration](#applying-a-new-migration)
-  - [Applying all migrations](#applying-all-migrations)
-  - [Merge all migrations](#merge-all-migrations)
-
+- [Prisma Migrations](./docs/prisma-migrations.docs.md)
 
 ## Introduction
 
 ### Project Overview
-- This repository provides a foundation for building robust **NestJS** applications utilizing **Prisma** as the ORM and **MySQL** as the underlying database. It streamlines the initial setup process, offering essential features commonly required in NestJS projects.
 
+- This repository provides a foundation for building robust **NestJS** applications utilizing **Prisma** as the ORM and **MySQL** as the underlying database. It streamlines the initial setup process, offering essential features commonly required in NestJS projects.
 
 ### Key Features
 
@@ -71,7 +67,6 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 
 - **Comprehensive Documentation**: Benefit from clear and detailed documentation, including comments and relevant references, to guide you through the codebase and understand its functionality.
 
-
 ## Quick Start
 
 ### 1. MySQL 8 Docker Setup
@@ -79,7 +74,7 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 If you have already set up MySQL 8, you can skip this step. Otherwise, you can use the following instructions to set up MySQL 8 using Docker.
 
 ```yaml
-version: "3.5"
+version: '3.5'
 services:
   mysql8:
     container_name: mysql8
@@ -89,20 +84,23 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 1234
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - ./database:/var/lib/mysql
     networks:
       - net-db
 
 networks:
-    net-db:
-        external: true
+  net-db:
+    external: true
 ```
+
 Save the file and run the following command in your terminal:
+
 ```bash
 $ docker-compose up -d
 ```
+
 This command will start the MySQL 8 database container.
 
 ### 2. Environment Configuration
@@ -159,11 +157,10 @@ Run the following command to start the server in development mode:
 $ yarn start:dev
 ```
 
-
-
 ## Installation
 
 ### Prerequisites
+
 Before proceeding with the setup, ensure that your development system has the following prerequisites installed:
 
 **Node.js**: This project relies on Node.js for its functionality. If you haven't installed it yet, you can download and install the latest version from the [ official Node website](https://nodejs.org/en).
@@ -175,8 +172,8 @@ To install all the required dependencies, run the following command in your term
 ```bash
 $ yarn install
 ```
-This command will handle the installation of all necessary dependencies for the project.
 
+This command will handle the installation of all necessary dependencies for the project.
 
 ## Setting up environment variables
 
@@ -205,7 +202,6 @@ PRODUCTION=0
 ```
 
 Remember, the `DATABASE_URL` environment variable should refer to your dev database and is only present for use with the Prisma CLI. To see how to configure the database(s) you wish to use when running the server, see Tenant Configuration below.
-
 
 ### Tenant Configuration
 
@@ -247,44 +243,6 @@ DB_DEBUG=0
 
 Copy paste the above as many times as you wish to serve multiple tenants. Make sure to update their host addresses and environment details accordingly.
 
-
-## Prisma Integration
-Prisma is a next-generation object-relational mapper (ORM) designed specifically for Node.js and TypeScript. It offers a streamlined and intuitive approach to interacting with databases, making your development experience more efficient and enjoyable.
-
-### Key Benefits of Prisma
-
-- **Intuitive data model**: Define your database schema using a concise and human-readable syntax.
-- **Automated migrations**: Effortlessly manage database schema changes through automated migrations.
-- **Type-safety and auto-completion**: Benefit from TypeScript's inherent type-safety and auto-completion features, simplifying query development and reducing errors.
-
-### Prisma Setup
-
-This project utilizes yarn to manage dependencies. Running `yarn install` will automatically install both Prisma and its client library as defined in the package.json file. However, if you prefer manual installation, you can use the following commands:
-
-``` bash
-$ yarn add prisma@latest
-$ yarn add @prisma/client@latest
-```
-
-To apply all the current migrations located in the prisma/migrations folder to your MySQL database.
-
-```bash
-$ yarn prisma migrate deploy
-```
-This ensures that the database schema reflects the latest changes defined in your Prisma models.
-
-Execute below command to generate the Prisma client. This client serves as an interface for interacting with your database, allowing you to perform queries and data manipulation operations.
-
-```bash
-$ yarn prisma generate
-``` 
-
-By following these steps, you'll successfully set up Prisma and its client, enabling you to seamlessly interact with your MySQL database within the project.
-
-### Aditional Resources
-- [Prisma playground](https://playground.prisma.io/) - Practice your Prisma queries and migrations in an interactive environment.
-- [Primsa Documentation](https://www.prisma.io/docs/orm/overview/introduction/what-is-prisma) - Dive deeper into Prisma functionalities with the comprehensive official documentation. 
-
 ## Running the app
 
 ```bash
@@ -309,87 +267,9 @@ $ yarn test:e2e
 $ yarn test:cov
 ```
 
-
-## Prisma Migrations
-
-Prisma migration tools are used to manage the database for this repository. This requires prisma to maintain a record of past migrations, which must be in sync with the database.
-
-### Baselining your database
-
-The following command is used to baseline a database.
-
-```bash
-$ yarn prisma migrate resolve --applied <migration-name>
-```
-
-This step is not required to work in this repository, and has been left in purely for educational purposes.
-
-### Applying a new migration
-
-To make any modification to the database after having baselined it, simply update the prisma schema as desired. Next, stage your migration using:
-
-```bash
-$ yarn prisma migrate dev --name <migration-name> --create-only
-```
-
-This will generate the appropriate migration files and sql required, but will **not** apply the migration to your database. If you wish, you can inspect and edit the generate files at this point (in case you need to insert data into a new column, for example). Finally, once you are satisfied that this is the migration you wish to apply, use the following command:
-
-```bash
-$ yarn prisma migrate dev
-```
-
-See [Prisma's custom migration instructions](https://www.prisma.io/docs/guides/database/developing-with-prisma-migrate/customizing-migrations) for more information.
-
-### Applying all migrations
-
-When deploying to production/making a new deployment, you will want
-to deploy all migrations created uptil now after successfully
-baselining your database. To do this, run the following command:
-
-```bash
-$ yarn prisma migrate deploy
-```
-
-### Merge all Migrations
-
-To consolidate all migrations into a single file, follow these steps:
-
-1. **Delete folders of Prisma migration folder.**
-    ```bash
-    $ rm -rf prisma/migrations/*
-    ```
-
-2. **Empty `_prisma_migrations` table from the database.**
-
-   ```sql
-   TRUNCATE _prisma_migrations; -- Apply this in the database
-   ```
-
-3. **Create `squashed_migrations` migration (single migration).**
-
-   ```bash
-   $ yarn prisma migrate dev --name squashed_migrations
-   ```
-
-   When prompted, provide a name for the migration, such as `squashed_migrations` or `init` or anything you like.
-
-4. **Mark the created migration as resolved.**
-   ```bash
-   $ yarn prisma migrate resolve --applied <Migration name>
-   ```
-   Migration name will be same as created in migration folder.
-
-   This step will generate a single migration file for all migrations.
-
-You can refer to the [Prisma Documentation on squashing migrations](https://www.prisma.io/docs/orm/prisma-migrate/workflows/squashing-migrations#how-to-squash-migrations).
-
-**Note:**
-`Please ensure there is no seeding data in the migration files before following these steps; otherwise, seeding data may be lost.`
-
 ## Stay in touch
 
 - Author - [Muhammad Faraz Khan](https://www.linkedin.com/in/farazkhan455/)
-
 
 ## License
 
