@@ -20,7 +20,7 @@ This repository provides a comprehensive and production-ready foundation for bui
 
 Feel free to clone this repository and use it as a starting point for your NestJS projects.
 
-<a ><img src="./image.png" alt="Swagger Image" /></a>
+<a ><img src="./docs/swagger-image.png" alt="Swagger Image" /></a>
 
 # Table of Contents
 
@@ -258,21 +258,11 @@ $ yarn start:dev
 $ yarn start:prod
 ```
 
-```bash
-# unit tests
-$ yarn test
+## Contributing
 
-# e2e tests
-$ yarn test:e2e
+Refer to [contribution guidlines](./docs/CONTRIBUTING.md) and [coding convntions](./docs/CODING_CONVENTIONS.md) and [code of conduct](./CODE_OF_CONDUCT.md).
 
-# test coverage
-$ yarn test:cov
-```
+## Stay in Touch
 
-## Stay in touch
-
-- Author - [Muhammad Faraz Khan](https://www.linkedin.com/in/farazkhan455/)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- **LinkedIn Profile**: [Muhammad Faraz Khan](https://www.linkedin.com/in/farazkhan455/)
+- **GitHub Profile**: [Muhammad Faraz Khan](https://github.com/faraz455)
