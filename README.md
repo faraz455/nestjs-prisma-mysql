@@ -243,6 +243,8 @@ DB_DEBUG=0
 
 Copy paste the above as many times as you wish to serve multiple tenants. Make sure to update their host addresses and environment details accordingly.
 
+For more detailed information on multi-tenancy, please visit - [docs - multitendancy](./docs/multi-tendancy.docs.md)
+
 ## Running the app
 
 ```bash
