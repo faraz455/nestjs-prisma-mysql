@@ -42,14 +42,14 @@ export class SignupDto {
   lastName?: string;
 
   @ApiProperty({
-    required: false,
-    example: 'gender',
+    required: true,
+    example: Gender.MALE,
     description: 'The gender of the User',
   })
   @IsEnum(Gender)
   gender: Gender;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: true })
   @IsString()
   birthDateString: string;
 
@@ -58,12 +58,13 @@ export class SignupDto {
   @IsString()
   email: string;
 
-  @ApiProperty({ required: true })
-  @IsString()
-  mobile: string;
-
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  address: string;
+  mobile?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  address?: string;
 }

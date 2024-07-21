@@ -6,14 +6,14 @@ export class LoginDto {
   @IsCustomString({ optional: true })
   @ApiProperty({
     required: true,
-    default: '090078601',
+    default: 'username123',
   })
-  mobile: string;
+  username: string;
 
   @IsCustomString({ optional: true })
   @ApiProperty({
     required: true,
-    default: 'Testing@1',
+    default: 'password',
   })
   password: string;
 

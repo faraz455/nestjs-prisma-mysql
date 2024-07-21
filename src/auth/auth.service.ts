@@ -28,10 +28,10 @@ export class AuthService {
   ) {}
 
   async validateUser(req: Request) {
-    let mobile: string = req.body.mobile;
+    let username: string = req.body.username;
     let pass: string = req.body.password;
 
-    if (!mobile || !pass) {
+    if (!username || !pass) {
       throw new BadRequestException('Login request malformed');
     }
 
@@ -49,7 +49,7 @@ export class AuthService {
         username: true,
         email: true,
       },
-      where: { mobile: mobile },
+      where: { username },
     });
 
     if (!user || !(await bcrypt.compare(pass, user.password))) {
