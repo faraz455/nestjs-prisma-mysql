@@ -7,10 +7,9 @@ import { EnvironmentVars } from 'src/common/common.types';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
-import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService],
   imports: [
     JwtModule.registerAsync({
       imports: [ConfigModule],

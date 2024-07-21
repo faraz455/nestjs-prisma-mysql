@@ -8,6 +8,7 @@ export const GetUser = createParamDecorator(
       // @ts-ignore
       return req.user ? req.user[key] : undefined;
     }
+    // @ts-ignore
     return req.user ? req.user : undefined;
   },
 );

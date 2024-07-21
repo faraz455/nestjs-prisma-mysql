@@ -6,21 +6,24 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { IS_PUBLIC_KEY } from '../decorators';
-import { PRISMA_SERVICE } from 'src/multi-tenant/multi-tenant.module';
+import {
+  PRISMA_SERVICE,
+  TENANT_CONFIG,
+} from 'src/multi-tenant/multi-tenant.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVars } from 'src/common/common.types';
 import { TenantConfig } from 'src/multi-tenant/multi-tenant.config';
-import { getHost, unixTimestamp } from 'src/common/common.helper';
+import { getHost } from 'src/common/common.helper';
 import * as cookieParser from 'cookie-parser';
 import { Profile } from '../dto';
+import { Request } from 'express';
 
 export type ReqUserObj = {
   userId: string;
-  userEmail: string;
+  userName: string;
   profile: Profile;
 };
 
@@ -31,9 +34,11 @@ export class CustomJwtGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly configService: ConfigService,
-    @Inject(PRISMA_SERVICE) private readonly prisma: PrismaService,
+    // @Inject(PRISMA_SERVICE) private readonly prisma: PrismaService,
+    // @Inject(TENANT_CONFIG) tConfig: TenantConfig
   ) {
     this.jwtService = new JwtService({
+      verifyOptions: { ignoreExpiration: true },
       secret: this.configService.getOrThrow(EnvironmentVars.JWT_SECRET),
     });
   }
@@ -48,120 +53,61 @@ export class CustomJwtGuard implements CanActivate {
     }
 
     const req: Request = context.switchToHttp().getRequest();
-    const { accessToken, refreshToken } = this.extractJwtTokenFromRequest(req);
+    const token = this.extractJwtTokenFromRequest(req);
 
-    if (!accessToken) {
+    const decodedToken = this.jwtService.decode(token);
+
+    if (!decodedToken) {
       throw new UnauthorizedException();
     }
 
-    const currentTime = unixTimestamp();
-    const decodedAccessToken = this.jwtService.decode(accessToken);
+    const user = this.constructUserObj(decodedToken);
 
-    // Access Token is expired
-    if (decodedAccessToken.exp < currentTime) {
-      const decodedRefreshToken: {
-        exp: number;
-        userId: string;
-        userRefreshTokenId: string;
-      } = this.jwtService.decode(refreshToken);
-
-      if (decodedRefreshToken.exp < currentTime) {
-        throw new UnauthorizedException();
-      }
-
-      const userRefreshToken = await this.prisma.userRefreshToken.findUnique({
-        select: { revoked: true },
-        where: {
-          userRefreshTokenId: decodedRefreshToken.userRefreshTokenId,
-          OR: [{ revoked: true }, { expiresAt: { lte: new Date() } }],
-        },
-      });
-
-      // If is already revoked
-      if (userRefreshToken) {
-        throw new UnauthorizedException(
-          'Both access token and refresh token have expired. Please log in again',
-        );
-      }
-
-      throw new UnauthorizedException(
-        'Access token expired. Please refresh your token.',
-      );
-    }
-
-    const user = this.constructUserObj(decodedAccessToken);
-
-    if (await this.checkUserSessions(user.profile.userId)) {
-      req.user = user;
-      return true;
-    }
-
-    throw new UnauthorizedException();
+    // @ts-ignore
+    req.user = user;
+    return true;
   }
 
   private constructUserObj(payload: any): ReqUserObj {
     return {
       userId: payload.sub,
-      userEmail: payload.userEmail,
       profile: payload.profile,
+      userName: payload.userName,
     };
   }
 
-  private extractJwtTokenFromRequest(req: Request): {
-    accessToken: string;
-    refreshToken: string;
-  } {
-    let { accessToken, refreshToken } = this.extJwtAndRefreshTokenFromCookies(
-      req,
-    ) ?? { accessToken: null, refreshToken: null };
+  private extractJwtTokenFromRequest(req: Request) {
+    let token: string = this.extractJwtTokenFromCookies(req);
 
-    if (!accessToken) {
+    if (!token) {
       // extract as bearer token
-      accessToken = req.headers.authorization?.split(' ')[1];
+      token = req.headers.authorization?.split(' ')[1];
     }
-    if (!accessToken) {
+    if (!token) {
       // extract as auth header
-      accessToken = req.headers.authorization;
+      token = req.headers.authorization;
     }
 
-    return { accessToken, refreshToken };
+    return token;
   }
 
-  private extJwtAndRefreshTokenFromCookies(req: Request): {
-    accessToken: string;
-    refreshToken: string;
-  } {
+  private extractJwtTokenFromCookies(req: Request) {
     const tConfig: TenantConfig =
       this.configService.get('multiTenant')[getHost(req)];
 
     try {
-      const accessToken = cookieParser.signedCookie(
+      const data = cookieParser.signedCookie(
         req.signedCookies[tConfig.AUTH_COOKIE_NAME],
         this.configService.getOrThrow<string>(
           EnvironmentVars.AUTH_COOKIE_SECRET,
         ),
       );
-
-      const refreshToken = cookieParser.signedCookie(
-        req.signedCookies[tConfig.REFRESH_COOKIE_NAME],
-        this.configService.getOrThrow<string>(
-          EnvironmentVars.AUTH_COOKIE_SECRET,
-        ),
-      );
-
-      if (!accessToken || !refreshToken) {
+      if (!data) {
         return null;
       }
-
-      return { accessToken, refreshToken };
+      return data;
     } catch (error) {
       return null;
     }
-  }
-
-  private async checkUserSessions(userId: string) {
-    // Need to implement refresh token
-    const sessionCount = 1;
-    return sessionCount > 0 ? true : false;
   }
 }

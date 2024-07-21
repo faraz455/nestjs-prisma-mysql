@@ -14,6 +14,7 @@ export class LoginGuard implements CanActivate {
 
     const user = await authService.validateUser(req);
     if (user) {
+      // @ts-ignore
       req.user = user;
       return true;
     }
