@@ -17,7 +17,7 @@ import { TENANT_CONFIG } from '../multi-tenant/multi-tenant.module';
 
 import { AuthService } from './auth.service';
 
-import { GetUser, Public } from './decorators';
+import { GetUser } from './decorators';
 import { LoginGuard } from './guards/login.guard';
 import { CustomJwtGuard } from './guards/custom-jwt.guard';
 
@@ -27,8 +27,8 @@ import { LoginDto, RefreshTokenDto, SignupDto } from './dto';
 import { User } from '@prisma/client';
 import { ThrottlerBehindProxyGuard } from './guards/throttler-behind-proxy.guard';
 
-// @UseGuards(ThrottlerBehindProxyGuard)
-@UseGuards(CustomJwtGuard)
+@UseGuards(ThrottlerBehindProxyGuard)
+// @UseGuards(CustomJwtGuard)
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
@@ -37,7 +37,6 @@ export class AuthController {
     @Inject(TENANT_CONFIG) private tConfig: TenantConfig,
   ) {}
 
-  @Public()
   @ApiOkResponse({ type: LoginEntity })
   @UseGuards(LoginGuard)
   @HttpCode(HttpStatus.OK)
@@ -60,7 +59,6 @@ export class AuthController {
     return payload;
   }
 
-  @Public()
   @ApiOkResponse({ type: LoginEntity })
   @HttpCode(HttpStatus.OK)
   @Post('refresh-token')
@@ -81,7 +79,6 @@ export class AuthController {
     return payload;
   }
 
-  @Public()
   @ApiOkResponse({ type: IDDto })
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
@@ -91,7 +88,6 @@ export class AuthController {
     return payload;
   }
 
-  @Public()
   @ApiOkResponse()
   @Post('logout')
   async PostLogout(
