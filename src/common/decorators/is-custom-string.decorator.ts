@@ -16,7 +16,7 @@ function buildOptionsWithDefaults(options: StringOptions) {
 }
 
 export class StringOptions {
-  optional?: boolean = false;
+  required?: boolean = true;
   trim?: boolean = true;
 }
 
@@ -33,7 +33,7 @@ export const IsCustomString = (options?: StringOptions) => {
   options = buildOptionsWithDefaults(options);
 
   let decorators: PropertyDecorator[] = [IsString(), IsNotEmpty()];
-  if (options.optional) {
+  if (!options.required) {
     decorators.push(IsOptional());
     decorators.push(Transform(({ value }) => (value != '' ? value : null)));
   }

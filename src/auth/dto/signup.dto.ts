@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from '@prisma/client';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsCustomString } from 'src/common/decorators/is-custom-string.decorator';
 
 export class SignupDto {
   @ApiProperty({
@@ -8,11 +9,11 @@ export class SignupDto {
     example: 'username',
     description: 'The username of the User',
   })
-  @IsString()
+  @IsCustomString()
   username: string;
 
   @ApiProperty({ required: true })
-  @IsString()
+  @IsCustomString()
   password: string;
 
   @ApiProperty({
@@ -20,7 +21,7 @@ export class SignupDto {
     example: 'firstName',
     description: 'The firstName of the User',
   })
-  @IsString()
+  @IsCustomString()
   firstName: string;
 
   @ApiProperty({
@@ -28,8 +29,7 @@ export class SignupDto {
     example: 'middleName',
     description: 'The middleName of the User',
   })
-  @IsOptional()
-  @IsString()
+  @IsCustomString({ required: false })
   middleName?: string;
 
   @ApiProperty({
@@ -37,8 +37,7 @@ export class SignupDto {
     example: 'lastName',
     description: 'The lastName of the User',
   })
-  @IsOptional()
-  @IsString()
+  @IsCustomString({ required: false })
   lastName?: string;
 
   @ApiProperty({
@@ -50,21 +49,19 @@ export class SignupDto {
   gender: Gender;
 
   @ApiProperty({ required: true })
-  @IsString()
+  @IsCustomString()
   birthDateString: string;
 
   @ApiProperty({ required: true })
-  @IsOptional()
-  @IsString()
+  @IsCustomString()
   email: string;
 
   @ApiProperty({ required: false })
-  @IsString()
+  @IsCustomString({ required: false })
   @IsOptional()
   mobile?: string;
 
   @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
+  @IsCustomString({ required: false })
   address?: string;
 }

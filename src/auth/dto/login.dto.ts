@@ -1,20 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsCustomString } from '../../common/decorators/is-custom-string.decorator';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class LoginDto {
-  @IsCustomString({ optional: true })
   @ApiProperty({
     required: true,
     default: 'username123',
   })
+  @IsCustomString()
   username: string;
 
-  @IsCustomString({ optional: true })
   @ApiProperty({
     required: true,
     default: 'password',
   })
+  @IsCustomString()
   password: string;
 
   // @IsCustomString({ optional: true })
@@ -26,9 +25,9 @@ export class LoginDto {
 }
 
 export class RefreshTokenDto {
-  @IsCustomString({ optional: true })
   @ApiProperty({
     required: true,
   })
+  @IsCustomString()
   refreshToken: string;
 }

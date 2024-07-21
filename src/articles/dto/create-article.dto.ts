@@ -14,7 +14,7 @@ export class CreateArticleDto {
     required: false,
     type: String,
   })
-  @IsCustomString({ optional: true })
+  @IsCustomString({ required: false })
   description?: string;
 
   @ApiProperty({
