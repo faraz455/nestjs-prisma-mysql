@@ -5,12 +5,12 @@ import { IsCustomString } from '../decorators/is-custom-string.decorator';
 
 export class PaginationQueryDto {
   @Type(() => Number)
-  @IsCustomString({ required: false })
+  @IsNumber()
   @ApiProperty({ required: false })
   page?: number = 1;
 
   @Type(() => Number)
-  @IsCustomString({ required: false })
+  @IsNumber()
   @ApiProperty({ required: false })
   perPage?: number = 30;
 
