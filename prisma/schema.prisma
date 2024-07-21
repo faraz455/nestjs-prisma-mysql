@@ -43,7 +43,7 @@ model User {
   birthDateString String @default("-")
 
   email   String? @unique @db.VarChar(100) /// {"dropdown": true}
-  mobile  String  @unique
+  mobile  String? @unique
   address String?
 
   createdAt DateTime @default(now())
