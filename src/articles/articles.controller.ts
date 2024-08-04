@@ -27,8 +27,7 @@ import { CustomJwtGuard } from 'src/auth/guards/custom-jwt.guard';
 import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
 import { Permissions } from 'src/auth/decorators';
 
-@UseGuards(CustomJwtGuard)
-@UseGuards(PermissionsGuard)
+@UseGuards(CustomJwtGuard, PermissionsGuard)
 @ApiTags('Articles')
 @ApiBearerAuth()
 @Controller('articles')
