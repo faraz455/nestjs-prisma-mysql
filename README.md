@@ -22,27 +22,34 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 
 # Table of Contents
 
-- [Introduction](#introduction)
+### Introduction
 
-  - [Project Overview](#project-overview)
-  - [Key Features](#key-features)
+- [Project Overview](#project-overview)
+- [Key Features](#key-features)
 
-- [Quick Start](#quick-start)
+### Quick Start
+
+- [Rapid Deployment](#rapid-deployment)
+
+### Installation
+
 - [Installation](#installation)
-
-  - [Prerequistes](#prerequisites)
-
-  - [Setting up environment variables](#setting-up-environment-variables)
+  - [Prerequisites](#prerequisites)
+  - [Setting up Environment Variables](#setting-up-environment-variables)
     - [Basic Environment](#basic-environment)
     - [Tenant Configuration](#tenant-configuration)
+- [Running the App](#running-the-app)
 
-- [Running the app](#running-the-app)
+### Prisma ORM
 
 - [Prisma Migrations](./docs/prisma/PRISMA_MIGRATIONS.md)
+- [Prisma Integration](./docs/prisma/PRISMA_INTEGRATION.md)
+- [MultiTenancy](./docs/prisma/MULTI_TENANCY.md)
 
-- [Security](#security)
-  - [JWT-Based Authentication](./docs/auth/AUTHENTICATION.md)
-  - [Role and Permission Authorization](./docs/auth/AUTHORIZATION.md)
+### Security
+
+- [JWT-Based Authentication](./docs/auth/AUTHENTICATION.md)
+- [Role and Permission Authorization](./docs/auth/AUTHORIZATION.md)
 
 ## Introduction
 
@@ -68,7 +75,7 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 
 - **Enhanced Authentication**: Implement secure authentication using JWT tokens, including throttle control for security, role and permission guards for access control, and login guards for session management.
 
-## Quick Start
+## Rapid Deployment
 
 ### 1. MySQL 8 Docker Setup
 
