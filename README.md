@@ -42,7 +42,7 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 
 - [Security](#security)
   - [JWT-Based Authentication](./docs/auth/AUTHENTICATION.md)
-  - [Role and Permission Authorization](#role-and-permission-authorization)
+  - [Role and Permission Authorization](./docs/auth/AUTHORIZATION.md)
 
 ## Introduction
 
@@ -269,79 +269,6 @@ $ yarn start:dev
 # production mode
 $ yarn start:prod
 ```
-
-## Security
-
-This module provides robust authentication and authorization mechanisms to secure access to your NestJS application's endpoints.
-
-## Jwt Authentication
-
-#### Login Guard and Strategy
-
-- **Login Guard**: The login guard validates user credentials and generates access and refresh tokens upon successful authentication.
-- **Login Strategy**: After validating the user, the login strategy retrieves required user information such as user info, roles and permissions. It then creates an access token and a refresh token.
-
-#### Token Management
-
-- **Access Token**: Used for authentication in subsequent requests to protected endpoints.
-- **Refresh Token**: Allows users to obtain a new access token without re-entering credentials if the access token expires.
-
-#### Cookie Management
-
-- Upon successful login, the access token and refresh token are set in cookies with specific names (`AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`).
-
-#### Custom JWT Guard
-
-- The custom JWT guard validates the access token for requests to protected endpoints.
-- If the access token is expired, it checks the refresh token. If the refresh token is still valid, a new access token is generated using the `refresh-token` endpoint.
-
-#### Token Revocation
-
-- Refresh tokens are securely managed in `UserRefreshToken` table and revoked only once to maintain security.
-
-#### Endpoints
-
-- **Signup**: Allows users to register for an account.
-- **Login**: Authenticates users and generates access and refresh tokens.
-- **Refresh Token**: Generates a new access token using a valid refresh token.
-- **Logout**: Clears user authentication cookies.
-- **Protected Endpoints**: Any endpoint requiring authentication, such as article-related endpoints, demonstrates the authentication workflow.
-
-This authentication mechanism ensures secure access to protected endpoints while maintaining user tokens and adhering to best practices.
-
-## Role and Permission Authorization
-
-### Role-Based Authorization
-
-- **User-Role Relationship**: Users are associated with roles through a many-to-many relationship facilitated by the `UserRole` table.
-- **Role-Resource Permission Relationship**: Roles have a one-to-many relationship with resource permissions, allowing them to define access rights to various resources.
-
-### Permission-Based Authorization
-
-- **Resource Permissions**: Resource permissions dictate the actions a role can perform on specific resources.
-- **Permission Granularity**: Permissions can be highly granular, allowing for precise control over user access to resources and actions such as `create` or `view`.
-
-### Role Guard
-
-The Role Guard (`RolesGuard`) ensures role-based authorization by verifying if the user possesses the required role(s) to access a particular endpoint. If the user's role matches the required role(s) specified in the endpoint's metadata, access is granted; otherwise, the request is denied.
-
-### Permission Guard
-
-The Permission Guard (`PermissionsGuard`) offers more intricate authorization capabilities by evaluating complex permission structures. It enables the specification of intricate permission requirements using a recursive structure. For example, a permission might demand that a user has permission to create a resource and either view or edit it. The Permission Guard evaluates these conditions and grants access if the user meets the specified permission criteria.
-
-#### Usage Example:
-
-```typescript
-// Specify the required permissions using a structured object
-const permissionRequired: PermsObject = {
-  AND: ['ResourceName.create', { OR: ['ResourceName.create', 'ResourceName.view'] ],
-};
-
-// Apply the @Permissions decorator with the required permissions
-@Permissions(permissionRequired)
-```
-
-By leveraging both role-based and permission-based authorization mechanisms, the application ensures robust access control, granting users the appropriate privileges based on their roles and permissions.
 
 ## Contributing
 
