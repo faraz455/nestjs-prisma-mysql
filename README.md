@@ -41,9 +41,8 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 - [Prisma Migrations](./docs/prisma/PRISMA_MIGRATIONS.md)
 
 - [Security](#security)
-  - [JWT-Based Authentication](#jwt-authentication)
+  - [JWT-Based Authentication](./docs/auth/AUTHENTICATION.md)
   - [Role and Permission Authorization](#role-and-permission-authorization)
-  - [Throttled Rate Limiting](#throttled-rate-limiting)
 
 ## Introduction
 
@@ -120,8 +119,6 @@ TIMEZONE=0
 JWT_SECRET=secret
 AUTH_COOKIE_SECRET=mycookiesecret
 
-THROTTLE_LIMIT=20
-THROTTLE_TTL=60000
 ```
 
 Create an `env.conf` file at the root directory of your project with the following content:
