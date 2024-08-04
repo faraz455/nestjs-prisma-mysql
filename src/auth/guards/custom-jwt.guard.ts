@@ -1,18 +1,12 @@
 import {
   CanActivate,
   ExecutionContext,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { IS_PUBLIC_KEY } from '../decorators';
-import {
-  PRISMA_SERVICE,
-  TENANT_CONFIG,
-} from 'src/multi-tenant/multi-tenant.module';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVars } from 'src/common/common.types';
 import { TenantConfig } from 'src/multi-tenant/multi-tenant.config';
@@ -34,8 +28,6 @@ export class CustomJwtGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly configService: ConfigService,
-    // @Inject(PRISMA_SERVICE) private readonly prisma: PrismaService,
-    // @Inject(TENANT_CONFIG) tConfig: TenantConfig
   ) {
     this.jwtService = new JwtService({
       verifyOptions: { ignoreExpiration: true },
