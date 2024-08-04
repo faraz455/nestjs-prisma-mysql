@@ -4,14 +4,14 @@ import { IsCustomString } from '../../common/decorators/is-custom-string.decorat
 export class LoginDto {
   @ApiProperty({
     required: true,
-    default: 'username123',
+    default: 'superAdmin',
   })
   @IsCustomString()
   username: string;
 
   @ApiProperty({
     required: true,
-    default: 'password',
+    default: 'SuperAdmin@1',
   })
   @IsCustomString()
   password: string;
