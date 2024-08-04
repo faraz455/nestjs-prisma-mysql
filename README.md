@@ -262,7 +262,7 @@ DB_DEBUG=0
 
 Copy paste the above as many times as you wish to serve multiple tenants. Make sure to update their host addresses and environment details accordingly.
 
-For more detailed information on multi-tenancy, please visit - [docs - multitendancy](./docs/MULTI_TENANCY.md)
+For more detailed information on multi-tenancy, please visit - [docs - multitendancy](./docs/prisma//MULTI_TENANCY.md)
 
 ## Running the app
 
@@ -283,5 +283,9 @@ Refer to [contribution guidlines](./docs/guidelines/CONTRIBUTING.md) and [coding
 
 ## Stay in Touch
 
-- **LinkedIn Profile**: [Muhammad Faraz Khan](https://www.linkedin.com/in/farazkhan455/)
-- **GitHub Profile**: [Muhammad Faraz Khan](https://github.com/faraz455)
+Feel free to reach out for any inquiries or collaborations!
+
+[![GitHub Icon](https://img.shields.io/badge/GitHub-%23121011?style=flat&logo=github&logoColor=white)](https://github.com/faraz455)
+[![LinkedIn Icon](https://img.shields.io/badge/LinkedIn-%230077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/farazkhan455/)
+[![Gmail Icon](https://img.shields.io/badge/Email-%23D14836?style=flat&logo=gmail&logoColor=white)](mailto:khanfaraz1199@gmail.com)
+[![HackerRank Icon](https://img.shields.io/badge/HackerRank-%2343A046?style=flat&logo=hackerrank&logoColor=white)](https://www.hackerrank.com/profile/khanfaraz1199)
