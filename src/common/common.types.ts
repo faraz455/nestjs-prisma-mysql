@@ -17,5 +17,7 @@ export type EnvironmentVars = keyof typeof EnvironmentVars;
 export const PermissionType = {
   create: 'create',
   view: 'view',
+  update: 'update',
+  delete: 'delete',
 } as const;
 export type PermissionType = keyof typeof PermissionType;

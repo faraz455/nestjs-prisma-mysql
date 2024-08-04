@@ -11,6 +11,8 @@ export async function seedPermissions(prisma: PrismaClient) {
     roleId: 'SUPERADMIN',
     create: true,
     view: true,
+    update: true,
+    delete: true,
   });
 
   permissionsData.push({

@@ -62,13 +62,6 @@ export class AuthService {
     return ret;
   }
 
-  async validateSession(req: Request) {
-    const mobile: string = req?.body?.mobile;
-
-    const sessionCount = 1;
-    return sessionCount > 0 ? true : false;
-  }
-
   async getUserPermissions(userId: string): Promise<ResoucePermissionType> {
     const user = await this.prisma.user.findUniqueOrThrow({
       select: {
@@ -105,7 +98,7 @@ export class AuthService {
 
   async refreshToken(refreshToken: string) {
     const user = await this.prisma.user.findFirst({
-      where: { UserRefreshToken: { some: { refreshToken, revoked: false } } },
+      where: { userRefreshTokens: { some: { refreshToken, revoked: false } } },
     });
 
     if (!user) {
@@ -133,6 +126,7 @@ export class AuthService {
     const profile = new Profile(
       user.userId,
       user.fullName,
+      user.username,
       user.firstName,
       user.middleName,
       user.lastName,

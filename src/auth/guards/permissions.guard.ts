@@ -59,10 +59,21 @@ export class PermissionsGuard implements CanActivate {
 
   async getRolePermissions(roles: string[]): Promise<ResoucePermissionType> {
     const recs = await this.prisma.resourcePermission.findMany({
-      select: { create: true, view: true, resourceName: true },
+      select: {
+        resourceName: true,
+        create: true,
+        view: true,
+        update: true,
+        delete: true,
+      },
       where: {
         role: { roleName: { in: roles } },
-        OR: [{ view: true }, { create: true }],
+        OR: [
+          { view: true },
+          { create: true },
+          { update: true },
+          { view: true },
+        ],
       },
     });
 
