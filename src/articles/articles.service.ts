@@ -37,13 +37,12 @@ export class ArticlesService {
     const offset: number = getOffset(query.page, query.perPage);
 
     const where: Prisma.ArticleWhereInput = {
-      OR:
-        query.search !== ''
-          ? [
-              { body: { contains: query.search } },
-              { title: { contains: query.search } },
-            ]
-          : undefined,
+      OR: !!query.search
+        ? [
+            { body: { contains: query.search } },
+            { title: { contains: query.search } },
+          ]
+        : undefined,
     };
 
     const count = await this.prisma.article.count({ where });
