@@ -1,4 +1,4 @@
-export const ResourceName = { ResourceName: 'ResourceName' } as const;
+export const ResourceName = { Article: 'Article' } as const;
 
 export type ResourceName = keyof typeof ResourceName;
 
