@@ -23,21 +23,22 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 # Table of Contents
 
 - [Introduction](#introduction)
+
   - [Project Overview](#project-overview)
   - [Key Features](#key-features)
 
 - [Quick Start](#quick-start)
 - [Installation](#installation)
+
   - [Prerequistes](#prerequisites)
 
   - [Setting up environment variables](#setting-up-environment-variables)
     - [Basic Environment](#basic-environment)
     - [Tenant Configuration](#tenant-configuration)
 
-
 - [Running the app](#running-the-app)
 
-- [Prisma Migrations](./docs/PRISMA_MIGRATIONS.md)
+- [Prisma Migrations](./docs/prisma/PRISMA_MIGRATIONS.md)
 
 - [Security](#security)
   - [JWT-Based Authentication](#jwt-authentication)
@@ -199,9 +200,6 @@ PRODUCTION=<0 or 1>
 
 JWT_SECRET=<secret>
 AUTH_COOKIE_SECRET=<mycookiesecret>
-
-THROTTLE_LIMIT=20 # limit to request
-THROTTLE_TTL=60000 # duration in milliseconds
 ```
 
 E.g.
@@ -216,9 +214,6 @@ PRODUCTION=0
 
 JWT_SECRET=secret
 AUTH_COOKIE_SECRET=mycookiesecret
-
-THROTTLE_LIMIT=20
-THROTTLE_TTL=60000 
 ```
 
 Remember, the `DATABASE_URL` environment variable should refer to your dev database and is only present for use with the Prisma CLI. To see how to configure the database(s) you wish to use when running the server, see Tenant Configuration below.
@@ -291,16 +286,16 @@ This module provides robust authentication and authorization mechanisms to secur
 
 #### Token Management
 
-- **Access Token**: Used for authentication in subsequent requests to protected endpoints. 
+- **Access Token**: Used for authentication in subsequent requests to protected endpoints.
 - **Refresh Token**: Allows users to obtain a new access token without re-entering credentials if the access token expires.
 
 #### Cookie Management
 
 - Upon successful login, the access token and refresh token are set in cookies with specific names (`AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`).
-  
+
 #### Custom JWT Guard
 
-- The custom JWT guard validates the access token for requests to protected endpoints. 
+- The custom JWT guard validates the access token for requests to protected endpoints.
 - If the access token is expired, it checks the refresh token. If the refresh token is still valid, a new access token is generated using the `refresh-token` endpoint.
 
 #### Token Revocation
@@ -314,7 +309,7 @@ This module provides robust authentication and authorization mechanisms to secur
 - **Refresh Token**: Generates a new access token using a valid refresh token.
 - **Logout**: Clears user authentication cookies.
 - **Protected Endpoints**: Any endpoint requiring authentication, such as article-related endpoints, demonstrates the authentication workflow.
-  
+
 This authentication mechanism ensures secure access to protected endpoints while maintaining user tokens and adhering to best practices.
 
 ## Role and Permission Authorization
@@ -328,7 +323,7 @@ This authentication mechanism ensures secure access to protected endpoints while
 
 - **Resource Permissions**: Resource permissions dictate the actions a role can perform on specific resources.
 - **Permission Granularity**: Permissions can be highly granular, allowing for precise control over user access to resources and actions such as `create` or `view`.
-  
+
 ### Role Guard
 
 The Role Guard (`RolesGuard`) ensures role-based authorization by verifying if the user possesses the required role(s) to access a particular endpoint. If the user's role matches the required role(s) specified in the endpoint's metadata, access is granted; otherwise, the request is denied.
@@ -351,34 +346,9 @@ const permissionRequired: PermsObject = {
 
 By leveraging both role-based and permission-based authorization mechanisms, the application ensures robust access control, granting users the appropriate privileges based on their roles and permissions.
 
-
-## Throttled Rate Limiting
-
-Rate limiting is a crucial security measure employed to protect applications from malicious activities such as brute-force attacks. It restricts the number of requests a client can make within a specific timeframe, thus mitigating the risk of server overload and abuse.
-
-### Implementation Details
-
-- **NestJS Throttler Package**: Rate limiting is implemented using the `@nestjs/throttler` package, which provides convenient middleware for defining rate-limiting policies.
-  
-- **Global Configuration**: Rate limiting is configured globally in the application, meaning it applies to all endpoints. This global setting ensures consistent protection across the entire application.
-
-- **Environment-Specific Configuration**: Rate limiting is enabled only in the production environment (`production=1`). This ensures that rate limiting is active only in the live deployment environment where it's most critical for security.
-
-- **Throttle Limit and Throttle TTL**: Rate limits are defined by the `THROTTLE_LIMIT` and `THROTTLE_TTL` environment variables. 
-  - `THROTTLE_LIMIT`: Specifies the maximum number of requests allowed within the defined time frame.
-  - `THROTTLE_TTL`: Defines the duration for which the rate limit applies, measured in milliseconds.
-
-## Usage and Customization
-
-- **Controller-Level Rate Limiting**: While the global configuration suffices for most cases, you have the flexibility to apply rate limiting at the controller level or even specific endpoints as needed.
-
-- **Testing and Customization**: During development or testing, you can modify the `production` environment variable to observe and adjust rate-limiting behavior. This allows for thorough testing and fine-tuning of rate-limiting policies.
-
-For more detailed information on rate limiting in NestJS and how to customize it further, refer to the official [NestJS documentation on rate limiting](https://docs.nestjs.com/security/rate-limiting).
-
 ## Contributing
 
-Refer to [contribution guidlines](./docs/CONTRIBUTING.md) and [coding convntions](./docs/CODING_CONVENTIONS.md) and [code of conduct](./CODE_OF_CONDUCT.md).
+Refer to [contribution guidlines](./docs/guidelines/CONTRIBUTING.md) and [coding convntions](./docs/guidelines/CODING_CONVENTIONS.md) and [code of conduct](./CODE_OF_CONDUCT.md).
 
 ## Stay in Touch
 
