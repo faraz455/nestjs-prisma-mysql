@@ -54,7 +54,7 @@ export class AuthService {
 
     if (!user || !(await bcrypt.compare(pass, user.password))) {
       throw new UnauthorizedException({
-        message: `Phone no. and password mismatch `,
+        message: `Username and password mismatch `,
       });
     }
 

@@ -1,14 +1,17 @@
 import { Gender, Prisma, PrismaClient } from '@prisma/client';
 import { MakeTimedIDUnique } from '../../src/common/common.helper';
+import * as bcrypt from 'bcrypt';
 
 export async function seedUsers(prisma: PrismaClient) {
   console.log('Seeding Users !!!');
+
+  const salt = await bcrypt.genSalt();
 
   const userData: Prisma.UserUncheckedCreateInput[] = [
     {
       userId: 'SUPERADMIN',
       username: 'superAdmin',
-      password: 'SuperAdmin@1',
+      password: await bcrypt.hash('SuperAdmin@1', salt),
       firstName: 'Super Admin',
       fullName: 'Super Admin',
       birthDateString: new Date().toDateString(),
@@ -17,7 +20,7 @@ export async function seedUsers(prisma: PrismaClient) {
     {
       userId: 'ADMIN',
       username: 'admin',
-      password: 'Admin@1',
+      password: await bcrypt.hash('Admin@1', salt),
       firstName: 'Admin',
       fullName: 'Admin',
       birthDateString: new Date().toDateString(),
