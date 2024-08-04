@@ -25,9 +25,11 @@ import { ArticleEntity } from './entities';
 
 import { CustomJwtGuard } from 'src/auth/guards/custom-jwt.guard';
 import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
-import { Permissions } from 'src/auth/decorators';
+import { Permissions, Roles } from 'src/auth/decorators';
+import { RolesGuards } from 'src/auth/guards/roles.guard';
 
-@UseGuards(CustomJwtGuard, PermissionsGuard)
+@UseGuards(CustomJwtGuard, PermissionsGuard, RolesGuards)
+@Roles({ OR: ['ADMIN', 'SUPER ADMIN'] })
 @ApiTags('Articles')
 @ApiBearerAuth()
 @Controller('articles')
