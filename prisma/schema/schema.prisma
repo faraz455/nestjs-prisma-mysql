@@ -1,0 +1,22 @@
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["relationJoins", "prismaSchemaFolder"]
+}
+
+model Article {
+    articleId String @id @db.Char(40)
+
+    title       String  @unique
+    description String?
+    body        String
+
+    published Boolean @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

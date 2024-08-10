@@ -1,0 +1,78 @@
+enum Gender {
+    MALE
+    FEMALE
+    PREFER_NOT_TO_SAY
+    OTHER
+}
+
+model User {
+    userId   String @id @db.Char(40)
+    username String @unique
+    password String
+
+    firstName  String
+    middleName String?
+    lastName   String?
+    fullName   String
+
+    gender          Gender
+    birthDateString String @default("-")
+
+    email   String? @unique @db.VarChar(100)
+    mobile  String? @unique
+    address String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    userRoles         UserRole[]
+    userRefreshTokens UserRefreshToken[]
+}
+
+model UserRole {
+    userRoleId String @id @db.Char(40)
+
+    User   User   @relation(fields: [userId], references: [userId])
+    userId String @db.Char(40)
+
+    role   Role   @relation(fields: [roleId], references: [roleId])
+    roleId String @db.Char(40)
+}
+
+model Role {
+    roleId   String @id @default(uuid()) @db.Char(40)
+    roleName String @unique
+
+    userRoles           UserRole[]
+    resourcePermissions ResourcePermission[]
+}
+
+model ResourcePermission {
+    resourcePermissionId String @id @db.Char(40)
+
+    resourceName String
+
+    create Boolean @default(false)
+    view   Boolean @default(false)
+    update Boolean @default(false)
+    delete Boolean @default(false)
+
+    role   Role   @relation(fields: [roleId], references: [roleId])
+    roleId String @db.Char(40)
+}
+
+model UserRefreshToken {
+    userRefreshTokenId String @id @db.Char(40)
+
+    userId String @db.Char(40)
+    user   User   @relation(fields: [userId], references: [userId])
+
+    refreshToken String   @unique() @db.VarChar(256)
+    expiresAt    DateTime
+    revoked      Boolean  @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId])
+}
