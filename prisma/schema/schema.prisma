@@ -5,7 +5,7 @@ datasource db {
 
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["relationJoins"]
+    previewFeatures = ["relationJoins", "prismaSchemaFolder"]
 }
 
 model Article {
