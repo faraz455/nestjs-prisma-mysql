@@ -50,11 +50,45 @@ export class AdminService {
   }
 
   async createRole(dto: CreateRoleDto): Promise<RoleEntity> {
-    return await this.prisma.role.create({ data: dto });
+    return await this.prisma.$transaction(async (tx) => {
+      const role = await tx.role.create({
+        data: { roleName: dto.roleName },
+      });
+      if (dto.permissions && dto.permissions.length > 0) {
+        await tx.resourcePermission.createMany({
+          data: dto.permissions.map((perm) => ({
+            resourcePermissionId: MakeTimedIDUnique(),
+            ...perm,
+            roleId: role.roleId,
+          })),
+        });
+      }
+      return role;
+    });
   }
 
   async updateRole(id: string, dto: UpdateRoleDto): Promise<RoleEntity> {
-    return await this.prisma.role.update({ where: { roleId: id }, data: dto });
+    return await this.prisma.$transaction(async (tx) => {
+      const role = await tx.role.update({
+        where: { roleId: id },
+        data: { roleName: dto.roleName },
+      });
+      if (dto.permissions) {
+        // Remove old permissions
+        await tx.resourcePermission.deleteMany({ where: { roleId: id } });
+        // Add new permissions
+        if (dto.permissions.length > 0) {
+          await tx.resourcePermission.createMany({
+            data: dto.permissions.map((perm) => ({
+              resourcePermissionId: MakeTimedIDUnique(),
+              ...perm,
+              roleId: id,
+            })),
+          });
+        }
+      }
+      return role;
+    });
   }
 
   async deleteRole(id: string): Promise<RoleEntity> {
