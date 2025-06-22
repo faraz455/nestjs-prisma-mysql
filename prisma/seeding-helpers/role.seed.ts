@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 
+/// Seeds the default roles into the database
 export async function seedRoles(prisma: PrismaClient) {
   console.log('-----------------------------');
   console.log('Seeding Roles !!!');

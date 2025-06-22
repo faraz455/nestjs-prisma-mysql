@@ -2,6 +2,7 @@ import { Gender, Prisma, PrismaClient } from '@prisma/client';
 import { MakeTimedIDUnique } from '../../src/common/common.helper';
 import * as bcrypt from 'bcrypt';
 
+/// Seeds the default users and their roles into the database
 export async function seedUsers(prisma: PrismaClient) {
   console.log('Seeding Users !!!');
 

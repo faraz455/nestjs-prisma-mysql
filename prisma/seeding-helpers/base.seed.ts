@@ -4,6 +4,7 @@ import { seedUsers } from './user.seed';
 import { seedPermissions } from './permission.seed';
 import { seedArticles } from './article.seed';
 
+/// Seeds all base data: roles, permissions, users, and articles
 export async function seedBaseData(prisma: PrismaClient) {
   console.log('Seeding started !!\n');
   await deleteData(prisma);
@@ -14,6 +15,7 @@ export async function seedBaseData(prisma: PrismaClient) {
   console.log('\nSeeding done !!!\n');
 }
 
+/// Deletes all data from the tables in the correct order
 export async function deleteData(prisma: PrismaClient) {
   await prisma.article.deleteMany();
   await prisma.resourcePermission.deleteMany();
