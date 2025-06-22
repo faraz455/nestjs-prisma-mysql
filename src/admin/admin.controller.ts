@@ -28,7 +28,7 @@ import { CustomJwtGuard } from 'src/auth/guards/custom-jwt.guard';
 @ApiTags('Admin')
 @ApiBearerAuth()
 @UseGuards(CustomJwtGuard, PermissionsGuard, RolesGuards)
-@Roles({ OR: ['SUPERADMIN', 'ADMIN'] })
+@Roles({ OR: ['SUPER ADMIN', 'ADMIN'] })
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -97,9 +97,9 @@ export class AdminController {
     return this.adminService.getPermissions();
   }
 
-  @Get('permissions/:id')
-  async getPermission(@Param('id') id: string) {
-    return this.adminService.getPermission(id);
+  @Get('permissions/:roleId')
+  async getPermission(@Param('roleId') roleId: string) {
+    return this.adminService.getPermission(roleId);
   }
 
   @Post('permissions')

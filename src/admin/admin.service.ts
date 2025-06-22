@@ -66,9 +66,9 @@ export class AdminService {
     return await this.prisma.resourcePermission.findMany();
   }
 
-  async getPermission(id: string) {
-    return await this.prisma.resourcePermission.findUniqueOrThrow({
-      where: { resourcePermissionId: id },
+  async getPermission(roleId: string) {
+    return await this.prisma.resourcePermission.findMany({
+      where: { roleId },
     });
   }
 
