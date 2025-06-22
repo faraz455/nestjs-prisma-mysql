@@ -162,7 +162,24 @@ $ yarn prisma generate
 $ yarn prisma migrate deploy
 ```
 
-### 5. Start the Server
+### 5. Seed Sample Data
+
+To seed the database with sample roles, permissions, users, and articles, run:
+
+```bash
+yarn run data:seed
+```
+
+This will create:
+
+- Roles: SUPERADMIN, ADMIN
+- Users: superAdmin (password: SuperAdmin@1), admin (password: Admin@1)
+- Permissions: Full permissions for SUPERADMIN, view permission for ADMIN
+- Sample articles
+
+You can modify the seed scripts in `prisma/seeding-helpers/` to customize the initial data.
+
+### 6. Start the Server
 
 Run the following command to start the server in development mode:
 
@@ -263,6 +280,23 @@ DB_DEBUG=0
 Copy paste the above as many times as you wish to serve multiple tenants. Make sure to update their host addresses and environment details accordingly.
 
 For more detailed information on multi-tenancy, please visit - [docs - multitendancy](./docs/prisma//MULTI_TENANCY.md)
+
+## Seed Sample Data
+
+To seed the database with sample roles, permissions, users, and articles, run:
+
+```bash
+yarn run data:seed
+```
+
+This will create:
+
+- Roles: SUPERADMIN, ADMIN
+- Users: superAdmin (password: SuperAdmin@1), admin (password: Admin@1)
+- Permissions: Full permissions for SUPERADMIN, view permission for ADMIN
+- Sample articles
+
+You can modify the seed scripts in `prisma/seeding-helpers/` to customize the initial data.
 
 ## Running the app
 
