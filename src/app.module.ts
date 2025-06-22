@@ -13,12 +13,14 @@ import { CommonModule } from './common/common.module';
 import { ArticlesModule } from './articles/articles.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
     CommonModule,
     ArticlesModule,
     MultiTenantModule,
+    AdminModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [multiTenantConfig],
