@@ -7,8 +7,9 @@ import {
   Post,
   Res,
   UseGuards,
+  Get,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 
 import { Response } from 'express';
 
@@ -19,6 +20,7 @@ import { AuthService } from './auth.service';
 
 import { GetUser } from './decorators';
 import { LoginGuard } from './guards/login.guard';
+import { CustomJwtGuard } from './guards/custom-jwt.guard';
 
 import { IDDto } from 'src/common/dto';
 import { LoginEntity } from './entities';
@@ -80,7 +82,6 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() signupDto: SignupDto) {
     const payload = await this.authService.signup(signupDto);
-
     return payload;
   }
 
@@ -93,5 +94,12 @@ export class AuthController {
     await this.authService.logout();
     res.clearCookie(this.tConfig.AUTH_COOKIE_NAME, { signed: true });
     res.clearCookie(this.tConfig.REFRESH_COOKIE_NAME, { signed: true });
+  }
+
+  @ApiOkResponse({ type: LoginEntity })
+  @UseGuards(CustomJwtGuard)
+  @Get('me')
+  async getMe(@GetUser() user: User) {
+    return user;
   }
 }
