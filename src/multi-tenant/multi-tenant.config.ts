@@ -5,6 +5,7 @@ export type TenantConfig = {
   SITE_CODE: string;
   BASE_URL: string;
   AUTH_COOKIE_NAME: string;
+  REFRESH_COOKIE_NAME: string;
   DB_HOST_MAIN: string;
   DB_USER: string;
   DB_PASSWORD: string;
@@ -23,6 +24,7 @@ export default registerAs('multiTenant', () => {
       SITE_CODE: config.get(section, 'SITE_CODE'),
       BASE_URL: config.get(section, 'BASE_URL'),
       AUTH_COOKIE_NAME: config.get(section, 'AUTH_COOKIE_NAME'),
+      REFRESH_COOKIE_NAME: config.get(section, 'REFRESH_COOKIE_NAME'),
       DB_HOST_MAIN: config.get(section, 'DB_HOST_MAIN'),
       DB_USER: config.get(section, 'DB_USER'),
       DB_PASSWORD: config.get(section, 'DB_PASSWORD'),

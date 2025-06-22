@@ -20,30 +20,36 @@ This repository provides a comprehensive and production-ready foundation for bui
 
 Feel free to clone this repository and use it as a starting point for your NestJS projects.
 
-<a ><img src="./docs/swagger-image.png" alt="Swagger Image" /></a>
-
 # Table of Contents
 
-- [Introduction](#introduction)
+### Introduction
 
-  - [Project Overview](#project-overview)
-  - [Key Features](#key-features)
+- [Project Overview](#project-overview)
+- [Key Features](#key-features)
 
-- [Quick Start](#quick-start)
+### Quick Start
+
+- [Rapid Deployment](#rapid-deployment)
+
+### Installation
+
 - [Installation](#installation)
-
-  - [Prerequistes](#prerequisites)
-
-  - [Setting up environment variables](#setting-up-environment-variables)
-
+  - [Prerequisites](#prerequisites)
+  - [Setting up Environment Variables](#setting-up-environment-variables)
     - [Basic Environment](#basic-environment)
     - [Tenant Configuration](#tenant-configuration)
+- [Running the App](#running-the-app)
 
-  - [Prisma Integration](./docs/PRISMA_INTEGRATION.md)
+### Prisma ORM
 
-- [Running the app](#running-the-app)
+- [Prisma Migrations](./docs/prisma/PRISMA_MIGRATIONS.md)
+- [Prisma Integration](./docs/prisma/PRISMA_INTEGRATION.md)
+- [MultiTenancy](./docs/prisma/MULTI_TENANCY.md)
 
-- [Prisma Migrations](./docs/PRISMA_MIGRATIONS.md)
+### Security
+
+- [JWT-Based Authentication](./docs/auth/AUTHENTICATION.md)
+- [Role and Permission Authorization](./docs/auth/AUTHORIZATION.md)
 
 ## Introduction
 
@@ -67,7 +73,9 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 
 - **Comprehensive Documentation**: Benefit from clear and detailed documentation, including comments and relevant references, to guide you through the codebase and understand its functionality.
 
-## Quick Start
+- **Enhanced Authentication**: Implement secure authentication using JWT tokens, including throttle control for security, role and permission guards for access control, and login guards for session management.
+
+## Rapid Deployment
 
 ### 1. MySQL 8 Docker Setup
 
@@ -109,10 +117,15 @@ Create a `.env` file at the root directory of your project with the following co
 
 ```bash
 DATABASE_URL=mysql://root:1234@localhost:3306/nestdb
-TIMEZONE=0
 LOG_QUERIES=0
 LOG_REQUESTS=1
+
 PRODUCTION=0
+TIMEZONE=0
+
+JWT_SECRET=secret
+AUTH_COOKIE_SECRET=mycookiesecret
+
 ```
 
 Create an `env.conf` file at the root directory of your project with the following content:
@@ -149,7 +162,24 @@ $ yarn prisma generate
 $ yarn prisma migrate deploy
 ```
 
-### 5. Start the Server
+### 5. Seed Sample Data
+
+To seed the database with sample roles, permissions, users, and articles, run:
+
+```bash
+yarn run data:seed
+```
+
+This will create:
+
+- Roles: SUPERADMIN, ADMIN
+- Users: superAdmin (password: SuperAdmin@1), admin (password: Admin@1)
+- Permissions: Full permissions for SUPERADMIN, view permission for ADMIN
+- Sample articles
+
+You can modify the seed scripts in `prisma/seeding-helpers/` to customize the initial data.
+
+### 6. Start the Server
 
 Run the following command to start the server in development mode:
 
@@ -188,17 +218,23 @@ TIMEZONE=<0>
 LOG_QUERIES=<0 or 1>
 LOG_REQUESTS=<0 or 1>
 PRODUCTION=<0 or 1>
+
+JWT_SECRET=<secret>
+AUTH_COOKIE_SECRET=<mycookiesecret>
 ```
 
 E.g.
 
 ```
 DATABASE_URL=mysql://root:1234@localhost:3306/databaseName
-TIMEZONE=0
-
 LOG_QUERIES=0
 LOG_REQUESTS=1
+
+TIMEZONE=0
 PRODUCTION=0
+
+JWT_SECRET=secret
+AUTH_COOKIE_SECRET=mycookiesecret
 ```
 
 Remember, the `DATABASE_URL` environment variable should refer to your dev database and is only present for use with the Prisma CLI. To see how to configure the database(s) you wish to use when running the server, see Tenant Configuration below.
@@ -243,7 +279,24 @@ DB_DEBUG=0
 
 Copy paste the above as many times as you wish to serve multiple tenants. Make sure to update their host addresses and environment details accordingly.
 
-For more detailed information on multi-tenancy, please visit - [docs - multitendancy](./docs/MULTI_TENANCY.md)
+For more detailed information on multi-tenancy, please visit - [docs - multitendancy](./docs/prisma//MULTI_TENANCY.md)
+
+## Seed Sample Data
+
+To seed the database with sample roles, permissions, users, and articles, run:
+
+```bash
+yarn run data:seed
+```
+
+This will create:
+
+- Roles: SUPERADMIN, ADMIN
+- Users: superAdmin (password: SuperAdmin@1), admin (password: Admin@1)
+- Permissions: Full permissions for SUPERADMIN, view permission for ADMIN
+- Sample articles
+
+You can modify the seed scripts in `prisma/seeding-helpers/` to customize the initial data.
 
 ## Running the app
 
@@ -260,9 +313,14 @@ $ yarn start:prod
 
 ## Contributing
 
-Refer to [contribution guidlines](./docs/CONTRIBUTING.md) and [coding convntions](./docs/CODING_CONVENTIONS.md) and [code of conduct](./CODE_OF_CONDUCT.md).
+Refer to [contribution guidlines](./docs/guidelines/CONTRIBUTING.md) and [coding convntions](./docs/guidelines/CODING_CONVENTIONS.md) and [code of conduct](./CODE_OF_CONDUCT.md).
 
 ## Stay in Touch
 
-- **LinkedIn Profile**: [Muhammad Faraz Khan](https://www.linkedin.com/in/farazkhan455/)
-- **GitHub Profile**: [Muhammad Faraz Khan](https://github.com/faraz455)
+Hi, I’m Muhammad Faraz Khan, a Software Engineer. I’m passionate about clean code, scalable architecture, and building tools that help other developers succeed.
+Feel free to reach out for any inquiries or collaborations!
+
+[![GitHub Icon](https://img.shields.io/badge/GitHub-%23121011?style=flat&logo=github&logoColor=white)](https://github.com/faraz455)
+[![LinkedIn Icon](https://img.shields.io/badge/LinkedIn-%230077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/farazkhan455/)
+[![Gmail Icon](https://img.shields.io/badge/Email-%23D14836?style=flat&logo=gmail&logoColor=white)](mailto:khanfaraz1199@gmail.com)
+[![HackerRank Icon](https://img.shields.io/badge/HackerRank-%2343A046?style=flat&logo=hackerrank&logoColor=white)](https://www.hackerrank.com/profile/khanfaraz1199)

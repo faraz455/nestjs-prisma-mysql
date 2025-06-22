@@ -7,6 +7,7 @@ import * as bodyParser from 'body-parser';
 
 import { AppModule } from './app.module';
 import { PrismaClientExceptionFilter } from './prisma/prisma-client-exception.filter';
+import * as cookieParser from 'cookie-parser';
 
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
@@ -24,7 +25,7 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new PrismaClientExceptionFilter());
-  // app.use(cookieParser(process.env.AUTH_COOKIE_SECRET));
+  app.use(cookieParser(process.env.AUTH_COOKIE_SECRET));
   app.use(bodyParser.json({ limit: '2mb' }));
   app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }));
 

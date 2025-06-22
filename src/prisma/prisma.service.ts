@@ -1,5 +1,4 @@
-import { INestApplication } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 export type PrismaServiceOptions = {
   url: string;

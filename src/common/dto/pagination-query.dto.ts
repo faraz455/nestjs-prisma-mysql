@@ -1,22 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsCustomString } from '../decorators/is-custom-string.decorator';
 
 export class PaginationQueryDto {
-  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @ApiProperty({ required: false })
   page?: number = 1;
 
-  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @ApiProperty({ required: false })
   perPage?: number = 30;
 
-  @IsString({})
-  @IsOptional()
+  @IsCustomString({ required: false })
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsOptional()
   @ApiProperty({ required: false })
-  search?: string = '';
+  search?: string;
 }

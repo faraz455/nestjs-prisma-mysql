@@ -1,27 +1,31 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-
-import { CommonModule } from './common/common.module';
-
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 import { MultiTenantMiddleware } from './multi-tenant/multi-tenant.middleware';
 import { MultiTenantModule } from './multi-tenant/multi-tenant.module';
 import multiTenantConfig from './multi-tenant/multi-tenant.config';
 import { RequestResponseInterceptor } from './logger/request-response.interceptor';
+
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
+import { CommonModule } from './common/common.module';
 import { ArticlesModule } from './articles/articles.module';
+import { AuthModule } from './auth/auth.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
     CommonModule,
     ArticlesModule,
     MultiTenantModule,
+    AdminModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [multiTenantConfig],
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
