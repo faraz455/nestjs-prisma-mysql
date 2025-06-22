@@ -27,13 +27,47 @@ export class AdminService {
   }
 
   async createUser(dto: CreateUserDto): Promise<UserEntity> {
-    return await this.prisma.user.create({
-      data: { userId: MakeTimedIDUnique(), ...dto },
+    return await this.prisma.$transaction(async (tx) => {
+      const { roleIds, ...userData } = dto;
+      const user = await tx.user.create({
+        data: { userId: MakeTimedIDUnique(), ...userData },
+      });
+      if (roleIds && roleIds.length > 0) {
+        await tx.userRole.createMany({
+          data: roleIds.map((roleId) => ({
+            userRoleId: MakeTimedIDUnique(),
+            userId: user.userId,
+            roleId,
+          })),
+        });
+      }
+      return user;
     });
   }
 
   async updateUser(id: string, dto: UpdateUserDto): Promise<UserEntity> {
-    return await this.prisma.user.update({ where: { userId: id }, data: dto });
+    return await this.prisma.$transaction(async (tx) => {
+      const { roleIds, ...userData } = dto;
+      const user = await tx.user.update({
+        where: { userId: id },
+        data: userData,
+      });
+      if (roleIds) {
+        // Remove all existing roles for the user
+        await tx.userRole.deleteMany({ where: { userId: id } });
+        // Add new roles
+        if (roleIds.length > 0) {
+          await tx.userRole.createMany({
+            data: roleIds.map((roleId) => ({
+              userRoleId: MakeTimedIDUnique(),
+              userId: id,
+              roleId,
+            })),
+          });
+        }
+      }
+      return user;
+    });
   }
 
   async deleteUser(id: string): Promise<UserEntity> {

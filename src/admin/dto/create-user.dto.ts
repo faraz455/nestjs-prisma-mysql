@@ -50,4 +50,12 @@ export class CreateUserDto {
   @IsCustomString({ required: false })
   @IsOptional()
   address?: string;
+
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description: 'Array of role IDs to assign to the user',
+  })
+  @IsOptional()
+  roleIds?: string[];
 }
