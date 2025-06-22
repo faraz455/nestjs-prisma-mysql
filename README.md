@@ -317,6 +317,7 @@ Refer to [contribution guidlines](./docs/guidelines/CONTRIBUTING.md) and [coding
 
 ## Stay in Touch
 
+Hi, I’m Muhammad Faraz Khan, a Software Engineer. I’m passionate about clean code, scalable architecture, and building tools that help other developers succeed.
 Feel free to reach out for any inquiries or collaborations!
 
 [![GitHub Icon](https://img.shields.io/badge/GitHub-%23121011?style=flat&logo=github&logoColor=white)](https://github.com/faraz455)
