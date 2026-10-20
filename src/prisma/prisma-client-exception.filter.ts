@@ -12,25 +12,7 @@ export type ExceptionResponseData = {
   message: string;
 };
 
-function getLines(errorMessage: string): string[] {
-  return errorMessage.split(/\r?\n/);
-}
-
-function getModel(errorMessage: string): string {
-  const lines = getLines(errorMessage);
-  for (const idx in lines) {
-    if (lines[idx].includes('→')) {
-      return lines[idx].split('this.prisma.')[1].split('.')[0];
-    }
-  }
-  throw 'Model not found';
-}
-
-@Catch(
-  Prisma.PrismaClientKnownRequestError,
-  Prisma.NotFoundError,
-  Prisma.PrismaClientValidationError,
-)
+@Catch(Prisma.PrismaClientKnownRequestError, Prisma.PrismaClientValidationError)
 export class PrismaClientExceptionFilter extends BaseExceptionFilter {
   prismaToHttp: PrismaToHttpCodeMapping = {
     P2000: HttpStatus.BAD_REQUEST,
@@ -44,7 +26,6 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
   catch(
     exception:
       | Prisma.PrismaClientKnownRequestError
-      | Prisma.NotFoundError
       | Prisma.PrismaClientValidationError,
     host: ArgumentsHost,
   ): any {
@@ -56,8 +37,6 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
 
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       exceptionResponseData = this.catchClientKnownRequestError(exception);
-    } else if (exception instanceof Prisma.NotFoundError) {
-      exceptionResponseData = this.catchNotFoundError(exception);
     } else if (exception instanceof Prisma.PrismaClientValidationError) {
       exceptionResponseData = this.catchValidationError(exception);
     }
@@ -117,13 +96,6 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         console.log(exception.code);
         break;
     }
-
-    return { statusCode, message };
-  }
-
-  catchNotFoundError(exception: Prisma.NotFoundError): ExceptionResponseData {
-    const statusCode = HttpStatus.NOT_FOUND;
-    const message = exception.message;
 
     return { statusCode, message };
   }
