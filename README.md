@@ -27,6 +27,10 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 - [Project Overview](#project-overview)
 - [Key Features](#key-features)
 
+### Architecture
+
+- [Architecture walkthrough](./docs/architecture/ARCHITECTURE.md)
+
 ### Quick Start
 
 - [Rapid Deployment](#rapid-deployment)
@@ -133,8 +137,6 @@ Create an `env.conf` file at the root directory of your project with the followi
 ```
 [localhost:3000]
 
-SITE_CODE=qa
-BASE_URL=http://localhost:3000
 AUTH_COOKIE_NAME=_qa_
 
 # DATABASE
@@ -142,7 +144,6 @@ DB_HOST_MAIN=localhost:3306
 DB_USER=root
 DB_PASSWORD=1234
 DB_NAME=nestdb
-DB_DEBUG=0
 ```
 
 ### 3. Install Dependencies
@@ -248,8 +249,6 @@ A tenant configuration file needs to be added for this. Create `env.conf` in the
 ```
 [<host-address>]
 
-SITE_CODE=qa
-BASE_URL=http://<host-address>
 AUTH_COOKIE_NAME=<cookie-name>
 
 # DATABASE
@@ -257,7 +256,6 @@ DB_HOST_MAIN=<db-host>:<db-port>
 DB_USER=<db-user>
 DB_PASSWORD=<db-password>
 DB_NAME=<db-name>
-DB_DEBUG=0 or 1
 ```
 
 E.g.
@@ -265,8 +263,6 @@ E.g.
 ```
 [localhost:3000]
 
-SITE_CODE=qa
-BASE_URL=http://localhost:3000
 AUTH_COOKIE_NAME=_qa_
 
 # DATABASE
@@ -274,7 +270,6 @@ DB_HOST_MAIN=localhost:3306
 DB_USER=root
 DB_PASSWORD=1234
 DB_NAME=databaseName
-DB_DEBUG=0
 ```
 
 Copy paste the above as many times as you wish to serve multiple tenants. Make sure to update their host addresses and environment details accordingly.
