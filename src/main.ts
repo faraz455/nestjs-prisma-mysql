@@ -7,7 +7,7 @@ import * as bodyParser from 'body-parser';
 
 import { AppModule } from './app.module';
 import { PrismaClientExceptionFilter } from './prisma/prisma-client-exception.filter';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);

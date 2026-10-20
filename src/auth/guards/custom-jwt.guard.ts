@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { EnvironmentVars } from 'src/common/common.types';
 import { TenantConfig } from 'src/multi-tenant/multi-tenant.config';
 import { getHost } from 'src/common/common.helper';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import { Profile } from '../dto';
 import { Request } from 'express';
 
