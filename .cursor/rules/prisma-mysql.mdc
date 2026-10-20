@@ -1,0 +1,19 @@
+---
+description: Prisma 5.18 MySQL schema, migration, and seed rules
+globs: prisma/**/*
+alwaysApply: false
+---
+
+# Prisma and MySQL
+
+Provider is `mysql`. Prisma is 5.18 with `prismaSchemaFolder`. Auth models stay in `prisma/schema/auth.prisma`. Content models stay beside `Article`.
+
+```prisma
+exampleId String @id @db.Char(40)
+```
+
+- Generate with `yarn prisma migrate dev --name <name> --create-only`, then read the SQL.
+- On a populated table, add a required column as nullable, backfill every row, then set `NOT NULL` in that same file.
+- Keep one migration per change. Do not reset or squash unless the user asks.
+- Seed permissions with role id `SUPERADMIN` or `ADMIN`. Role names are `SUPER ADMIN` and `ADMIN`.
+- Do not print `DATABASE_URL` or `env.conf` secrets.

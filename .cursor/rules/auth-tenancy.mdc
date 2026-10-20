@@ -1,0 +1,20 @@
+---
+description: JWT, role, permission, and tenant isolation rules
+globs: src/auth/**/*.ts,src/multi-tenant/**/*.ts,src/admin/**/*.ts,prisma/schema/auth.prisma
+alwaysApply: false
+---
+
+# Auth and tenancy
+
+Guard order on a protected controller is `CustomJwtGuard`, `PermissionsGuard`, `RolesGuards`.
+
+```typescript
+@Roles({ OR: ['ADMIN', 'SUPER ADMIN'] })
+@Permissions({ AND: ['Article.view'] })
+```
+
+- Register a new resource on `ResourceName` in `src/auth/dto/permissions.ts` and in the permission seed.
+- Take the Prisma client from `PRISMA_SERVICE` for the request host. Unknown hosts stay a 404 from the middleware.
+- Keep `LoginGuard` on login only. Store passwords as bcrypt hashes.
+- Role names in tokens are strings. Permission flags are loaded from MySQL per request.
+- Do not log passwords, refresh tokens, or raw `Authorization` headers.

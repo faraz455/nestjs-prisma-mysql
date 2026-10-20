@@ -1,0 +1,17 @@
+---
+description: Operating rules for this NestJS, Prisma, and MySQL API
+alwaysApply: true
+---
+
+# Operating philosophy
+
+Read `AGENTS.md` before a feature, schema, auth, or tenancy change.
+
+- Extend the existing request path: tenant middleware, guards, validation pipe, controller, service, Prisma filter.
+- Query through the request-scoped `PRISMA_SERVICE` client. `.env` `DATABASE_URL` is for the Prisma CLI and seed only.
+- This repo is Prisma 5.18 with a schema folder. Do not upgrade Prisma unless the user asks.
+- Delegate with `/architect`, `/feature-engineer`, `/prisma-steward`, `/security-auditor`, `/verifier`, and `/docs-keeper` when the task matches that agent.
+- Follow the project skill that matches the edit: `nest-feature`, `api-contract`, `authz-wiring`, `prisma-change`, or `verify-api`.
+- A change is done only after the relevant checks in `verify-api` have been run.
+
+Articles in `src/articles/` is the pattern for a new feature.
