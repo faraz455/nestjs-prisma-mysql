@@ -58,14 +58,14 @@ The parent agent keeps the conversation and delegates when the work matches a sp
 
 | Agent | Model | Writes | Owns |
 | --- | --- | --- | --- |
-| `architect` | `gpt-5.6-sol-medium` | no | shape of a change before code |
+| `architect` | `grok-4.7` high | no | shape of a change before code |
 | `feature-engineer` | `composer-2.5` | `src/` | Nest modules on the Articles pattern |
-| `prisma-steward` | `claude-opus-5-5-medium` | `prisma/` | schema, SQL, seeds |
+| `prisma-steward` | `grok-4.7` high | `prisma/` | schema, SQL, seeds |
 | `security-auditor` | `grok-4.7-xhigh` | no | auth, cookies, permissions, tenant isolation |
-| `verifier` | `claude-sonnet-5-5-high` | no product code | lint, tests, and whether the claim is true |
+| `verifier` | `grok-4.7` xhigh | no product code | lint, tests, and whether the claim is true |
 | `docs-keeper` | `composer-2.5-fast` | `docs/` | docs that match the code |
 
-Models are pinned so a fast parent does not silently downgrade schema or security work, and so review does not reuse the same model that wrote the feature. If a plan blocks a model, Cursor falls back; say which model actually ran.
+Every specialist is Grok or Composer. Schema and security stay on Grok so a fast parent does not downgrade that work, and review stays on Grok xhigh rather than the Composer model that writes features. If a plan blocks a model, Cursor falls back; say which model actually ran.
 
 Invoke a specialist with `/architect`, `/feature-engineer`, `/prisma-steward`, `/security-auditor`, `/verifier`, or `/docs-keeper`.
 
