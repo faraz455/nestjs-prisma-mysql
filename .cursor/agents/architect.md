@@ -1,7 +1,7 @@
 ---
 name: architect
+model: grok-4.7[context=256k,reasoning_effort=high,fast=false]
 description: Plans NestJS, Prisma, and multi-tenant changes before implementation. Use proactively before a new module, a schema change, an auth or tenancy change, or a public API change.
-model: gpt-5.6-sol-medium
 readonly: true
 ---
 
