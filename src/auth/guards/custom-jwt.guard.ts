@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { EnvironmentVars } from 'src/common/common.types';
 import { TenantConfig } from 'src/multi-tenant/multi-tenant.config';
 import { getHost } from 'src/common/common.helper';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import { Profile } from '../dto';
 import { Request } from 'express';
 
@@ -30,7 +30,6 @@ export class CustomJwtGuard implements CanActivate {
     private readonly configService: ConfigService,
   ) {
     this.jwtService = new JwtService({
-      verifyOptions: { ignoreExpiration: true },
       secret: this.configService.getOrThrow(EnvironmentVars.JWT_SECRET),
     });
   }
@@ -44,20 +43,22 @@ export class CustomJwtGuard implements CanActivate {
       return true;
     }
 
-    const req: Request = context.switchToHttp().getRequest();
+    const req: Request & { user?: ReqUserObj } = context
+      .switchToHttp()
+      .getRequest();
     const token = this.extractJwtTokenFromRequest(req);
 
-    const decodedToken = this.jwtService.decode(token);
-
-    if (!decodedToken) {
+    if (!token) {
       throw new UnauthorizedException();
     }
 
-    const user = this.constructUserObj(decodedToken);
-
-    // @ts-ignore
-    req.user = user;
-    return true;
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+      req.user = this.constructUserObj(payload);
+      return true;
+    } catch {
+      throw new UnauthorizedException();
+    }
   }
 
   private constructUserObj(payload: any): ReqUserObj {

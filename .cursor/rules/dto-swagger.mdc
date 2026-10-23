@@ -1,0 +1,20 @@
+---
+description: DTO, entity, and Swagger contract rules
+globs: src/**/dto/**/*.ts,src/**/entities/**/*.ts
+alwaysApply: false
+---
+
+# DTO and Swagger
+
+`ApiProperty.required`, validators, and `?` describe the same field. The global pipe strips unknown fields and rejects extras.
+
+```typescript
+@ApiProperty({ required: false, type: String })
+@IsCustomString({ required: false })
+description?: string;
+```
+
+- Required strings use `@IsCustomString()`.
+- Updates use `PartialType` and must accept a body with missing keys.
+- Nested arrays use `@ValidateNested({ each: true })` and `@Type`.
+- Entity fields match the service `select`. Controller `@ApiOkResponse` or `@ApiCreatedResponse` uses that entity or `IDDto`.

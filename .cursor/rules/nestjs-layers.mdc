@@ -1,0 +1,26 @@
+---
+description: NestJS layering for controllers, services, and modules
+globs: src/**/*.ts
+alwaysApply: false
+---
+
+# Nest layers
+
+Controllers accept HTTP and call a service. Services own Prisma calls. Modules register both and are imported from `AppModule`.
+
+```typescript
+// service
+constructor(@Inject(PRISMA_SERVICE) private readonly prisma: PrismaService) {}
+
+// create
+const record = await this.prisma.article.create({
+  select: { articleId: true },
+  data: { articleId: MakeTimedIDUnique(), ...dto },
+});
+return { id: record.articleId };
+```
+
+- Put `@Get('articles/export')` above `@Get('articles/:id')` when both share a method.
+- Use `findUniqueOrThrow` for a single record.
+- Wrap two or more writes in `this.prisma.$transaction`.
+- Format with Prettier: single quotes and trailing commas. The lint script is `yarn lint`.
