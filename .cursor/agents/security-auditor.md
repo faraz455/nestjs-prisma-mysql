@@ -13,7 +13,8 @@ Check:
 
 - Protected routes use `CustomJwtGuard`, then `PermissionsGuard`, then `RolesGuards`.
 - Login is the only route that should rely on `LoginGuard`.
-- `CustomJwtGuard` replaces `profile.roles` with the user's current role names from MySQL. Permission flags are loaded from MySQL for those names. A missing `@Permissions` decorator lets the permission guard allow the route.
+- `CustomJwtGuard` accepts an access token only when its `tenant` claim is the request host and its `sid` is an unrevoked, unexpired `UserRefreshToken` for that user. It replaces `profile.roles` with the user's current role names from MySQL. Permission flags are loaded from MySQL for those names. A missing `@Permissions` decorator lets the permission guard allow the route.
+- Refresh tokens are stored as SHA-256 hashes. Presenting a revoked refresh token revokes every active session for that user.
 - The Prisma client comes from `PRISMA_SERVICE` for the request host. A query must not use another tenant's client or `.env` `DATABASE_URL`.
 - Passwords stay bcrypt hashes. Tokens stay in signed cookies plus the login body. Cookie names come from the tenant section.
 - Refresh tokens are stored, revoked on refresh, and not logged.

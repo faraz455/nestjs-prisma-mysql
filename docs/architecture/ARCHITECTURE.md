@@ -59,21 +59,25 @@ flowchart TD
   request["Incoming request"] --> which{"Route"}
   which -->|"POST /auth/login"| login["LoginGuard"]
   login --> bcrypt["AuthService checks username and bcrypt"]
-  bcrypt --> issue["Issue access JWT 24h and refresh JWT 25h"]
+  bcrypt --> issue["Issue tenant-bound access JWT 24h and refresh JWT 25h"]
   issue --> cookies["Signed cookies and the same tokens in the JSON body"]
   which -->|"Protected controllers"| jwt["CustomJwtGuard"]
   jwt --> read["Signed auth cookie, otherwise Authorization Bearer"]
-  read --> user["Attach profile to the request"]
+  read --> user["Session must belong to this host"]
   user --> next["Authorization guards"]
 ```
 
 `LoginGuard` runs only on login. It resolves `AuthService` for this request, loads the user, and compares the password with bcrypt. On success the controller calls `login()`.
 
-`login()` puts the user's `roleName` list on a profile, signs an access token for 24 hours (`86400s` in `JwtModule`), and signs a refresh token for 25 hours. The refresh token is also stored in `UserRefreshToken`. Both tokens are returned in the body and set as signed cookies. Cookie names come from the tenant section: `AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`.
+`login()` puts the user's current `roleName` list on a profile and opens one session row in `UserRefreshToken`. The access token is signed for 24 hours (`86400s` in `JwtModule`) and carries `sub`, `sid`, `tenant`, and `tokenUse: access`. The refresh token is signed for 25 hours with `tokenUse: refresh`. The row stores the SHA-256 of the refresh token. `sid` is a random 40-character id. Both tokens are returned in the body and set as signed cookies. Cookie names come from the tenant section: `AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`.
 
-`POST /auth/refresh-token` accepts the refresh token in the body, marks that database row revoked, and issues a new pair.
+`tenant` is the request host, normalized the same way the tenant middleware chooses a database. A token from one host is rejected on another host. Seeded user ids are the same in every tenant database (`ADMIN`, `SUPERADMIN`), so the host claim and the session row are what keep a login inside the tenant that created it.
 
-`CustomJwtGuard` is what protected controllers use. It reads the signed auth cookie, then a Bearer token. After the token verifies, it loads the user's current role names from MySQL and puts those on the request profile. That profile is what the later guards read.
+`POST /auth/refresh-token` checks the refresh token's signature, `tenant`, and hash. A matching active row is revoked and a new session is issued. Presenting a refresh token whose row is already revoked revokes every active session for that user.
+
+`CustomJwtGuard` is what protected controllers use. It reads the signed auth cookie, then a Bearer token. It rejects the token when the signature is invalid, `tokenUse` is not `access`, `tenant` is not this host, or the `sid` row is missing, revoked, or expired. It then loads the user's current role names onto the profile. That profile is what the later guards read.
+
+`POST /auth/logout` revokes the session in the presented access or refresh token and clears both cookies. `POST /auth/logout-all` revokes every active session for the caller. `POST /admin/users/:id/sessions/revoke` does that for a chosen user. Admin routes still require `ADMIN` or `SUPER ADMIN`. A database reset deletes the session rows, so tokens issued before the reset stop working and the user has to log in again.
 
 `POST /auth/signup` creates a user with a bcrypt password and no role. Login works afterward. Protected controllers still reject that user until a role is assigned.
 
@@ -83,7 +87,7 @@ Authorization answers "what may this person do?". It runs only after authenticat
 
 ```mermaid
 flowchart LR
-  jwt["CustomJwtGuard<br/>current roles from MySQL"] --> perms["PermissionsGuard<br/>flags loaded from MySQL"]
+  jwt["CustomJwtGuard<br/>tenant, session, current roles"] --> perms["PermissionsGuard<br/>flags loaded from MySQL"]
   perms --> roles["Roles guard<br/>current role names"]
   roles --> handler["Controller method"]
 ```

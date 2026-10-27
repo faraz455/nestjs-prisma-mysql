@@ -11,13 +11,6 @@ class LoginUserEntity {
   userId: string;
 
   @ApiProperty({
-    required: true,
-    example: 'password',
-    description: 'The password of the User',
-  })
-  password: string;
-
-  @ApiProperty({
     required: false,
     example: 'MALE',
     enum: Gender,

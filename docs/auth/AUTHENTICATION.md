@@ -34,8 +34,17 @@ When a user logs in:
 ## Custom JWT Guard
 
 - **Validation**: The custom JWT guard validates the access token for requests to protected endpoints.
-- **Current roles**: After the token is valid, the guard loads the user's current role names from MySQL and puts them on the request profile. A role change applies on the next request. A user that no longer exists is unauthorized.
-- **Token Expiry**: If the access token is expired, it checks the refresh token. If the refresh token is still valid, a new access token is generated using the `refresh-token` endpoint.
+- **Tenant**: The token's `tenant` claim must match the request host. A token issued for one tenant is rejected on another.
+- **Session**: The token's `sid` must be an active `UserRefreshToken` row in that tenant's database. A missing, revoked, or expired row is unauthorized. Resetting the database removes those rows, so old tokens stop working.
+- **Current roles**: After the session is active, the guard loads the user's current role names from MySQL and puts them on the request profile. A role change applies on the next request.
+- **Token Expiry**: Call `POST /auth/refresh-token` with a valid refresh token to issue a new session. The previous session row is revoked.
+
+## Sessions
+
+- **Logout**: `POST /auth/logout` revokes the current session and clears the auth cookies.
+- **Logout everywhere**: `POST /auth/logout-all` revokes every active session for the caller. The caller must log in again.
+- **Admin revoke**: `POST /admin/users/:id/sessions/revoke` revokes every active session for that user. `ADMIN` and `SUPER ADMIN` can call it.
+- **Refresh reuse**: Sending a refresh token that was already revoked revokes every remaining session for that user.
 
 ## Token Revocation
 

@@ -8,7 +8,7 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { RolesGuards } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
@@ -24,6 +24,8 @@ import {
 } from './dto';
 import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
 import { CustomJwtGuard } from 'src/auth/guards/custom-jwt.guard';
+import { AuthService } from 'src/auth/auth.service';
+import { RevokedSessionsEntity } from 'src/auth/entities';
 
 @ApiTags('Admin')
 @ApiBearerAuth()
@@ -31,7 +33,10 @@ import { CustomJwtGuard } from 'src/auth/guards/custom-jwt.guard';
 @Roles({ OR: ['SUPER ADMIN', 'ADMIN'] })
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly authService: AuthService,
+  ) {}
 
   // --- USERS ---
   @Get('users')
@@ -60,6 +65,14 @@ export class AdminController {
   @Delete('users/:id')
   async deleteUser(@Param('id') id: string): Promise<UserEntity> {
     return this.adminService.deleteUser(id);
+  }
+
+  @Post('users/:id/sessions/revoke')
+  @ApiOkResponse({ type: RevokedSessionsEntity })
+  async revokeUserSessions(
+    @Param('id') id: string,
+  ): Promise<RevokedSessionsEntity> {
+    return this.authService.revokeUserSessionsByAdmin(id);
   }
 
   // --- ROLES ---

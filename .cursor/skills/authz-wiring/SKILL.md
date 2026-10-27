@@ -29,10 +29,10 @@ Per route:
 3. Seed `ResourcePermission` rows. `SUPER ADMIN` gets every flag. Grant `ADMIN` only the flags the product allows.
 4. Role names in decorators and `roleName` are `ADMIN` and `SUPER ADMIN`. Seeded role ids are `ADMIN` and `SUPERADMIN`.
 
-`CustomJwtGuard` verifies the access token, then replaces `profile.roles` with the user's current `UserRole` names from MySQL. `PermissionsGuard` loads permission flags for those names. A role or permission change applies on the next request. The token still carries the roles from login; the guards do not authorize from that copy. A user id that no longer exists is unauthorized.
+`CustomJwtGuard` verifies the access token, then rejects it unless `tokenUse` is `access`, `tenant` equals the request host, and `sid` is an unrevoked, unexpired `UserRefreshToken` for `sub` in that tenant's database. It replaces `profile.roles` with that user's current `UserRole` names. `PermissionsGuard` loads permission flags for those names. A role or permission change applies on the next request. Ending a session is separate: `POST /auth/logout` revokes the current row, and `POST /auth/logout-all` or `POST /admin/users/:id/sessions/revoke` revokes every active row for the user. A refresh token whose row is already revoked revokes every active session for that user. Refresh tokens are stored as SHA-256 hashes.
 
 ## Cookies and passwords
 
-`LoginGuard` is for `POST /auth/login`. Passwords are bcrypt hashes. Access and refresh tokens are signed, returned in the body, and stored as signed cookies whose names come from the tenant's `env.conf` section. Refresh rows live in `UserRefreshToken` and are revoked when refreshed.
+`LoginGuard` is for `POST /auth/login`. Passwords are bcrypt hashes. Access and refresh tokens are signed, returned in the body, and stored as signed cookies whose names come from the tenant's `env.conf` section. Each login inserts one `UserRefreshToken` row for that host. The raw refresh token is not stored.
 
 Do not log passwords, refresh tokens, or `Authorization` headers in new code.

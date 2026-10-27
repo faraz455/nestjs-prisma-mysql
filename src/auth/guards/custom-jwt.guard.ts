@@ -17,10 +17,12 @@ import { Profile } from '../dto';
 import { Request } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PRISMA_SERVICE } from 'src/multi-tenant/multi-tenant.module';
+import { ACCESS_TOKEN_USE, AccessTokenClaims } from '../token-claims';
 
 export type ReqUserObj = {
   userId: string;
   userName: string;
+  sessionId: string;
   profile: Profile;
 };
 
@@ -56,46 +58,77 @@ export class CustomJwtGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    let payload: { profile?: Profile };
+    let payload: AccessTokenClaims;
     try {
       payload = await this.jwtService.verifyAsync(token);
     } catch {
       throw new UnauthorizedException();
     }
 
-    const reqUser = this.constructUserObj(payload);
-    const userId = reqUser.profile?.userId;
-    if (!userId) {
+    if (!this.accessClaimsMatchRequest(payload, getHost(req))) {
       throw new UnauthorizedException();
     }
 
-    reqUser.profile.roles = await this.currentRoleNames(userId);
+    const reqUser = this.constructUserObj(payload);
+    reqUser.profile.roles = await this.currentRoleNames(
+      payload.sub,
+      payload.sid,
+    );
     req.user = reqUser;
     return true;
   }
 
-  private async currentRoleNames(userId: string): Promise<string[]> {
-    const user = await this.prisma.user.findUnique({
-      where: { userId },
+  private accessClaimsMatchRequest(
+    payload: AccessTokenClaims,
+    tenant: string,
+  ): boolean {
+    return (
+      payload?.tokenUse === ACCESS_TOKEN_USE &&
+      payload.tenant === tenant &&
+      !!payload.sid &&
+      !!payload.sub &&
+      payload.profile?.userId === payload.sub
+    );
+  }
+
+  private async currentRoleNames(
+    userId: string,
+    sessionId: string,
+  ): Promise<string[]> {
+    const session = await this.prisma.userRefreshToken.findUnique({
+      where: { userRefreshTokenId: sessionId },
       select: {
-        userRoles: {
-          select: { role: { select: { roleName: true } } },
+        userId: true,
+        revoked: true,
+        expiresAt: true,
+        user: {
+          select: {
+            userRoles: {
+              select: { role: { select: { roleName: true } } },
+            },
+          },
         },
       },
     });
 
-    if (!user) {
+    if (
+      !session ||
+      session.revoked ||
+      session.userId !== userId ||
+      session.expiresAt <= new Date()
+    ) {
       throw new UnauthorizedException();
     }
 
-    return user.userRoles.map((userRole) => userRole.role.roleName);
+    return session.user.userRoles.map((userRole) => userRole.role.roleName);
   }
 
-  private constructUserObj(payload: any): ReqUserObj {
+  private constructUserObj(payload: AccessTokenClaims): ReqUserObj {
     return {
       userId: payload.sub,
+      sessionId: payload.sid,
       profile: payload.profile,
-      userName: payload.userName,
+      userName: payload.profile.username,
     };
   }
 
