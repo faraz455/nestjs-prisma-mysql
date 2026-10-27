@@ -73,7 +73,7 @@ flowchart TD
 
 `POST /auth/refresh-token` accepts the refresh token in the body, marks that database row revoked, and issues a new pair.
 
-`CustomJwtGuard` is what protected controllers use. It reads the signed auth cookie, then a Bearer token. The profile from the token is what the role guard reads later.
+`CustomJwtGuard` is what protected controllers use. It reads the signed auth cookie, then a Bearer token. After the token verifies, it loads the user's current role names from MySQL and puts those on the request profile. That profile is what the later guards read.
 
 `POST /auth/signup` creates a user with a bcrypt password and no role. Login works afterward. Protected controllers still reject that user until a role is assigned.
 
@@ -83,12 +83,12 @@ Authorization answers "what may this person do?". It runs only after authenticat
 
 ```mermaid
 flowchart LR
-  jwt["CustomJwtGuard<br/>profile on the request"] --> perms["PermissionsGuard<br/>flags loaded from MySQL"]
-  perms --> roles["Roles guard<br/>role names from the JWT"]
+  jwt["CustomJwtGuard<br/>current roles from MySQL"] --> perms["PermissionsGuard<br/>flags loaded from MySQL"]
+  perms --> roles["Roles guard<br/>current role names"]
   roles --> handler["Controller method"]
 ```
 
-Roles are the names signed into the token, compared as strings:
+Roles are the user's current role names, compared as strings:
 
 ```typescript
 @Roles({ OR: ['ADMIN', 'SUPER ADMIN'] })
@@ -96,7 +96,7 @@ Roles are the names signed into the token, compared as strings:
 
 The seed creates those two names. `SUPER ADMIN` receives every Article flag. `ADMIN` receives `Article.view`.
 
-Permissions are rows in `ResourcePermission`: a resource name plus `create`, `view`, `update`, and `delete`. The guard loads the rows for the caller's role names on each request, so a permission change applies without a new login. Role changes apply on the next login, because the names live in the token.
+Permissions are rows in `ResourcePermission`: a resource name plus `create`, `view`, `update`, and `delete`. The permission guard loads the rows for the caller's current role names on each request. `CustomJwtGuard` loads those names from `UserRole` on each request, so a role or permission change applies on the next request. The access token still carries the roles from login; authorization does not use that copy.
 
 Article routes ask for one flag:
 

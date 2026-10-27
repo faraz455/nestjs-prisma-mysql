@@ -29,7 +29,7 @@ Per route:
 3. Seed `ResourcePermission` rows. `SUPER ADMIN` gets every flag. Grant `ADMIN` only the flags the product allows.
 4. Role names in decorators and `roleName` are `ADMIN` and `SUPER ADMIN`. Seeded role ids are `ADMIN` and `SUPERADMIN`.
 
-Permissions are read from MySQL on each request. Role names come from the access token, so a role change applies on the next login.
+`CustomJwtGuard` verifies the access token, then replaces `profile.roles` with the user's current `UserRole` names from MySQL. `PermissionsGuard` loads permission flags for those names. A role or permission change applies on the next request. The token still carries the roles from login; the guards do not authorize from that copy. A user id that no longer exists is unauthorized.
 
 ## Cookies and passwords
 

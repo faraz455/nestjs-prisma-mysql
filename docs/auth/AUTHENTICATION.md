@@ -34,6 +34,7 @@ When a user logs in:
 ## Custom JWT Guard
 
 - **Validation**: The custom JWT guard validates the access token for requests to protected endpoints.
+- **Current roles**: After the token is valid, the guard loads the user's current role names from MySQL and puts them on the request profile. A role change applies on the next request. A user that no longer exists is unauthorized.
 - **Token Expiry**: If the access token is expired, it checks the refresh token. If the refresh token is still valid, a new access token is generated using the `refresh-token` endpoint.
 
 ## Token Revocation

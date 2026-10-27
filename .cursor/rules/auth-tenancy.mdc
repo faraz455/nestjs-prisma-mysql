@@ -16,5 +16,5 @@ Guard order on a protected controller is `CustomJwtGuard`, `PermissionsGuard`, `
 - Register a new resource on `ResourceName` in `src/auth/dto/permissions.ts` and in the permission seed.
 - Take the Prisma client from `PRISMA_SERVICE` for the request host. Unknown hosts stay a 404 from the middleware.
 - Keep `LoginGuard` on login only. Store passwords as bcrypt hashes.
-- Role names in tokens are strings. Permission flags are loaded from MySQL per request.
+- Role names used for authorization are loaded from MySQL on each request. Permission flags are loaded from MySQL for those names.
 - Do not log passwords, refresh tokens, or raw `Authorization` headers.

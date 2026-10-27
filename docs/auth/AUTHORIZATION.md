@@ -9,7 +9,7 @@ This section covers the permission-based and role-based authorization mechanisms
 
 ## Role Guard
 
-The Role Guard (`RolesGuard`) ensures role-based authorization by verifying if the user possesses the required role(s) to access a particular endpoint. If the user's role matches the required role(s) specified in the endpoint's metadata, access is granted; otherwise, the request is denied.
+The Role Guard (`RolesGuards`) ensures role-based authorization by verifying if the user possesses the required role(s) to access a particular endpoint. If the user's role matches the required role(s) specified in the endpoint's metadata, access is granted; otherwise, the request is denied. The names it compares are the current roles `CustomJwtGuard` loaded from MySQL for this request, so a role change applies while the existing access token is still valid.
 
 ### Usage Example:
 

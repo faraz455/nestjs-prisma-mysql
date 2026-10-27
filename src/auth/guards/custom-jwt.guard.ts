@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,6 +15,8 @@ import { getHost } from 'src/common/common.helper';
 import cookieParser from 'cookie-parser';
 import { Profile } from '../dto';
 import { Request } from 'express';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PRISMA_SERVICE } from 'src/multi-tenant/multi-tenant.module';
 
 export type ReqUserObj = {
   userId: string;
@@ -28,6 +31,7 @@ export class CustomJwtGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly configService: ConfigService,
+    @Inject(PRISMA_SERVICE) private readonly prisma: PrismaService,
   ) {
     this.jwtService = new JwtService({
       secret: this.configService.getOrThrow(EnvironmentVars.JWT_SECRET),
@@ -52,13 +56,39 @@ export class CustomJwtGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
+    let payload: { profile?: Profile };
     try {
-      const payload = await this.jwtService.verifyAsync(token);
-      req.user = this.constructUserObj(payload);
-      return true;
+      payload = await this.jwtService.verifyAsync(token);
     } catch {
       throw new UnauthorizedException();
     }
+
+    const reqUser = this.constructUserObj(payload);
+    const userId = reqUser.profile?.userId;
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
+
+    reqUser.profile.roles = await this.currentRoleNames(userId);
+    req.user = reqUser;
+    return true;
+  }
+
+  private async currentRoleNames(userId: string): Promise<string[]> {
+    const user = await this.prisma.user.findUnique({
+      where: { userId },
+      select: {
+        userRoles: {
+          select: { role: { select: { roleName: true } } },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return user.userRoles.map((userRole) => userRole.role.roleName);
   }
 
   private constructUserObj(payload: any): ReqUserObj {
