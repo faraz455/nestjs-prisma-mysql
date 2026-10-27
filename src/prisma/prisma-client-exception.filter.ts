@@ -1,7 +1,7 @@
 import { BaseExceptionFilter } from '@nestjs/core';
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../generated/prisma/client';
 
 export type PrismaToHttpCodeMapping = {
   [key: string]: number;

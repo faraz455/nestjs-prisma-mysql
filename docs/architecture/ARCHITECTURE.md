@@ -48,7 +48,7 @@ flowchart LR
 
 `env.conf` is an INI file. The section name is the host, for example `localhost:3000`. The section holds the MySQL user, password, host, and database name. The first request for a host opens a pool. Later requests for that host reuse it. An unknown host gets `404 Tenant not found`.
 
-`.env` `DATABASE_URL` is for the Prisma CLI and the seed script. Request handling uses the `env.conf` URL.
+`.env` `DATABASE_URL` is for the Prisma CLI and the seed script. `prisma.config.ts` loads that file. Request handling uses the `env.conf` fields. Each host gets a Prisma 7.10.1 client that connects through the MariaDB driver, with a pool of 20 connections.
 
 ## 4. Authentication guards
 

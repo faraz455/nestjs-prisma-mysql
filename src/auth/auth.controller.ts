@@ -25,7 +25,7 @@ import { CustomJwtGuard } from './guards/custom-jwt.guard';
 import { IDDto } from 'src/common/dto';
 import { LoginEntity } from './entities';
 import { LoginDto, RefreshTokenDto, SignupDto } from './dto';
-import { User } from '@prisma/client';
+import { User } from '../generated/prisma/client';
 
 @Controller('auth')
 @ApiTags('auth')

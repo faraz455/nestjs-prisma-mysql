@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '../../src/generated/prisma/client';
 
 /// Seeds the default roles into the database
 export async function seedRoles(prisma: PrismaClient) {

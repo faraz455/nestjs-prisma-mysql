@@ -10,12 +10,9 @@ Prisma is a next-generation object-relational mapper (ORM) designed specifically
 
 ### Prisma Setup
 
-This project utilizes yarn to manage dependencies. Running `yarn install` will automatically install both Prisma and its client library as defined in the package.json file. However, if you prefer manual installation, you can use the following commands:
+This project utilizes yarn to manage dependencies. Running `yarn install` will install Prisma 7.10.1, `@prisma/client`, and `@prisma/adapter-mariadb` as pinned in `package.json`. Node.js 20.19, 22.12, or newer is required. The repository `.nvmrc` selects Node 22.
 
-```bash
-$ yarn add prisma@latest
-$ yarn add @prisma/client@latest
-```
+`yarn prisma generate` writes the client to `src/generated/prisma`. Prisma 7 requires that output path, and Nest compiles it from `src`. Those files are generated types and client code. A schema change updates them only when generate runs again. Do not edit them, and do not commit them: the directory is gitignored. `prisma migrate dev` does not generate the client.
 
 To apply all the current migrations located in the prisma/migrations folder to your MySQL database.
 

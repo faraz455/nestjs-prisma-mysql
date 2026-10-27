@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
+import { User } from '../generated/prisma/client';
 import { ConfigService } from '@nestjs/config';
 
 import { Request } from 'express';

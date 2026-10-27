@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../../../src/generated/prisma/client';
 import { MakeTimedIDUnique } from '../../../src/common/common.helper';
 
 export const articleData: Prisma.ArticleUncheckedCreateInput[] = [

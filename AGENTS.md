@@ -1,6 +1,6 @@
 # Engineering philosophy
 
-This repository is a production-shaped NestJS API: Prisma 5.18, MySQL, one process, many tenants. Articles is the reference feature. Auth is JWT in a signed cookie, with roles and resource permissions. The job of every agent is to extend that system without inventing a second one.
+This repository is a production-shaped NestJS API: Prisma 7.10.1, MySQL, one process, many tenants. Articles is the reference feature. Auth is JWT in a signed cookie, with roles and resource permissions. The job of every agent is to extend that system without inventing a second one.
 
 ## The request path
 
@@ -21,6 +21,8 @@ New behavior enters at the layer that already owns it. Controllers stay thin. Se
 `.env` `DATABASE_URL` is for the Prisma CLI and `yarn data:seed`. Request handling uses the `env.conf` section whose name is the host, for example `localhost:3000`. An unknown host is `404 Tenant not found`.
 
 Services inject `@Inject(PRISMA_SERVICE)`. They do not construct `PrismaClient` and they do not read `DATABASE_URL` at request time.
+
+Prisma Client is generated to `src/generated/prisma` (`prisma-client`, `moduleFormat = "cjs"`). That directory is not committed. Run `yarn prisma generate` after install and after a schema change. Runtime pools use `@prisma/adapter-mariadb`. The CLI reads `prisma.config.ts`, which loads `.env`. Node.js must be 20.19, 22.12, or newer. Do not upgrade Prisma unless asked.
 
 ## Identity and content
 

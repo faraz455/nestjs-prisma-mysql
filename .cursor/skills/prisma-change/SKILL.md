@@ -1,11 +1,13 @@
 ---
 name: prisma-change
-description: Changes the Prisma 5.18 MySQL schema, writes a reviewed migration, and updates seeds. Use when editing prisma/schema, prisma/migrations, or prisma/seeding-helpers.
+description: Changes the Prisma 7.10.1 MySQL schema, writes a reviewed migration, and updates seeds. Use when editing prisma/schema, prisma/migrations, or prisma/seeding-helpers.
 ---
 
 # Prisma change
 
-Installed Prisma is 5.18.0. Schema files are a folder. Preview features in use are `relationJoins` and `prismaSchemaFolder`. Stay on this version.
+Installed Prisma is 7.10.1. Schema files are a folder. The generator is `prisma-client`, output `../../src/generated/prisma`, `moduleFormat = "cjs"`. Multi-file schema and relation joins are stable, so they are not preview features. Stay on this version.
+
+The CLI database URL is in `prisma.config.ts`, loaded from `.env` with `dotenv`. Runtime clients do not use that URL. They use `@prisma/adapter-mariadb` inside `PrismaService`. Node.js must be 20.19, 22.12, or newer. After install, run `yarn prisma generate`. `migrate dev` does not generate the client.
 
 ## Where models go
 

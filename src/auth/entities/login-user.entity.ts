@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Gender } from '@prisma/client';
+import { Gender } from '../../generated/prisma/client';
 import { Profile } from '../dto';
 
 class LoginUserEntity {

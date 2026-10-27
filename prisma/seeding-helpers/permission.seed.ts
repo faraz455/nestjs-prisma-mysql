@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '../../src/generated/prisma/client';
 import { MakeTimedIDUnique } from '../../src/common/common.helper';
 
 export async function seedPermissions(prisma: PrismaClient) {

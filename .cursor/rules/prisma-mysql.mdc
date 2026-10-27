@@ -1,12 +1,12 @@
 ---
-description: Prisma 5.18 MySQL schema, migration, and seed rules
+description: Prisma 7.10.1 MySQL schema, migration, and seed rules
 globs: prisma/**/*
 alwaysApply: false
 ---
 
 # Prisma and MySQL
 
-Provider is `mysql`. Prisma is 5.18 with `prismaSchemaFolder`. Auth models stay in `prisma/schema/auth.prisma`. Content models stay beside `Article`.
+Provider is `mysql`. Prisma is 7.10.1. The schema is a folder. The generator is `prisma-client` with `moduleFormat = "cjs"` and output `src/generated/prisma`. Do not put `prismaSchemaFolder` or `relationJoins` in `previewFeatures`. The CLI database URL lives in `prisma.config.ts`. Auth models stay in `prisma/schema/auth.prisma`. Content models stay beside `Article`.
 
 ```prisma
 exampleId String @id @db.Char(40)

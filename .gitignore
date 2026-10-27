@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+# Prisma Client. Regenerate with `yarn prisma generate`.
+/src/generated
+
 env.conf
 # Logs
 logs

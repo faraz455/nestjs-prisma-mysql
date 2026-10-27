@@ -30,7 +30,10 @@ export class MultiTenantMiddleware implements NestMiddleware {
 
         MultiTenantMiddleware.prismas[host] = new PrismaService({
           logQueries: this.configService.get<number>('LOG_QUERIES') == 1,
-          url: `mysql://${tConfig.DB_USER}:${tConfig.DB_PASSWORD}@${tConfig.DB_HOST_MAIN}/${tConfig.DB_NAME}?connection_limit=20`,
+          host: tConfig.DB_HOST_MAIN,
+          user: tConfig.DB_USER,
+          password: tConfig.DB_PASSWORD,
+          database: tConfig.DB_NAME,
         });
         await MultiTenantMiddleware.prismas[host].initService();
         console.log('New connection pool to database made for', host);

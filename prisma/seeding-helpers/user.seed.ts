@@ -1,4 +1,4 @@
-import { Gender, Prisma, PrismaClient } from '@prisma/client';
+import { Gender, Prisma, PrismaClient } from '../../src/generated/prisma/client';
 import { MakeTimedIDUnique } from '../../src/common/common.helper';
 import * as bcrypt from 'bcrypt';
 

@@ -194,7 +194,7 @@ $ yarn start:dev
 
 Before proceeding with the setup, ensure that your development system has the following prerequisites installed:
 
-**Node.js**: This project relies on Node.js for its functionality. If you haven't installed it yet, you can download and install the latest version from the [ official Node website](https://nodejs.org/en).
+**Node.js**: Prisma 7.10.1 requires Node.js 20.19, 22.12, or newer. This repository's `.nvmrc` selects Node 22. Download it from the [official Node website](https://nodejs.org/en) if you need it, then run `nvm use` in the repository.
 
 **Yarn**: Yarn is used for efficient dependency management in this project. Make sure Yarn is installed on your system. If not, you can install it by following the instructions on the [official Yarn website.](https://yarnpkg.com/).
 
