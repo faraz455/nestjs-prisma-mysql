@@ -17,6 +17,9 @@ function prisma() {
       createMany: jest.fn(),
       deleteMany: jest.fn(),
     },
+    userRefreshToken: {
+      updateMany: jest.fn(),
+    },
     role: {
       findMany: jest.fn(),
       findUniqueOrThrow: jest.fn(),
@@ -119,12 +122,14 @@ describe('AdminService', () => {
     expect(db.userRole.deleteMany).not.toHaveBeenCalled();
     expect(db.user.update.mock.calls[0][0].data.password).toBeUndefined();
     expect(db.user.update.mock.calls[0][0].data.firstName).toBe('Grace');
+    expect(db.userRefreshToken.updateMany).not.toHaveBeenCalled();
 
     await service.updateUser('user-1', { roleIds: [] });
     expect(db.userRole.deleteMany).toHaveBeenCalledWith({
       where: { userId: 'user-1' },
     });
     expect(db.userRole.createMany).not.toHaveBeenCalled();
+    expect(db.userRefreshToken.updateMany).not.toHaveBeenCalled();
 
     await service.updateUser('user-1', {
       roleIds: ['role-a'],
@@ -133,6 +138,10 @@ describe('AdminService', () => {
     expect(db.userRole.createMany).toHaveBeenCalled();
     const password = db.user.update.mock.calls.at(-1)[0].data.password;
     await expect(bcrypt.compare('next-password', password)).resolves.toBe(true);
+    expect(db.userRefreshToken.updateMany).toHaveBeenCalledWith({
+      where: { userId: 'user-1', revoked: false },
+      data: { revoked: true },
+    });
   });
 
   it('deletes a user through the public select', async () => {

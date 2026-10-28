@@ -89,6 +89,12 @@ export class AdminService {
           ...(passwordHash ? { password: passwordHash } : {}),
         },
       });
+      if (passwordHash) {
+        await tx.userRefreshToken.updateMany({
+          where: { userId: id, revoked: false },
+          data: { revoked: true },
+        });
+      }
       if (roleIds) {
         await tx.userRole.deleteMany({ where: { userId: id } });
         if (roleIds.length > 0) {

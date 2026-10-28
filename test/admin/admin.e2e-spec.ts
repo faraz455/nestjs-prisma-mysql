@@ -137,9 +137,11 @@ describe('Admin HTTP', () => {
       ctx.prisma.userRoles.some((link) => link.userId === ids.plainUser),
     ).toBe(false);
 
+    const plain = await loginAs(ctx.app, usernames.plain);
     await call(ctx.app, 'patch', `/admin/users/${ids.plainUser}`, token)
       .send({ roleIds: [ids.superRole], password: 'next-password' })
       .expect(200);
+    await call(ctx.app, 'get', '/auth/me', plain.authToken).expect(401);
     await http(ctx.app)
       .post('/auth/login')
       .send({ username: usernames.plain, password: PASSWORD })
