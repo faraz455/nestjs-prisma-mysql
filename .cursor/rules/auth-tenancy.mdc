@@ -18,5 +18,5 @@ Guard order on a protected controller is `CustomJwtGuard`, `PermissionsGuard`, `
 - Keep `LoginGuard` on login only. Store passwords as bcrypt hashes. Signup and user writes require 8 characters and at most 72 bytes. Login rejects a password over 72 bytes before bcrypt.
 - `AuthRateLimitGuard` runs first on `POST /auth/login`, `POST /auth/signup`, and `POST /auth/refresh-token`. Each route allows 10 attempts per minute for one connecting address.
 - Role names used for authorization are loaded from MySQL on each request. Permission flags are loaded from MySQL for those names.
-- An access token must name the request host and an active `UserRefreshToken` row in that host's database. Revoke the row to end the session. `POST /admin/users/:id/sessions/revoke` ends every active session for that user.
+- An access token must name the request host and an active `UserRefreshToken` row in that host's database. Revoke the row to end the session. `POST /admin/users/:id/sessions/revoke` ends every active session for that user. A password change does the same revoke inside the user update transaction.
 - Do not log passwords, refresh tokens, or raw `Authorization` headers.

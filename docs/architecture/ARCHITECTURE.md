@@ -81,7 +81,7 @@ flowchart TD
 
 `POST /auth/logout` revokes the session in the presented access or refresh token and clears both cookies. `POST /auth/logout-all` revokes every active session for the caller. `POST /admin/users/:id/sessions/revoke` does that for a chosen user. Admin routes still require `ADMIN` or `SUPER ADMIN`. A database reset deletes the session rows, so tokens issued before the reset stop working and the user has to log in again.
 
-`POST /auth/signup` creates a user with a bcrypt password and no role. Login works afterward. Protected controllers still reject that user until a role is assigned.
+`POST /auth/signup` creates a user with a bcrypt password and no role. Login works afterward. Protected controllers still reject that user until a role is assigned. When an administrator sets a new password, that update also revokes every active session for the user. A token from before the change is rejected.
 
 ## 5. Authorization guards
 
