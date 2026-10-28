@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from '../../generated/prisma/client';
 import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
 import { IsCustomString } from 'src/common/decorators/is-custom-string.decorator';
+import { IsPassword } from 'src/common/decorators/is-password.decorator';
 
 export class CreateUserDto {
   @ApiProperty({ required: true })
@@ -9,7 +10,7 @@ export class CreateUserDto {
   username: string;
 
   @ApiProperty({ required: true })
-  @IsCustomString()
+  @IsPassword()
   password: string;
 
   @ApiProperty({ required: true })

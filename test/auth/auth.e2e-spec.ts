@@ -11,6 +11,7 @@ import {
   loginAs,
   tokenPayload,
 } from '../support/http';
+import { AUTH_ATTEMPT_LIMIT } from 'src/auth/auth-rate-limit';
 import {
   ids,
   PASSWORD,
@@ -149,6 +150,39 @@ describe('Auth HTTP', () => {
       .send({ refreshToken: issued.refreshToken })
       .expect(401);
     await call(ctx.app, 'get', '/auth/me', issued.authToken).expect(401);
+  });
+
+  it('rejects a signup password that is too short or too large for bcrypt', async () => {
+    const short = await http(ctx.app)
+      .post('/auth/signup')
+      .send({ ...signupBody('ada'), password: 'short' })
+      .expect(400);
+    expect(errorText(short.body)).toMatch(/at least 8/);
+    const wide = await http(ctx.app)
+      .post('/auth/signup')
+      .send({ ...signupBody('ada'), password: '😀'.repeat(20) })
+      .expect(400);
+    expect(errorText(wide.body)).toMatch(/72 bytes/);
+    expect(ctx.prisma.users.some((user) => user.username === 'ada')).toBe(
+      false,
+    );
+
+    const oversized = await http(ctx.app)
+      .post('/auth/login')
+      .send({ username: usernames.super, password: 'a'.repeat(73) })
+      .expect(400);
+    expect(errorText(oversized.body)).toMatch(/72 bytes/);
+    expect(ctx.prisma.sessions).toHaveLength(0);
+  });
+
+  it('returns 429 after ten attempts to login, signup, or refresh', async () => {
+    for (const path of ['/auth/login', '/auth/signup', '/auth/refresh-token']) {
+      for (let attempt = 0; attempt < AUTH_ATTEMPT_LIMIT; attempt += 1) {
+        await http(ctx.app).post(path).send({}).expect(400);
+      }
+      const limited = await http(ctx.app).post(path).send({}).expect(429);
+      expect(errorText(limited.body)).toMatch(/Too many attempts/);
+    }
   });
 
   it('signs a visitor up without a role and rejects a duplicate username', async () => {

@@ -18,6 +18,7 @@ import { PRISMA_SERVICE } from '../multi-tenant/multi-tenant.module';
 import { TenantConfig } from '../multi-tenant/multi-tenant.config';
 
 import { getHost } from 'src/common/common.helper';
+import { assertPassword, assertPasswordMaxBytes } from 'src/common/password';
 import { EnvironmentVars } from 'src/common/common.types';
 import { IDDto } from 'src/common/dto';
 import { Profile, ResoucePermissionType, ResourceName, SignupDto } from './dto';
@@ -65,6 +66,7 @@ export class AuthService {
     if (!username || !pass) {
       throw new BadRequestException('Login request malformed');
     }
+    assertPasswordMaxBytes(pass);
 
     const user = await this.prisma.user.findFirst({
       select: {
@@ -214,6 +216,7 @@ export class AuthService {
 
   async signup(signupDto: SignupDto): Promise<IDDto> {
     const { password, ...restDto } = signupDto;
+    assertPassword(password);
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 

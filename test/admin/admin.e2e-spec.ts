@@ -115,6 +115,12 @@ describe('Admin HTTP', () => {
       .send({ ...userBody('bad'), roleIds: 'nope' })
       .expect(400);
     await call(ctx.app, 'post', '/admin/users', token)
+      .send({ ...userBody('short-pass'), password: 'short' })
+      .expect(400);
+    expect(
+      ctx.prisma.users.some((user) => user.username === 'short-pass'),
+    ).toBe(false);
+    await call(ctx.app, 'post', '/admin/users', token)
       .send({ ...userBody('extra'), extra: true })
       .expect(400);
   });

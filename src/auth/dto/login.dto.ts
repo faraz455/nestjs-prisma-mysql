@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsCustomString } from '../../common/decorators/is-custom-string.decorator';
+import { MaxPasswordBytes } from '../../common/decorators/is-password.decorator';
 
 export class LoginDto {
   @ApiProperty({
@@ -14,6 +15,7 @@ export class LoginDto {
     default: 'SuperAdmin@1',
   })
   @IsCustomString()
+  @MaxPasswordBytes()
   password: string;
 
   // @IsCustomString({ optional: true })

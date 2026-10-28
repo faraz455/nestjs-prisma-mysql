@@ -3,6 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PRISMA_SERVICE } from '../multi-tenant/multi-tenant.module';
+import { assertPassword } from 'src/common/password';
 
 import {
   CreateUserDto,
@@ -35,6 +36,7 @@ export class AdminService {
   constructor(@Inject(PRISMA_SERVICE) private readonly prisma: PrismaService) {}
 
   private async hashPassword(password: string): Promise<string> {
+    assertPassword(password);
     return bcrypt.hash(password, await bcrypt.genSalt());
   }
 

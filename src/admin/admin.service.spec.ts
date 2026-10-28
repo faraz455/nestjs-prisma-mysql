@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AdminService } from './admin.service';
 
@@ -46,7 +47,7 @@ function prisma() {
 
 const userDto = {
   username: 'ada',
-  password: 'secret',
+  password: 'password',
   firstName: 'Ada',
   fullName: 'Ada Lovelace',
   gender: 'MALE' as const,
@@ -83,13 +84,25 @@ describe('AdminService', () => {
     expect(arg.select.password).toBeUndefined();
     expect(arg.data.userId).toBeUndefined();
     expect(arg.data.password).not.toBe('secret');
-    await expect(bcrypt.compare('secret', arg.data.password)).resolves.toBe(
+    await expect(bcrypt.compare('password', arg.data.password)).resolves.toBe(
       true,
     );
     expect(db.userRole.createMany.mock.calls[0][0].data).toEqual([
       expect.objectContaining({ roleId: 'role-a', userId: created.userId }),
       expect.objectContaining({ roleId: 'role-b', userId: created.userId }),
     ]);
+  });
+
+  it('rejects a short or oversized password before writing the user', async () => {
+    const db = prisma();
+    const service = new AdminService(db as never);
+    await expect(
+      service.createUser({ ...userDto, password: 'short' }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    await expect(
+      service.updateUser('user-1', { password: 'a'.repeat(73) }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(db.$transaction).not.toHaveBeenCalled();
   });
 
   it('creates a user with no roles when role ids are omitted', async () => {
@@ -115,11 +128,11 @@ describe('AdminService', () => {
 
     await service.updateUser('user-1', {
       roleIds: ['role-a'],
-      password: 'next',
+      password: 'next-password',
     });
     expect(db.userRole.createMany).toHaveBeenCalled();
     const password = db.user.update.mock.calls.at(-1)[0].data.password;
-    await expect(bcrypt.compare('next', password)).resolves.toBe(true);
+    await expect(bcrypt.compare('next-password', password)).resolves.toBe(true);
   });
 
   it('deletes a user through the public select', async () => {

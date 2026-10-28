@@ -3,6 +3,7 @@ import { httpValidationOptions } from 'src/bootstrap/apply-http-defaults';
 import { PaginationQueryDto } from './pagination-query.dto';
 import { CreateArticleDto, UpdateArticleDto } from 'src/articles/dto';
 import { LoginDto, SignupDto } from 'src/auth/dto';
+import { UpdateUserDto } from 'src/admin/dto';
 import {
   CreatePermissionDto,
   CreateRoleDto,
@@ -90,15 +91,19 @@ describe('HTTP validation pipe', () => {
     await reject({ unknown: true }, UpdateArticleDto);
   });
 
-  it('rejects a login body without a username', async () => {
+  it('rejects a login body without a username or with a password bcrypt would truncate', async () => {
     await reject({ password: 'secret' }, LoginDto);
+    await reject({ username: 'ada', password: 'a'.repeat(73) }, LoginDto);
+    await expect(
+      accept({ username: 'ada', password: 'nope' }, LoginDto),
+    ).resolves.toMatchObject({ password: 'nope' });
   });
 
   it('rejects a signup gender outside the enum and accepts a minimal signup', async () => {
     await reject(
       {
         username: 'ada',
-        password: 'secret',
+        password: 'password',
         firstName: 'Ada',
         gender: 'UNKNOWN',
         birthDateString: '1815-12-10',
@@ -109,7 +114,7 @@ describe('HTTP validation pipe', () => {
     const dto = await accept(
       {
         username: 'ada',
-        password: 'secret',
+        password: 'password',
         firstName: 'Ada',
         gender: 'MALE',
         birthDateString: '1815-12-10',
@@ -119,6 +124,28 @@ describe('HTTP validation pipe', () => {
     );
     expect(dto.username).toBe('ada');
     expect(dto.middleName).toBeUndefined();
+    await reject(
+      {
+        username: 'ada',
+        password: 'short',
+        firstName: 'Ada',
+        gender: 'MALE',
+        birthDateString: '1815-12-10',
+        email: 'ada@example.com',
+      },
+      SignupDto,
+    );
+    await reject(
+      {
+        username: 'ada',
+        password: '😀'.repeat(20),
+        firstName: 'Ada',
+        gender: 'MALE',
+        birthDateString: '1815-12-10',
+        email: 'ada@example.com',
+      },
+      SignupDto,
+    );
   });
 
   it('allows a role without permissions and rejects a bad nested permission', async () => {
@@ -151,15 +178,21 @@ describe('HTTP validation pipe', () => {
   it('rejects role ids that are not an array of strings', async () => {
     const user = {
       username: 'ada',
-      password: 'secret',
+      password: 'password',
       firstName: 'Ada',
       fullName: 'Ada',
       gender: 'MALE',
       birthDateString: '-',
     };
     await reject({ ...user, roleIds: 'role-1' }, CreateUserDto);
+    await reject({ ...user, password: 'short' }, CreateUserDto);
     await expect(accept(user, CreateUserDto)).resolves.toMatchObject({
       username: 'ada',
     });
+    await expect(accept({}, UpdateUserDto)).resolves.toBeDefined();
+    await reject({ password: 'short' }, UpdateUserDto);
+    await expect(
+      accept({ password: 'next-password' }, UpdateUserDto),
+    ).resolves.toMatchObject({ password: 'next-password' });
   });
 });

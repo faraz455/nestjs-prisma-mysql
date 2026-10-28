@@ -21,6 +21,7 @@ import { getHost } from 'src/common/common.helper';
 import { AuthService } from './auth.service';
 
 import { GetUser } from './decorators';
+import { AuthRateLimitGuard } from './auth-rate-limit';
 import { LoginGuard } from './guards/login.guard';
 import { CustomJwtGuard, ReqUserObj } from './guards/custom-jwt.guard';
 
@@ -38,7 +39,7 @@ export class AuthController {
   ) {}
 
   @ApiOkResponse({ type: LoginEntity })
-  @UseGuards(LoginGuard)
+  @UseGuards(AuthRateLimitGuard, LoginGuard)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
@@ -53,6 +54,7 @@ export class AuthController {
   }
 
   @ApiOkResponse({ type: LoginEntity })
+  @UseGuards(AuthRateLimitGuard)
   @HttpCode(HttpStatus.OK)
   @Post('refresh-token')
   async refreshToken(
@@ -69,6 +71,7 @@ export class AuthController {
   }
 
   @ApiOkResponse({ type: IDDto })
+  @UseGuards(AuthRateLimitGuard)
   @HttpCode(HttpStatus.CREATED)
   @Post('signup')
   async signup(@Body() signupDto: SignupDto) {

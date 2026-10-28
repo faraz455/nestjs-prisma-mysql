@@ -358,6 +358,13 @@ describe('AuthService sessions', () => {
       } as Request),
     ).rejects.toBeInstanceOf(UnauthorizedException);
 
+    await expect(
+      service.validateUser({
+        body: { username: 'admin', password: 'a'.repeat(73) },
+      } as Request),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(findFirst).toHaveBeenCalledTimes(1);
+
     const hash = await bcrypt.hash('secret', 4);
     findFirst.mockResolvedValue({ ...user(), password: hash });
     await expect(
@@ -373,6 +380,22 @@ describe('AuthService sessions', () => {
     expect(result.username).toBe('admin');
   });
 
+  it('rejects a signup password before hashing it', async () => {
+    const create = jest.fn();
+    const service = serviceWith({ user: { create } });
+    await expect(
+      service.signup({
+        username: 'ada',
+        password: 'short',
+        firstName: 'Ada',
+        gender: 'MALE',
+        birthDateString: '-',
+        email: 'ada@example.com',
+      } as SignupDto),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(create).not.toHaveBeenCalled();
+  });
+
   it('stores a bcrypt password and omits blank name parts', async () => {
     const create = jest.fn(async ({ data }) => ({
       userId: data.userId ?? 'user-generated',
@@ -380,7 +403,7 @@ describe('AuthService sessions', () => {
     const service = serviceWith({ user: { create } });
     const created = await service.signup({
       username: 'ada',
-      password: 'secret',
+      password: 'password',
       firstName: 'Ada',
       lastName: 'Lovelace',
       middleName: 'Marie',
@@ -392,13 +415,13 @@ describe('AuthService sessions', () => {
     const data = create.mock.calls[0][0].data;
     expect(data.fullName).toBe('Ada Marie Lovelace');
     expect(data.userId).toBeUndefined();
-    expect(data.password).not.toBe('secret');
-    await expect(bcrypt.compare('secret', data.password)).resolves.toBe(true);
+    expect(data.password).not.toBe('password');
+    await expect(bcrypt.compare('password', data.password)).resolves.toBe(true);
     expect(created).toEqual({ id: 'user-generated' });
 
     await service.signup({
       username: 'ada',
-      password: 'secret',
+      password: 'password',
       firstName: 'Ada',
       gender: 'MALE',
       birthDateString: '-',

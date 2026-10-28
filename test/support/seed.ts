@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import { resetAuthRateLimit } from 'src/auth/auth-rate-limit';
 import { MemoryPrisma, PermissionRow, UserRow } from './memory-prisma';
 
 export const PASSWORD = 'password';
@@ -57,6 +58,7 @@ function permission(
 }
 
 export function seedTenant(prisma: MemoryPrisma) {
+  resetAuthRateLimit();
   prisma.reset();
   const password = bcrypt.hashSync(PASSWORD, 4);
   prisma.roles.push(
