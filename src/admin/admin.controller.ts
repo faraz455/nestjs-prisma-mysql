@@ -7,6 +7,8 @@ import {
   Param,
   Body,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { RolesGuards } from '../auth/guards/roles.guard';
@@ -68,6 +70,7 @@ export class AdminController {
   }
 
   @Post('users/:id/sessions/revoke')
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: RevokedSessionsEntity })
   async revokeUserSessions(
     @Param('id') id: string,
