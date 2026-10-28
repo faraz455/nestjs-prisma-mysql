@@ -12,6 +12,17 @@ export type ExceptionResponseData = {
   message: string;
 };
 
+export function uniqueConstraintField(target: unknown): string {
+  if (Array.isArray(target) && target.length > 0) {
+    return target.map((field) => String(field)).join(', ');
+  }
+  if (typeof target === 'string' && target.length > 0) {
+    const parts = target.split('_');
+    return parts.length >= 2 ? parts[1] : target;
+  }
+  return 'value';
+}
+
 @Catch(Prisma.PrismaClientKnownRequestError, Prisma.PrismaClientValidationError)
 export class PrismaClientExceptionFilter extends BaseExceptionFilter {
   prismaToHttp: PrismaToHttpCodeMapping = {
@@ -60,8 +71,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
         break;
 
       case 'P2002':
-        const col = exception.meta.target as string;
-        colName = col.split('_')[1];
+        colName = uniqueConstraintField(exception.meta?.target);
         message = `${colName} is already used`;
         break;
 
