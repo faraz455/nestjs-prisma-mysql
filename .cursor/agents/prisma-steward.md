@@ -11,7 +11,7 @@ Before editing, read `.cursor/skills/prisma-change/SKILL.md` and `docs/prisma/PR
 Rules:
 
 - Datasource and content models live under `prisma/schema/`. Auth models stay in `prisma/schema/auth.prisma`.
-- Ids are `String @id @db.Char(40)` unless an existing model already uses another form.
+- Ids are `String @id @default(uuid(7)) @db.Char(40)` unless an existing model already uses another form. `UserRefreshToken.userRefreshTokenId` has no default. Do not switch these keys to `autoincrement()`.
 - Generate SQL with `yarn prisma migrate dev --name <name> --create-only`. Read the SQL before applying it.
 - A new non-nullable column on a populated table is hand-written in one migration: nullable column, backfill every row, then `NOT NULL`.
 - One migration per change. Do not reset, squash, or edit an applied migration unless the user explicitly asks.

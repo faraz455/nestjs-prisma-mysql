@@ -9,8 +9,10 @@ alwaysApply: false
 Provider is `mysql`. Prisma is 7.10.1. The schema is a folder. The generator is `prisma-client` with `moduleFormat = "cjs"` and output `src/generated/prisma`. Do not put `prismaSchemaFolder` or `relationJoins` in `previewFeatures`. The CLI database URL lives in `prisma.config.ts`. Auth models stay in `prisma/schema/auth.prisma`. Content models stay beside `Article`.
 
 ```prisma
-exampleId String @id @db.Char(40)
+exampleId String @id @default(uuid(7)) @db.Char(40)
 ```
+
+Services omit that id. Prisma Client fills a UUID version 7. Do not use `autoincrement()` for these keys, and do not add a MySQL `UUID()` default. `UserRefreshToken.userRefreshTokenId` has no default; `AuthService` sets it with `randomBytes`. Seeded role and user ids stay `SUPERADMIN` and `ADMIN`.
 
 - Generate with `yarn prisma migrate dev --name <name> --create-only`, then read the SQL.
 - On a populated table, add a required column as nullable, backfill every row, then set `NOT NULL` in that same file.

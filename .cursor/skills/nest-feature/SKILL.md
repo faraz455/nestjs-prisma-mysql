@@ -13,7 +13,7 @@ Copy the shape of `src/articles/`. One feature folder contains `*.module.ts`, `*
 - [ ] `AppModule` imports the feature module.
 - [ ] Service constructor is `@Inject(PRISMA_SERVICE) private readonly prisma: PrismaService`.
 - [ ] Imports of `PrismaService` come from `src/prisma/prisma.service`. The token comes from `src/multi-tenant/multi-tenant.module`.
-- [ ] Create sets the id with `MakeTimedIDUnique()` and returns `{ id }`.
+- [ ] Create omits the id so Prisma assigns `@default(uuid(7))`, and returns `{ id }`. Session ids stay `randomBytes` in `AuthService`.
 - [ ] List uses `PaginationQueryDto`, `getOffset`, `getPages`, and returns `{ pages, count, records }`.
 - [ ] Single reads use `findUniqueOrThrow`.
 - [ ] Update spreads the DTO and does not require omitted keys.

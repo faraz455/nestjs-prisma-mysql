@@ -19,11 +19,11 @@ Ids:
 
 ```prisma
 model Example {
-  exampleId String @id @db.Char(40)
+  exampleId String @id @default(uuid(7)) @db.Char(40)
 }
 ```
 
-The service assigns that id with `MakeTimedIDUnique()`.
+The service omits that id. Prisma Client assigns a UUID version 7. Seed rows that must stay stable, such as `ADMIN` and `SUPERADMIN`, pass the id explicitly. Do not use `autoincrement()` for these keys. `UserRefreshToken.userRefreshTokenId` has no default.
 
 ## Migration
 

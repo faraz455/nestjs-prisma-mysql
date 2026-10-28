@@ -123,6 +123,8 @@ The service is the only layer that queries MySQL. It receives the tenant client 
 
 `User` reaches a role only through `UserRole`. Permissions belong to a role. Foreign keys use `ON DELETE RESTRICT`.
 
+Primary keys are `CHAR(40)` strings. Prisma Client fills a new row with a UUID version 7 when the create call leaves the id out. That value sorts by time and is unique across processes, so the API does not generate ids itself. `autoincrement()` is not used: these ids are returned to callers, and the seed uses the same `ADMIN` and `SUPERADMIN` ids in every tenant database. `UserRefreshToken.userRefreshTokenId` is the exception. Login sets it to 40 random hex characters, and the column has no default, because that id is the session key inside the JWT. Existing rows keep the ids they already have. A UUID version 7 is 36 characters, so it fits the same column.
+
 `prisma migrate dev` writes a SQL file under `prisma/migrations` when the schema changes. `prisma migrate deploy` applies the files that have not run yet. Prisma records each applied file in the `_prisma_migrations` table in that MySQL database, and the next deploy skips those rows. The CLI reads `.env` `DATABASE_URL`, so point that URL at the tenant database you are updating.
 
 `PrismaClientExceptionFilter` runs only when Prisma throws. A unique value or a foreign key that blocks the change is `409`. A missing row is `404`.

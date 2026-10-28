@@ -18,7 +18,7 @@ Rules:
 - Keep Prisma calls in the service. Controllers validate through DTOs and delegate.
 - Register the module in `src/app.module.ts`.
 - Protected controllers use `@UseGuards(CustomJwtGuard, PermissionsGuard, RolesGuards)` in that order.
-- Create ids with `MakeTimedIDUnique()`. Return `IDDto` from create, update, and delete. Return `PaginatedResponseDto` from lists.
+- Omit primary keys on create so Prisma assigns `@default(uuid(7))`. Return `IDDto` from create, update, and delete. Return `PaginatedResponseDto` from lists. Do not generate session ids; `AuthService` owns those.
 - Match Prettier: single quotes, trailing commas. Run `yarn lint` on the files you touched.
 - A new or changed route also gets the unit spec and HTTP test in `.cursor/skills/api-tests/SKILL.md`.
 

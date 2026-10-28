@@ -28,7 +28,7 @@ Prisma Client is generated to `src/generated/prisma` (`prisma-client`, `moduleFo
 
 `prisma/schema/auth.prisma` holds users, roles, permissions, and refresh tokens. `prisma/schema/schema.prisma` holds the datasource and content models, starting with `Article`. A new content area gets its own model file in that folder when it is not auth.
 
-Primary keys are `String @id @db.Char(40)`, created in services with `MakeTimedIDUnique()` from `src/common/common.helper.ts`. Required relations stay restrictive. Cascade deletes are a product decision, not a default.
+Primary keys are `String @id @default(uuid(7)) @db.Char(40)`. Prisma Client assigns that UUID when a create omits the field. It is time-ordered and unique across processes, so services do not mint ids and do not sleep. Seeded users and roles keep the fixed ids `ADMIN` and `SUPERADMIN`, which are the same in every tenant database. `UserRefreshToken.userRefreshTokenId` has no default: `AuthService` sets it with `randomBytes(20).toString('hex')` because that value is a credential. Do not replace these keys with `autoincrement()`. Required relations stay restrictive. Cascade deletes are a product decision, not a default.
 
 Permissions are rows, not code. Role names live in the JWT and are compared as strings: `ADMIN` and `SUPER ADMIN`. A new resource is unfinished until all of these exist:
 
