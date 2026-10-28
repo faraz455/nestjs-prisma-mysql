@@ -221,7 +221,9 @@ export class AuthService {
       signupDto.firstName,
       signupDto.middleName,
       signupDto.lastName,
-    ].join(' ');
+    ]
+      .filter((part): part is string => !!part)
+      .join(' ');
 
     const rec = await this.prisma.user.create({
       data: {
