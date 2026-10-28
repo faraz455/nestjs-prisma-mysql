@@ -15,5 +15,10 @@
       "ts-jest",
       { "tsconfig": "<rootDir>/test/tsconfig.json" }
     ]
-  }
+  },
+  "collectCoverageFrom": [
+    "src/**/*.ts",
+    "!src/generated/**",
+    "!src/**/*.spec.ts"
+  ]
 }
