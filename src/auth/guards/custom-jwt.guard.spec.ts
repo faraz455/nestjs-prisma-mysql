@@ -149,4 +149,113 @@ describe('CustomJwtGuard', () => {
       guard.canActivate(contextFor(requestWith(accessToken()))),
     ).rejects.toBeInstanceOf(UnauthorizedException);
   });
+
+  it('skips authentication on a public route', async () => {
+    const findUnique = jest.fn();
+    const guard = new CustomJwtGuard(
+      { getAllAndOverride: () => true } as unknown as Reflector,
+      configService(),
+      { userRefreshToken: { findUnique } } as unknown as PrismaService,
+    );
+
+    await expect(
+      guard.canActivate({
+        getHandler: () => ({}),
+        getClass: () => ({}),
+        switchToHttp: () => {
+          throw new Error('request should not be read');
+        },
+      } as unknown as ExecutionContext),
+    ).resolves.toBe(true);
+    expect(findUnique).not.toHaveBeenCalled();
+  });
+
+  it('rejects a missing token, a bad signature, a refresh token, and a mismatched profile', async () => {
+    const findUnique = jest.fn();
+    const guard = guardWith(findUnique);
+    await expect(
+      guard.canActivate(
+        contextFor({
+          headers: { host: 'localhost:3000' },
+          originalUrl: '/articles',
+          signedCookies: {},
+        }),
+      ),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    const forged = new JwtService({ secret: 'other-secret' }).sign({
+      sub: 'user-1',
+      sid: 'session-1',
+      tenant: 'localhost:3000',
+      tokenUse: ACCESS_TOKEN_USE,
+    });
+    await expect(
+      guard.canActivate(contextFor(requestWith(forged))),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+    await expect(
+      guard.canActivate(
+        contextFor(requestWith(accessToken({ tokenUse: 'refresh' }))),
+      ),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+    await expect(
+      guard.canActivate(
+        contextFor(
+          requestWith(
+            accessToken({
+              profile: {
+                userId: 'someone-else',
+                username: 'ada',
+                fullName: 'Ada',
+                firstName: 'Ada',
+                middleName: null,
+                lastName: null,
+                mobile: null,
+                roles: ['SUPER ADMIN'],
+              },
+            }),
+          ),
+        ),
+      ),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+    expect(findUnique).not.toHaveBeenCalled();
+  });
+
+  it('rejects an expired session and a session for a different user', async () => {
+    await expect(
+      guardWith(
+        jest.fn().mockResolvedValue({
+          ...activeSession(),
+          expiresAt: new Date(Date.now() - 1000),
+        }),
+      ).canActivate(contextFor(requestWith(accessToken()))),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    await expect(
+      guardWith(
+        jest.fn().mockResolvedValue({ ...activeSession(), userId: 'other' }),
+      ).canActivate(contextFor(requestWith(accessToken()))),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('accepts a raw authorization value and the signed auth cookie', async () => {
+    const token = accessToken();
+    const findUnique = jest.fn().mockResolvedValue(activeSession());
+    const guard = guardWith(findUnique);
+    const raw = {
+      headers: { host: 'localhost:3000', authorization: token },
+      originalUrl: '/articles',
+      signedCookies: {},
+    };
+    await expect(guard.canActivate(contextFor(raw))).resolves.toBe(true);
+
+    const cookieRequest = {
+      headers: { host: 'localhost:3000' },
+      originalUrl: '/articles',
+      signedCookies: { auth: token },
+    };
+    await expect(guard.canActivate(contextFor(cookieRequest))).resolves.toBe(
+      true,
+    );
+    expect(findUnique).toHaveBeenCalledTimes(2);
+  });
 });
