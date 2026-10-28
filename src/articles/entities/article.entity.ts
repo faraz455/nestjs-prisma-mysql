@@ -5,6 +5,12 @@ export class ArticleEntity {
     required: true,
     type: String,
   })
+  articleId: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
   title: string;
 
   @ApiProperty({

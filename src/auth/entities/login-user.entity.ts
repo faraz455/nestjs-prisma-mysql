@@ -1,78 +1,46 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender } from '../../generated/prisma/client';
-import { Profile } from '../dto';
+import { Profile, ResoucePermissionType } from '../dto';
 
-class LoginUserEntity {
-  @ApiProperty({
-    required: true,
-    example: 'userId',
-    description: 'The userId of the User',
-  })
+export class LoginUserEntity {
+  @ApiProperty({ required: true })
   userId: string;
 
-  @ApiProperty({
-    required: false,
-    example: 'MALE',
-    enum: Gender,
-    description: 'The gender of the User',
-  })
-  gender?: Gender;
-
-  @ApiProperty({
-    required: false,
-    example: 101,
-    description: 'The birthDate of the User',
-  })
-  birthDate?: bigint;
-
-  @ApiProperty({
-    required: true,
-    example: 'mobile',
-    description: 'The mobile of the User',
-  })
-  mobile: string;
-
-  @ApiProperty({
-    required: true,
-    example: 'firstName',
-    description: 'The firstName of the User',
-  })
-  firstName: string;
-
-  @ApiProperty({
-    required: false,
-    example: 'lastName',
-    description: 'The lastName of the User',
-  })
-  lastName?: string;
-
-  @ApiProperty({
-    required: false,
-    example: 'middleName',
-    description: 'The middleName of the User',
-  })
-  middleName?: string;
-
-  @ApiProperty({
-    required: false,
-    example: 'fullName',
-    description: 'The fullName of the User',
-  })
-  fullName: string;
-
-  @ApiProperty({
-    required: true,
-    example: 'username',
-    description: 'The username of the User',
-  })
+  @ApiProperty({ required: true })
   username: string;
 
-  @ApiProperty({
-    required: false,
-    example: 'email',
-    description: 'The email of the User',
-  })
+  @ApiProperty({ required: true })
+  firstName: string;
+
+  @ApiProperty({ required: false })
+  middleName?: string;
+
+  @ApiProperty({ required: false })
+  lastName?: string;
+
+  @ApiProperty({ required: true })
+  fullName: string;
+
+  @ApiProperty({ required: true, enum: Gender })
+  gender: Gender;
+
+  @ApiProperty({ required: true })
+  birthDateString: string;
+
+  @ApiProperty({ required: false })
   email?: string;
+
+  @ApiProperty({ required: false })
+  mobile?: string;
+
+  @ApiProperty({ required: false })
+  address?: string;
+
+  @ApiProperty({ required: true })
+  createdAt: Date;
+
+  @ApiProperty({ required: true })
+  updatedAt: Date;
 }
 
 export class LoginEntity {
@@ -82,6 +50,12 @@ export class LoginEntity {
   @ApiProperty({ required: true, type: Profile })
   profile: Profile;
 
-  @ApiProperty({ required: true, description: 'JWT auth token' })
-  auth_token: string;
+  @ApiProperty({ required: true, type: Object })
+  permissions: ResoucePermissionType;
+
+  @ApiProperty({ required: true })
+  authToken: string;
+
+  @ApiProperty({ required: true })
+  refreshToken: string;
 }
