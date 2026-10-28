@@ -1,4 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PRISMA_SERVICE } from '../multi-tenant/multi-tenant.module';
 
@@ -13,24 +15,53 @@ import {
 import { RoleEntity, UserEntity } from './entities';
 import { MakeTimedIDUnique } from 'src/common/common.helper';
 
+const userPublicSelect = {
+  userId: true,
+  username: true,
+  firstName: true,
+  middleName: true,
+  lastName: true,
+  fullName: true,
+  gender: true,
+  birthDateString: true,
+  email: true,
+  mobile: true,
+  address: true,
+  createdAt: true,
+  updatedAt: true,
+} satisfies Prisma.UserSelect;
+
 @Injectable()
 export class AdminService {
   constructor(@Inject(PRISMA_SERVICE) private readonly prisma: PrismaService) {}
 
+  private async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, await bcrypt.genSalt());
+  }
+
   // --- USERS ---
   async getUsers(): Promise<UserEntity[]> {
-    return await this.prisma.user.findMany();
+    return await this.prisma.user.findMany({ select: userPublicSelect });
   }
 
   async getUser(id: string): Promise<UserEntity> {
-    return await this.prisma.user.findUniqueOrThrow({ where: { userId: id } });
+    return await this.prisma.user.findUniqueOrThrow({
+      where: { userId: id },
+      select: userPublicSelect,
+    });
   }
 
   async createUser(dto: CreateUserDto): Promise<UserEntity> {
+    const { roleIds, password, ...userData } = dto;
+    const passwordHash = await this.hashPassword(password);
     return await this.prisma.$transaction(async (tx) => {
-      const { roleIds, ...userData } = dto;
       const user = await tx.user.create({
-        data: { userId: MakeTimedIDUnique(), ...userData },
+        select: userPublicSelect,
+        data: {
+          userId: MakeTimedIDUnique(),
+          ...userData,
+          password: passwordHash,
+        },
       });
       if (roleIds && roleIds.length > 0) {
         await tx.userRole.createMany({
@@ -46,16 +77,21 @@ export class AdminService {
   }
 
   async updateUser(id: string, dto: UpdateUserDto): Promise<UserEntity> {
+    const { roleIds, password, ...userData } = dto;
+    const passwordHash = password
+      ? await this.hashPassword(password)
+      : undefined;
     return await this.prisma.$transaction(async (tx) => {
-      const { roleIds, ...userData } = dto;
       const user = await tx.user.update({
         where: { userId: id },
-        data: userData,
+        select: userPublicSelect,
+        data: {
+          ...userData,
+          ...(passwordHash ? { password: passwordHash } : {}),
+        },
       });
       if (roleIds) {
-        // Remove all existing roles for the user
         await tx.userRole.deleteMany({ where: { userId: id } });
-        // Add new roles
         if (roleIds.length > 0) {
           await tx.userRole.createMany({
             data: roleIds.map((roleId) => ({
@@ -71,7 +107,10 @@ export class AdminService {
   }
 
   async deleteUser(id: string): Promise<UserEntity> {
-    return await this.prisma.user.delete({ where: { userId: id } });
+    return await this.prisma.user.delete({
+      where: { userId: id },
+      select: userPublicSelect,
+    });
   }
 
   // --- ROLES ---
