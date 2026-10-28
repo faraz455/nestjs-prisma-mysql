@@ -4,7 +4,13 @@ import {
   createTestApp,
 } from '../support/create-test-app';
 import { call, errorText, HttpMethod, http, loginAs } from '../support/http';
-import { ids, PASSWORD, seedTenant, userBody, usernames } from '../support/seed';
+import {
+  ids,
+  PASSWORD,
+  seedTenant,
+  userBody,
+  usernames,
+} from '../support/seed';
 
 const routes: Array<[HttpMethod, string]> = [
   ['get', '/admin/users'],
