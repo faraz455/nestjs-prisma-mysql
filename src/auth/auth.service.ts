@@ -106,7 +106,13 @@ export class AuthService {
             role: {
               select: {
                 resourcePermissions: {
-                  select: { resourceName: true, create: true, view: true },
+                  select: {
+                    resourceName: true,
+                    create: true,
+                    view: true,
+                    update: true,
+                    delete: true,
+                  },
                 },
               },
             },
@@ -118,16 +124,22 @@ export class AuthService {
 
     const permissions: ResoucePermissionType = {};
 
-    user.userRoles.map((roles) => {
-      roles.role.resourcePermissions.map((resource) => {
-        const { resourceName, ...perms } = resource;
-
-        if (perms.create === true || perms.view === true) {
-          const name = resourceName as ResourceName;
-          permissions[name] = perms;
+    for (const assignment of user.userRoles) {
+      for (const resource of assignment.role.resourcePermissions) {
+        const { resourceName, create, view, update, delete: remove } = resource;
+        if (!create && !view && !update && !remove) {
+          continue;
         }
-      });
-    });
+        const name = resourceName as ResourceName;
+        const current = permissions[name] ?? {};
+        permissions[name] = {
+          create: !!(current.create || create),
+          view: !!(current.view || view),
+          update: !!(current.update || update),
+          delete: !!(current.delete || remove),
+        };
+      }
+    }
 
     return permissions;
   }

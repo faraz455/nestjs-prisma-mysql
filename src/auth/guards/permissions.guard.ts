@@ -72,18 +72,24 @@ export class PermissionsGuard implements CanActivate {
           { view: true },
           { create: true },
           { update: true },
-          { view: true },
+          { delete: true },
         ],
       },
     });
 
-    let perms: ResoucePermissionType = {};
+    const perms: ResoucePermissionType = {};
 
-    recs.map((rec) => {
+    for (const rec of recs) {
       const { resourceName, ...permission } = rec;
       const name = resourceName as ResourceName;
-      perms[name] = permission;
-    });
+      const current = perms[name] ?? {};
+      perms[name] = {
+        create: !!(current.create || permission.create),
+        view: !!(current.view || permission.view),
+        update: !!(current.update || permission.update),
+        delete: !!(current.delete || permission.delete),
+      };
+    }
 
     return perms;
   }
