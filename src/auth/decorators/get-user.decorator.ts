@@ -5,10 +5,10 @@ export const GetUser = createParamDecorator(
   (key: keyof ReqUserObj | undefined, ctx: ExecutionContext) => {
     const req: Express.Request = ctx.switchToHttp().getRequest();
     if (key) {
-      // @ts-ignore
+      // @ts-expect-error Express request has no user until the guard sets it
       return req.user ? req.user[key] : undefined;
     }
-    // @ts-ignore
+    // @ts-expect-error Express request has no user until the guard sets it
     return req.user ? req.user : undefined;
   },
 );

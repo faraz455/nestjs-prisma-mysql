@@ -113,6 +113,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
   catchValidationError(
     exception: Prisma.PrismaClientValidationError,
   ): ExceptionResponseData {
+    void exception;
     const statusCode = HttpStatus.CONFLICT;
     const message =
       'Data validation failed: database was not expecting data of this form';

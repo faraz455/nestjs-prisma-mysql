@@ -47,7 +47,7 @@ export function getPages(count: number, per_page: number) {
 export function getHost(req: Request) {
   let host: string = req.headers.host!;
   if (req.originalUrl.includes('private/apis')) {
-    // @ts-ignore
+    // @ts-expect-error header-host is a string set by the private API caller
     host = req.headers['header-host'];
     if (!host) {
       return 'impossiblestring';

@@ -1,4 +1,6 @@
 import { registerAs } from '@nestjs/config';
+// configparser is CommonJS and its types are not constructable as an import.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const ConfigParser = require('configparser');
 
 export type TenantConfig = {
@@ -12,7 +14,7 @@ export type TenantConfig = {
 };
 
 export default registerAs('multiTenant', () => {
-  let tenantConfigs: { [tenant: string]: TenantConfig } = {};
+  const tenantConfigs: { [tenant: string]: TenantConfig } = {};
   const config = new ConfigParser();
   config.read('./env.conf');
 

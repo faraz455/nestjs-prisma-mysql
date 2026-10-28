@@ -24,7 +24,7 @@ export class StringOptions {
 export const IsCustomString = (options?: StringOptions) => {
   options = buildOptionsWithDefaults(options);
 
-  let decorators: PropertyDecorator[] = [IsString(), IsNotEmpty()];
+  const decorators: PropertyDecorator[] = [IsString(), IsNotEmpty()];
   decorators.push(Transform(({ value }) => (value != '' ? value : null)));
 
   if (!options.required) {

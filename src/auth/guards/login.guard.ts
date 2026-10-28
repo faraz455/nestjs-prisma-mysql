@@ -14,7 +14,7 @@ export class LoginGuard implements CanActivate {
 
     const user = await authService.validateUser(req);
     if (user) {
-      // @ts-ignore
+      // @ts-expect-error Express request has no user until this guard sets it
       req.user = user;
       return true;
     }

@@ -1,4 +1,4 @@
-export type dumpyType = {};
+export type dumpyType = Record<string, never>;
 
 export const EnvironmentVars = {
   JWT_SECRET: 'JWT_SECRET',

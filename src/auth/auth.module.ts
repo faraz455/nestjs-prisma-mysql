@@ -7,7 +7,6 @@ import { EnvironmentVars } from 'src/common/common.types';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
-
 @Module({
   providers: [AuthService],
   imports: [
