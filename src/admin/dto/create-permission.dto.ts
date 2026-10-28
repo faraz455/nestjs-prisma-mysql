@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
+import { IsCustomString } from 'src/common/decorators/is-custom-string.decorator';
 import { ResourceName } from 'src/auth/dto';
 
 export class CreatePermissionDto {
@@ -8,21 +9,26 @@ export class CreatePermissionDto {
   resourceName: ResourceName;
 
   @ApiProperty({ required: true })
+  @IsCustomString()
   roleId: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   create?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   view?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   update?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @IsBoolean()
   delete?: boolean;
 }

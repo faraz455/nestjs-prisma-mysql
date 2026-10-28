@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, MaxLength } from 'class-validator';
 import { IsCustomString } from 'src/common/decorators/is-custom-string.decorator';
+import { MYSQL_STRING_MAX } from 'src/common/common.types';
 
 export class CreateArticleDto {
   @ApiProperty({
     required: true,
     type: String,
   })
+  @MaxLength(MYSQL_STRING_MAX)
   @IsCustomString()
   title: string;
 
@@ -14,6 +16,7 @@ export class CreateArticleDto {
     required: false,
     type: String,
   })
+  @MaxLength(MYSQL_STRING_MAX)
   @IsCustomString({ required: false })
   description?: string;
 
@@ -21,6 +24,7 @@ export class CreateArticleDto {
     required: true,
     type: String,
   })
+  @MaxLength(MYSQL_STRING_MAX)
   @IsCustomString()
   body: string;
 

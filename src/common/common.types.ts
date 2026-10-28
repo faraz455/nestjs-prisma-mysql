@@ -19,3 +19,6 @@ export const PermissionType = {
   delete: 'delete',
 } as const;
 export type PermissionType = keyof typeof PermissionType;
+
+/** Prisma `String` on MySQL is `VARCHAR(191)` unless the schema sets `@db`. */
+export const MYSQL_STRING_MAX = 191;
