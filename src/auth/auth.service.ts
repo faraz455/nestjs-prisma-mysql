@@ -17,7 +17,7 @@ import cookieParser from 'cookie-parser';
 import { PRISMA_SERVICE } from '../multi-tenant/multi-tenant.module';
 import { TenantConfig } from '../multi-tenant/multi-tenant.config';
 
-import { getHost, MakeTimedIDUnique } from 'src/common/common.helper';
+import { getHost } from 'src/common/common.helper';
 import { EnvironmentVars } from 'src/common/common.types';
 import { IDDto } from 'src/common/dto';
 import { Profile, ResoucePermissionType, ResourceName, SignupDto } from './dto';
@@ -227,7 +227,6 @@ export class AuthService {
 
     const rec = await this.prisma.user.create({
       data: {
-        userId: MakeTimedIDUnique(),
         fullName,
         password: hashedPassword,
         ...restDto,

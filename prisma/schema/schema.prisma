@@ -9,7 +9,7 @@ generator client {
 }
 
 model Article {
-    articleId String @id @db.Char(40)
+    articleId String @id @default(uuid(7)) @db.Char(40)
 
     title       String  @unique
     description String?

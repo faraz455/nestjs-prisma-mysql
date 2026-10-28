@@ -12,25 +12,6 @@ export function asyncSleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function syncSleep(ms: number) {
-  const timestamp = timeStampMilliseconds() + ms;
-  while (timeStampMilliseconds() < timestamp);
-}
-
-const BASE36_ALPHABETS: string = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-export function MakeTimedIDUnique(): string {
-  syncSleep(1);
-
-  let base36: string = '';
-  let num: number = Math.round(timeStampMilliseconds() * 1000);
-  while (num != 0) {
-    const idx = num % BASE36_ALPHABETS.length;
-    num = Math.floor(num / BASE36_ALPHABETS.length);
-    base36 = BASE36_ALPHABETS[idx] + base36;
-  }
-  return base36;
-}
-
 export function getOffset(page: number, per_page: number) {
   return page == 1 ? 0 : per_page * (page - 1);
 }

@@ -16,8 +16,8 @@ function prisma() {
 describe('ArticlesService', () => {
   it('creates an article id and returns only that id', async () => {
     const db = prisma();
-    db.article.create.mockImplementation(async ({ data }) => ({
-      articleId: data.articleId,
+    db.article.create.mockImplementation(async () => ({
+      articleId: 'article-generated',
     }));
     const result = await new ArticlesService(db as never).create({
       title: 'Hello',
@@ -27,7 +27,8 @@ describe('ArticlesService', () => {
     const data = db.article.create.mock.calls[0][0].data;
     expect(data.title).toBe('Hello');
     expect(data.published).toBe(false);
-    expect(result).toEqual({ id: data.articleId });
+    expect(data.articleId).toBeUndefined();
+    expect(result).toEqual({ id: 'article-generated' });
   });
 
   it('lists every article when search is missing or blank', async () => {

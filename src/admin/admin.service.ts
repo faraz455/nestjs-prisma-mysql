@@ -13,7 +13,6 @@ import {
   UpdatePermissionDto,
 } from './dto';
 import { RoleEntity, UserEntity } from './entities';
-import { MakeTimedIDUnique } from 'src/common/common.helper';
 
 const userPublicSelect = {
   userId: true,
@@ -58,7 +57,6 @@ export class AdminService {
       const user = await tx.user.create({
         select: userPublicSelect,
         data: {
-          userId: MakeTimedIDUnique(),
           ...userData,
           password: passwordHash,
         },
@@ -66,7 +64,6 @@ export class AdminService {
       if (roleIds && roleIds.length > 0) {
         await tx.userRole.createMany({
           data: roleIds.map((roleId) => ({
-            userRoleId: MakeTimedIDUnique(),
             userId: user.userId,
             roleId,
           })),
@@ -95,7 +92,6 @@ export class AdminService {
         if (roleIds.length > 0) {
           await tx.userRole.createMany({
             data: roleIds.map((roleId) => ({
-              userRoleId: MakeTimedIDUnique(),
               userId: id,
               roleId,
             })),
@@ -130,7 +126,6 @@ export class AdminService {
       if (dto.permissions && dto.permissions.length > 0) {
         await tx.resourcePermission.createMany({
           data: dto.permissions.map((perm) => ({
-            resourcePermissionId: MakeTimedIDUnique(),
             ...perm,
             roleId: role.roleId,
           })),
@@ -153,7 +148,6 @@ export class AdminService {
         if (dto.permissions.length > 0) {
           await tx.resourcePermission.createMany({
             data: dto.permissions.map((perm) => ({
-              resourcePermissionId: MakeTimedIDUnique(),
               ...perm,
               roleId: id,
             })),
@@ -181,7 +175,7 @@ export class AdminService {
 
   async createPermission(dto: CreatePermissionDto) {
     return this.prisma.resourcePermission.create({
-      data: { resourcePermissionId: MakeTimedIDUnique(), ...dto },
+      data: { ...dto },
     });
   }
 

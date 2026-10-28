@@ -1,10 +1,4 @@
-import {
-  getHost,
-  getOffset,
-  getPages,
-  MakeTimedIDUnique,
-  unixTimestamp,
-} from './common.helper';
+import { getHost, getOffset, getPages, unixTimestamp } from './common.helper';
 import { Request } from 'express';
 
 function request(
@@ -47,12 +41,7 @@ describe('request helpers', () => {
     expect(getPages(5, 0)).toBe(Number.POSITIVE_INFINITY);
   });
 
-  it('builds unique uppercase ids and a unix timestamp near now', () => {
-    const first = MakeTimedIDUnique();
-    const second = MakeTimedIDUnique();
-    expect(first).toMatch(/^[0-9A-Z]+$/);
-    expect(second).toMatch(/^[0-9A-Z]+$/);
-    expect(second).not.toBe(first);
+  it('returns a unix timestamp near now', () => {
     expect(
       Math.abs(unixTimestamp() - Math.round(Date.now() / 1000)),
     ).toBeLessThanOrEqual(1);

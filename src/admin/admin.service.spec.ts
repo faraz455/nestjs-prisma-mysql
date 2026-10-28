@@ -6,7 +6,9 @@ function prisma() {
     user: {
       findMany: jest.fn(),
       findUniqueOrThrow: jest.fn(),
-      create: jest.fn(async ({ data }) => ({ userId: data.userId })),
+      create: jest.fn(async ({ data }) => ({
+        userId: data.userId ?? 'user-generated',
+      })),
       update: jest.fn(async ({ where }) => ({ userId: where.userId })),
       delete: jest.fn(async ({ where }) => ({ userId: where.userId })),
     },
@@ -79,6 +81,7 @@ describe('AdminService', () => {
 
     expect(db.$transaction).toHaveBeenCalled();
     expect(arg.select.password).toBeUndefined();
+    expect(arg.data.userId).toBeUndefined();
     expect(arg.data.password).not.toBe('secret');
     await expect(bcrypt.compare('secret', arg.data.password)).resolves.toBe(
       true,
@@ -186,9 +189,11 @@ describe('AdminService', () => {
       expect.objectContaining({
         roleId: 'role-1',
         delete: true,
-        resourcePermissionId: expect.any(String),
       }),
     );
+    expect(
+      db.resourcePermission.create.mock.calls[0][0].data.resourcePermissionId,
+    ).toBeUndefined();
 
     await service.updatePermission('perm-1', { view: false });
     expect(db.resourcePermission.update).toHaveBeenCalledWith({

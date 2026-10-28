@@ -5,6 +5,7 @@ import { Prisma } from 'src/generated/prisma/client';
  * It implements the calls the services make, rolls back a failed
  * `$transaction`, and throws Prisma errors the HTTP filter already maps.
  * It is not MySQL: no collation, no CHAR padding, no VARCHAR limits.
+ * Omitted primary keys receive a stand-in id, matching Prisma `@default(uuid(7))`.
  */
 
 export type UserRow = {
@@ -260,6 +261,7 @@ export function createMemoryPrisma(): MemoryPrisma {
         assertUserUnique(args.data);
         const now = new Date();
         const row = {
+          userId: (args.data.userId as string | undefined) ?? nextId('user'),
           middleName: null,
           lastName: null,
           email: null,
@@ -319,7 +321,11 @@ export function createMemoryPrisma(): MemoryPrisma {
             },
           }));
       },
-      async createMany(args: { data: UserRoleRow[] }) {
+      async createMany(args: {
+        data: Array<
+          Partial<UserRoleRow> & Pick<UserRoleRow, 'userId' | 'roleId'>
+        >;
+      }) {
         for (const link of args.data) {
           if (!state.users.some((user) => user.userId === link.userId)) {
             foreignKey('userId');
@@ -327,7 +333,11 @@ export function createMemoryPrisma(): MemoryPrisma {
           if (!state.roles.some((role) => role.roleId === link.roleId)) {
             foreignKey('roleId');
           }
-          state.userRoles.push({ ...link });
+          state.userRoles.push({
+            userRoleId: link.userRoleId ?? nextId('user-role'),
+            userId: link.userId,
+            roleId: link.roleId,
+          });
         }
         return { count: args.data.length };
       },
@@ -532,7 +542,9 @@ export function createMemoryPrisma(): MemoryPrisma {
           foreignKey('roleId');
         }
         const row: PermissionRow = {
-          resourcePermissionId: args.data.resourcePermissionId as string,
+          resourcePermissionId:
+            (args.data.resourcePermissionId as string | undefined) ??
+            nextId('perm'),
           roleId,
           resourceName: args.data.resourceName as string,
           create: (args.data.create as boolean) ?? false,
@@ -628,6 +640,8 @@ export function createMemoryPrisma(): MemoryPrisma {
         }
         const now = new Date();
         const row = {
+          articleId:
+            (args.data.articleId as string | undefined) ?? nextId('article'),
           description: null,
           createdAt: now,
           updatedAt: now,

@@ -4,11 +4,7 @@ import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PRISMA_SERVICE } from 'src/multi-tenant/multi-tenant.module';
 
-import {
-  MakeTimedIDUnique,
-  getOffset,
-  getPages,
-} from 'src/common/common.helper';
+import { getOffset, getPages } from 'src/common/common.helper';
 import {
   IDDto,
   PaginatedResponseDto,
@@ -23,10 +19,7 @@ export class ArticlesService {
   async create(createArticleDto: CreateArticleDto): Promise<IDDto> {
     const record = await this.prisma.article.create({
       select: { articleId: true },
-      data: {
-        articleId: MakeTimedIDUnique(),
-        ...createArticleDto,
-      },
+      data: { ...createArticleDto },
     });
     return { id: record.articleId };
   }

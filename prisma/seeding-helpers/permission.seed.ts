@@ -1,12 +1,10 @@
 import { Prisma, PrismaClient } from '../../src/generated/prisma/client';
-import { MakeTimedIDUnique } from '../../src/common/common.helper';
 
 export async function seedPermissions(prisma: PrismaClient) {
   console.log('Seeding Resource Permissions !!!');
 
   const permissionsData: Prisma.ResourcePermissionUncheckedCreateInput[] = [];
   permissionsData.push({
-    resourcePermissionId: MakeTimedIDUnique(),
     resourceName: 'Article',
     roleId: 'SUPERADMIN',
     create: true,
@@ -16,7 +14,6 @@ export async function seedPermissions(prisma: PrismaClient) {
   });
 
   permissionsData.push({
-    resourcePermissionId: MakeTimedIDUnique(),
     resourceName: 'Article',
     roleId: 'ADMIN',
     view: true,

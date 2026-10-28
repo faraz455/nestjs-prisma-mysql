@@ -374,7 +374,9 @@ describe('AuthService sessions', () => {
   });
 
   it('stores a bcrypt password and omits blank name parts', async () => {
-    const create = jest.fn(async ({ data }) => ({ userId: data.userId }));
+    const create = jest.fn(async ({ data }) => ({
+      userId: data.userId ?? 'user-generated',
+    }));
     const service = serviceWith({ user: { create } });
     const created = await service.signup({
       username: 'ada',
@@ -389,9 +391,10 @@ describe('AuthService sessions', () => {
 
     const data = create.mock.calls[0][0].data;
     expect(data.fullName).toBe('Ada Marie Lovelace');
+    expect(data.userId).toBeUndefined();
     expect(data.password).not.toBe('secret');
     await expect(bcrypt.compare('secret', data.password)).resolves.toBe(true);
-    expect(created).toEqual({ id: data.userId });
+    expect(created).toEqual({ id: 'user-generated' });
 
     await service.signup({
       username: 'ada',

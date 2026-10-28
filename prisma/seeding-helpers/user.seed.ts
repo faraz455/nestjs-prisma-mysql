@@ -1,5 +1,4 @@
 import { Gender, Prisma, PrismaClient } from '../../src/generated/prisma/client';
-import { MakeTimedIDUnique } from '../../src/common/common.helper';
 import * as bcrypt from 'bcrypt';
 
 /// Seeds the default users and their roles into the database
@@ -36,12 +35,10 @@ export async function seedUsers(prisma: PrismaClient) {
   const recordsV2 = await prisma.userRole.createMany({
     data: [
       {
-        userRoleId: MakeTimedIDUnique(),
         roleId: 'ADMIN',
         userId: 'ADMIN',
       },
       {
-        userRoleId: MakeTimedIDUnique(),
         roleId: 'SUPERADMIN',
         userId: 'SUPERADMIN',
       },
