@@ -19,6 +19,8 @@ jobs:
           cache: yarn
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+      - name: Check request-path dependencies
+        run: yarn check:request-path
       - name: Generate Prisma Client
         run: yarn prisma generate
         env:
