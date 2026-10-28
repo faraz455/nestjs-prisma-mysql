@@ -65,11 +65,12 @@ The parent agent keeps the conversation and delegates when the work matches a sp
 | `prisma-steward` | `grok-4.7` high | `prisma/` | schema, SQL, seeds |
 | `security-auditor` | `grok-4.7-xhigh` | no | auth, cookies, permissions, tenant isolation |
 | `verifier` | `grok-4.7` xhigh | no product code | lint, tests, and whether the claim is true |
+| `test-engineer` | `grok-4.7` high | `src/**/*.spec.ts`, `test/` | unit and HTTP tests on the repo standard |
 | `docs-keeper` | `composer-2.5-fast` | `docs/` | docs that match the code |
 
 Every specialist is Grok or Composer. Schema and security stay on Grok so a fast parent does not downgrade that work, and review stays on Grok xhigh rather than the Composer model that writes features. If a plan blocks a model, Cursor falls back; say which model actually ran.
 
-Invoke a specialist with `/architect`, `/feature-engineer`, `/prisma-steward`, `/security-auditor`, `/verifier`, or `/docs-keeper`.
+Invoke a specialist with `/architect`, `/feature-engineer`, `/prisma-steward`, `/security-auditor`, `/test-engineer`, `/verifier`, or `/docs-keeper`.
 
 ## Skills and rules
 
@@ -82,9 +83,10 @@ Skills are procedures. Rules are invariants that stay in context.
 | `authz-wiring` | touching guards, roles, permissions, or cookies |
 | `prisma-change` | touching `prisma/schema`, migrations, or seeds |
 | `verify-api` | checking that a change actually works |
+| `api-tests` | adding or changing unit specs or HTTP tests |
 
-Rules in `.cursor/rules/` cover the request path, Nest layering, Prisma and MySQL, auth and tenancy, the API contract, and secrets.
+Rules in `.cursor/rules/` cover the request path, Nest layering, Prisma and MySQL, auth and tenancy, the API contract, tests, and secrets.
 
 ## Definition of done
 
-A change is done when the layer is correct, the tenant client is the one that runs the query, the permission exists for a new resource, the migration SQL has been read, secrets stayed local, and `yarn lint` plus the relevant tests have been run. Behavior that a caller or operator can see is reflected in `docs/`.
+A change is done when the layer is correct, the tenant client is the one that runs the query, the permission exists for a new resource, the migration SQL has been read, secrets stayed local, and `yarn lint` plus `yarn test` have been run. Run `yarn test:e2e` when a route, guard, pipe, or tenant check changed. Behavior that a caller or operator can see is reflected in `docs/`.

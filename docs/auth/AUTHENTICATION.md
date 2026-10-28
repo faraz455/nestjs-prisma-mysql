@@ -7,7 +7,7 @@ This system is designed to ensure secure access to our application by validating
 During the signup process:
 
 - **Mandatory Fields**: Username and password are required.
-- **Password Storage**: The password is hashed using bcrypt and stored in the user table database.
+- **Password Storage**: The password is hashed using bcrypt and stored in the user table. Admin create and update hash the password before the write. User responses omit the hash.
 
 ## User Login
 

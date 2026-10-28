@@ -20,6 +20,7 @@ Copy the shape of `src/articles/`. One feature folder contains `*.module.ts`, `*
 - [ ] Two or more writes in one method use `this.prisma.$transaction`.
 - [ ] Protected controller decorators match `ArticlesController`: guards, `@Roles`, `@ApiTags`, `@ApiBearerAuth`, and per-route `@Permissions`.
 - [ ] Static paths for a method are declared above `':id'` paths.
+- [ ] The service spec and an HTTP test cover the new route. Follow `api-tests`.
 
 ## Response wrappers
 

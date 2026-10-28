@@ -10,8 +10,9 @@ Read `AGENTS.md` before a feature, schema, auth, or tenancy change.
 - Extend the existing request path: tenant middleware, guards, validation pipe, controller, service, Prisma filter.
 - Query through the request-scoped `PRISMA_SERVICE` client. `.env` `DATABASE_URL` is for the Prisma CLI and seed only.
 - This repo is Prisma 7.10.1 with a schema folder. The client is generated to `src/generated/prisma` and connects through `@prisma/adapter-mariadb`. Do not upgrade Prisma unless the user asks.
-- Delegate with `/architect`, `/feature-engineer`, `/prisma-steward`, `/security-auditor`, `/verifier`, and `/docs-keeper` when the task matches that agent.
-- Follow the project skill that matches the edit: `nest-feature`, `api-contract`, `authz-wiring`, `prisma-change`, or `verify-api`.
+- Delegate with `/architect`, `/feature-engineer`, `/prisma-steward`, `/security-auditor`, `/test-engineer`, `/verifier`, and `/docs-keeper` when the task matches that agent.
+- Follow the project skill that matches the edit: `nest-feature`, `api-contract`, `authz-wiring`, `prisma-change`, `api-tests`, or `verify-api`.
+- A new or changed route ships with a unit spec and an HTTP test. `yarn test` and `yarn test:e2e` do not open MySQL.
 - A change is done only after the relevant checks in `verify-api` have been run.
 
 Articles in `src/articles/` is the pattern for a new feature.

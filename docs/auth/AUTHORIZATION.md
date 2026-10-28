@@ -6,6 +6,7 @@ This section covers the permission-based and role-based authorization mechanisms
 
 - **Resource Permissions**: Resource permissions dictate the actions a role can perform on specific resources.
 - **Permission Granularity**: Permissions can be highly granular, allowing for precise control over user access to resources and actions such as `create`, `view`, `update`, `delete`.
+- **Several roles**: Flags for the same resource are combined. A flag is granted when any of the caller's role rows sets it, including `delete`.
 
 ## Role Guard
 

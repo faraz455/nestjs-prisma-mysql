@@ -108,11 +108,11 @@ Article routes ask for one flag:
 @Permissions({ AND: ['Article.create'] })
 ```
 
-`AND` and `OR` can be nested. Admin routes set the role and do not set `@Permissions`, so the permission guard allows them through and the role guard is the check.
+`AND` and `OR` can be nested. When the caller has more than one role, flags for the same resource are combined: a flag is granted when any matching row sets it. The guard reads `create`, `view`, `update`, and `delete`. Admin routes set the role and do not set `@Permissions`, so the permission guard allows them through and the role guard is the check.
 
 ## 6. Request response interceptor
 
-`RequestResponseInterceptor` is bound on every route. On the way in it logs the host, URL, and body. On the way out it logs the response body. This runs only when `LOG_REQUESTS` is on. Set to `0`, the interceptor lets the request through without logging.
+`RequestResponseInterceptor` is bound on every route. When `LOG_REQUESTS` is `0`, including the string `"0"`, it does not log. Otherwise it logs the host, URL, request body, and response body after replacing `password`, `refreshToken`, `authToken`, and `authorization` with `[redacted]`. Dates are left unchanged.
 
 ## 7. Prisma
 
@@ -130,3 +130,7 @@ The service is the only layer that queries MySQL. It receives the tenant client 
 ## 8. Swagger
 
 `main.ts` builds the document from the same controllers and DTO classes the pipe validates. It is mounted at `/swagger` when `PRODUCTION` is `0`, with Bearer auth so a caller can paste the access token. Controllers add `@ApiTags` and `@ApiBearerAuth`. Response decorators such as `@ApiOkResponse` name the shape of the JSON. In production that UI is left off and CORS stays off with it.
+
+## 9. Tests
+
+`yarn test` runs the unit specs next to the source. `yarn test:e2e` boots this application and sends HTTP through the same middleware, guards, pipe, and Prisma filter. Neither command opens MySQL. The HTTP suite uses an in-memory client for `localhost:3000`. The cases and commands are in [TESTING.md](../guidelines/TESTING.md).

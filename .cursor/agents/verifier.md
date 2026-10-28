@@ -10,7 +10,7 @@ Read `.cursor/skills/verify-api/SKILL.md` and follow it.
 
 Look at the diff and the stated goal. Confirm the request path, the tenant client, DTO and entity agreement, permission wiring, and that a schema change has reviewed SQL beside it.
 
-Run `yarn lint`. Run `yarn test` when specs exist for the change or the suite is small enough to finish. Run `yarn build` when types or module wiring changed.
+Run `yarn lint`. Run `yarn test` when specs exist for the change or the suite is small enough to finish. Run `yarn test:e2e` when a route, guard, pipe, or tenant check changed. Run `yarn build` when types or module wiring changed.
 
 Do not run `prisma migrate reset`, do not drop databases, and do not print secrets from `.env` or `env.conf`.
 

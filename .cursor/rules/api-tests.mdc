@@ -1,0 +1,16 @@
+---
+description: Unit and HTTP test standard for this API
+globs: src/**/*.spec.ts,test/**/*.ts
+alwaysApply: false
+---
+
+# API tests
+
+Unit specs are `src/**/*.spec.ts`. HTTP tests are `test/**/*.e2e-spec.ts`.
+
+- Run `yarn test` and, for HTTP coverage, `yarn test:e2e`.
+- Do not open MySQL. Do not read `.env` or `env.conf`. Do not construct `PrismaService`.
+- HTTP tests use `createTestApp()`. Supertest's `127.0.0.1` host is rewritten to `localhost:3000`.
+- A changed route needs the service branches and the HTTP cases: anonymous, forbidden, invalid input, missing row, and the success shape.
+- Name a test for the behavior. One behavior per test. No response snapshots.
+- Follow `.cursor/skills/api-tests/SKILL.md`.

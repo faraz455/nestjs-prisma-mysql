@@ -55,6 +55,11 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 - [JWT-Based Authentication](./docs/auth/AUTHENTICATION.md)
 - [Role and Permission Authorization](./docs/auth/AUTHORIZATION.md)
 
+### Testing
+
+- [Testing](#testing)
+- [Testing guide](./docs/guidelines/TESTING.md)
+
 ## Introduction
 
 ### Project Overview
@@ -305,6 +310,16 @@ $ yarn start:dev
 # production mode
 $ yarn start:prod
 ```
+
+## Testing
+
+```bash
+yarn test
+yarn test:e2e
+yarn test:all
+```
+
+`yarn test` runs the unit specs. `yarn test:e2e` boots the API and calls every route through the real guards, pipe, and error filter. Neither command opens MySQL. The seeded callers, status codes, and the rule for a new test are in [the testing guide](./docs/guidelines/TESTING.md).
 
 ## Contributing
 

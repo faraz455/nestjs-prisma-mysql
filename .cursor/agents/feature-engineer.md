@@ -20,6 +20,7 @@ Rules:
 - Protected controllers use `@UseGuards(CustomJwtGuard, PermissionsGuard, RolesGuards)` in that order.
 - Create ids with `MakeTimedIDUnique()`. Return `IDDto` from create, update, and delete. Return `PaginatedResponseDto` from lists.
 - Match Prettier: single quotes, trailing commas. Run `yarn lint` on the files you touched.
+- A new or changed route also gets the unit spec and HTTP test in `.cursor/skills/api-tests/SKILL.md`.
 
 If the change needs a new model, migration, or seed row, stop and hand that part back for `prisma-steward`. Do not invent SQL inside the feature change.
 
