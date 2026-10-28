@@ -1,13 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import * as bodyParser from 'body-parser';
 
 import { AppModule } from './app.module';
-import { PrismaClientExceptionFilter } from './prisma/prisma-client-exception.filter';
-import cookieParser from 'cookie-parser';
+import { applyHttpDefaults } from './bootstrap/apply-http-defaults';
 
 (BigInt.prototype as any).toJSON = function () {
   return Number(this);
@@ -16,18 +13,7 @@ import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
-
-  app.useGlobalFilters(new PrismaClientExceptionFilter());
-  app.use(cookieParser(process.env.AUTH_COOKIE_SECRET));
-  app.use(bodyParser.json({ limit: '2mb' }));
-  app.use(bodyParser.urlencoded({ limit: '2mb', extended: true }));
+  applyHttpDefaults(app);
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
