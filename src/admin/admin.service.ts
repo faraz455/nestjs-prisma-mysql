@@ -144,12 +144,12 @@ export class AdminService {
     return await this.prisma.$transaction(async (tx) => {
       const role = await tx.role.update({
         where: { roleId: id },
-        data: { roleName: dto.roleName },
+        data: {
+          ...(dto.roleName !== undefined ? { roleName: dto.roleName } : {}),
+        },
       });
       if (dto.permissions) {
-        // Remove old permissions
         await tx.resourcePermission.deleteMany({ where: { roleId: id } });
-        // Add new permissions
         if (dto.permissions.length > 0) {
           await tx.resourcePermission.createMany({
             data: dto.permissions.map((perm) => ({
