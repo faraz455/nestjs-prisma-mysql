@@ -67,7 +67,9 @@ flowchart TD
   user --> next["Authorization guards"]
 ```
 
-`LoginGuard` runs only on login. It resolves `AuthService` for this request, loads the user, and compares the password with bcrypt. On success the controller calls `login()`.
+`LoginGuard` runs only on login. It resolves `AuthService` for this request, loads the user, and compares the password with bcrypt. On success the controller calls `login()`. A password longer than 72 bytes is rejected before that comparison, because bcrypt would ignore the extra bytes. Signup and user create or update require at least 8 characters and at most 72 bytes.
+
+`POST /auth/login`, `POST /auth/signup`, and `POST /auth/refresh-token` allow 10 attempts per minute for each connecting address. The three routes have separate counts. The limit lives in this process, so each process keeps its own window, and it uses the socket address rather than a forwarded header.
 
 `login()` puts the user's current `roleName` list on a profile and opens one session row in `UserRefreshToken`. The access token is signed for 24 hours (`86400s` in `JwtModule`) and carries `sub`, `sid`, `tenant`, and `tokenUse: access`. The refresh token is signed for 25 hours with `tokenUse: refresh`. The row stores the SHA-256 of the refresh token. `sid` is a random 40-character id. Both tokens are returned in the body and set as signed cookies. Cookie names come from the tenant section: `AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`.
 

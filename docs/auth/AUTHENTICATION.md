@@ -7,7 +7,9 @@ This system is designed to ensure secure access to our application by validating
 During the signup process:
 
 - **Mandatory Fields**: Username and password are required.
+- **Password Rule**: A new password must be at least 8 characters and at most 72 bytes. The same rule applies when an administrator sets a password. Login still accepts a shorter password that is already stored, and it rejects a password longer than 72 bytes before bcrypt runs.
 - **Password Storage**: The password is hashed using bcrypt and stored in the user table. Admin create and update hash the password before the write. User responses omit the hash.
+- **Attempt Limit**: Login, signup, and token refresh each allow 10 attempts per minute for one connecting address. The next attempt receives `429`.
 
 ## User Login
 

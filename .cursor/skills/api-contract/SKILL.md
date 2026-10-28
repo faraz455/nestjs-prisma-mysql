@@ -10,6 +10,7 @@ The global pipe in `src/main.ts` uses `transform`, `whitelist`, and `forbidNonWh
 ## Field rules
 
 - Required string: `@ApiProperty({ required: true, type: String })` and `@IsCustomString()`.
+- A password that will be stored uses `@IsPassword()`. Login uses `@MaxPasswordBytes()` so a shorter stored password can still be checked.
 - Optional string: `required: false`, `@IsCustomString({ required: false })`, and `field?: string`.
 - Booleans use `@IsBoolean()` and `type: Boolean`.
 - Nested object arrays use `@ValidateNested({ each: true })` and `@Type(() => NestedDto)`.

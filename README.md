@@ -82,7 +82,7 @@ Feel free to clone this repository and use it as a starting point for your NestJ
 
 - **Comprehensive Documentation**: Benefit from clear and detailed documentation, including comments and relevant references, to guide you through the codebase and understand its functionality.
 
-- **Enhanced Authentication**: Implement secure authentication using JWT tokens, including throttle control for security, role and permission guards for access control, and login guards for session management.
+- **Enhanced Authentication**: Implement secure authentication using JWT tokens. Login, signup, and token refresh each allow 10 attempts per minute for a connecting address. A new password must be at least 8 characters and at most 72 bytes. Role and permission guards control access, and the login guard manages the session.
 
 ## Rapid Deployment
 
