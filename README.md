@@ -317,9 +317,13 @@ $ yarn start:prod
 yarn test
 yarn test:e2e
 yarn test:all
+yarn test:cov
+yarn lint:check
 ```
 
-`yarn test` runs the unit specs. `yarn test:e2e` boots the API and calls every route through the real guards, pipe, and error filter. Neither command opens MySQL. The seeded callers, status codes, and the rule for a new test are in [the testing guide](./docs/guidelines/TESTING.md).
+`yarn test` runs the unit specs. `yarn test:e2e` boots the API and calls every route through the real guards, pipe, and error filter. Neither command opens MySQL. `yarn test:cov` runs both and fails if the merged coverage drops below the floors in [the testing guide](./docs/guidelines/TESTING.md).
+
+Every push and pull request runs that guide's pipeline: `yarn lint:check` and `yarn test:cov`.
 
 ## Contributing
 

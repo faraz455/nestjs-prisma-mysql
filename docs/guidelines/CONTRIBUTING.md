@@ -15,7 +15,7 @@ Here's how you can contribute changes:
 -   **Clone your fork**: Clone your forked repository to your local machine.
 -   **Create a branch**: Create a new branch for your specific changes. This helps keep your changes isolated and easier to manage.
 -   **Make your changes**: Implement your changes and write clear and concise code that follows the project's coding conventions.
--   **Test your changes**: Run `yarn test`. Run `yarn test:e2e` when a route, guard, or tenant check changed. The cases are in [TESTING.md](TESTING.md).
+-   **Test your changes**: Run `yarn test`. Run `yarn test:e2e` when a route, guard, or tenant check changed. `yarn test:cov` checks the merged coverage. A push runs the same lint and coverage commands. The cases are in [TESTING.md](TESTING.md).
 -   **Commit your changes**: Commit your changes to your local branch with a descriptive commit message.
 -   **Push your changes**: Push your committed changes to your forked repository on GitHub.
 -   **Create a pull request**: Create a pull request from your branch to the main branch of the official repository. This will notify the project maintainers about your proposed changes.

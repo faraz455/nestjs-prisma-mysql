@@ -6,10 +6,16 @@ Unit specs and HTTP tests both run without MySQL. They do not read `.env` or `en
 yarn test
 yarn test:e2e
 yarn test:all
+yarn test:cov
 yarn lint
+yarn lint:check
 ```
 
 `yarn test` runs `src/**/*.spec.ts`. `yarn test:e2e` runs `test/**/*.e2e-spec.ts`. Node must be 20.19, 22.12, or newer.
+
+`yarn lint` fixes what ESLint can fix. `yarn lint:check` reports the same problems and leaves the files alone. The push pipeline uses `lint:check`.
+
+`yarn test:cov` runs both suites and merges the coverage. It fails when the combined report drops below 88% statements, 84% branches, 87% functions, or 88% lines. `src/main.ts` stays in that report. The HTTP tests boot the app through `createTestApp`, so the process entry in `main.ts` is the part this gate does not execute.
 
 ## What each layer owns
 
@@ -54,3 +60,7 @@ Name the test for the behavior, in the present tense. One behavior per test. Do 
 When a service starts calling a Prisma method the in-memory client does not implement, add that method in `test/support/memory-prisma.ts`. Throw a Prisma known error for a missing row, a duplicate unique value, or a blocked foreign key. The client rolls a failed `$transaction` back. It is not MySQL: it does not enforce collation, `CHAR` width, or `VARCHAR` length. String length belongs on the DTO and in `src/common/dto/http-validation.spec.ts`.
 
 The procedure for an agent is `.cursor/skills/api-tests/SKILL.md`.
+
+## On every push
+
+`.github/workflows/ci.yml` runs on push and on a pull request. It installs dependencies, generates the Prisma client, then runs `yarn lint:check` and `yarn test:cov`. Generate reads `DATABASE_URL` and does not open MySQL. The workflow uses the sample URL from the README.

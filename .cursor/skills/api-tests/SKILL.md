@@ -12,7 +12,7 @@ Two layers. Both run without MySQL and without reading `.env` or `env.conf`.
 | Unit | `src/**/*.spec.ts` | `yarn test` | A function, service query, or guard branch |
 | HTTP | `test/**/*.e2e-spec.ts` | `yarn test:e2e` | Status, auth, validation, and the response shape |
 
-`yarn test:all` runs both. `yarn lint` covers `src` and `test`.
+`yarn test:all` runs both. `yarn test:cov` runs both and fails if the merged coverage drops below the floors in `scripts/check-coverage.js`. `yarn lint:check` covers `src` and `test` without rewriting files. Pushes run `lint:check` and `test:cov` from `.github/workflows/ci.yml`.
 
 ## When a route changes
 

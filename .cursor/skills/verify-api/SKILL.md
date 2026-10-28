@@ -10,13 +10,14 @@ description: Verifies NestJS and Prisma changes with lint, tests, and a claim ch
 From the repository root:
 
 ```bash
-yarn lint
+yarn lint:check
 yarn test
 yarn test:e2e
+yarn test:cov
 yarn build
 ```
 
-Run `yarn test` when a spec covers the change. Run `yarn test:e2e` when a route, guard, pipe, filter, or tenant check changed. Run `yarn build` when a module, provider, or Prisma client type changed. Skip a command only when the repo cannot run it, and say why.
+Run `yarn lint:check` so a formatting fix is not applied during the check. Run `yarn test` when a spec covers the change. Run `yarn test:e2e` when a route, guard, pipe, filter, or tenant check changed. Run `yarn test:cov` when the change should hold the coverage floors. Run `yarn build` when a module, provider, or Prisma client type changed. Skip a command only when the repo cannot run it, and say why.
 
 Do not run `prisma migrate reset`, do not drop schemas, and do not cat `.env` or `env.conf`.
 
