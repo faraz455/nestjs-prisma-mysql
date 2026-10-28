@@ -1,0 +1,18 @@
+---
+description: Split commits by one change and do not add an agent co-author
+alwaysApply: true
+---
+
+# Atomic commits
+
+When asked to commit, split the pending work. Each commit does one thing. Several files belong in that commit when they are the same change. Do not group unrelated work to save a step.
+
+A commit should stand on its own. The tree should still build, and the change should not need a later uncommitted edit to be true.
+
+Order them so a later commit can build on an earlier one: behavior, then the tests for that behavior, then the docs that describe it.
+
+Write the message for why the change exists, in one or two sentences, in the style of the existing history.
+
+## Co-author
+
+The commit author is the user. Do not add a `Co-authored-by` trailer, a second author, or a committer for Cursor or any agent. Do not set `git config`. Do not pass `--trailer`.
