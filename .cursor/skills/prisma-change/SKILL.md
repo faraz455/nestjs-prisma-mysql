@@ -45,4 +45,4 @@ CLI and seed use `.env` `DATABASE_URL`. The running API uses `env.conf`. After a
 
 ## Seeds
 
-Add sample rows in `prisma/seeding-helpers/` and call them from `prisma/seed.ts` when the new data is part of `yarn data:seed`. Permission seeds use `roleId` `SUPERADMIN` or `ADMIN`.
+`yarn data:reset` runs `prisma/seed.ts`. It deletes application rows in `DATABASE_URL`, then inserts the local test sample. Skip it for a database you need to keep. Sample usernames and passwords are in `prisma/seeding-helpers/user.seed.ts`. Add sample rows in `prisma/seeding-helpers/`, delete the new table from `deleteData` before the rows it references, and call the insert from `seedBaseData`. Permission seeds use `roleId` `SUPERADMIN` or `ADMIN`.

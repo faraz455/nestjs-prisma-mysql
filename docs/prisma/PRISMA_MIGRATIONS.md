@@ -38,6 +38,14 @@ baselining your database. To do this, run the following command:
 $ yarn prisma migrate deploy
 ```
 
+That is the production schema step. It does not insert sample users or articles.
+
+### Sample data reset
+
+`yarn data:reset` is not a migration. It deletes application rows in the database named by `DATABASE_URL`, then inserts the local test sample from `prisma/seed.ts`. The schema and `_prisma_migrations` stay. Skip it when the database holds data you need to keep. Change the sample usernames and passwords in `prisma/seeding-helpers/user.seed.ts` if you use those accounts.
+
+`yarn prisma migrate reset` is a different command. It drops the database, reapplies every migration, and then runs that same sample reset. Do not use it on a database you need to keep, and do not put seed rows in a migration file.
+
 ### Merge all Migrations
 
 To consolidate all migrations into a single file, follow these steps:

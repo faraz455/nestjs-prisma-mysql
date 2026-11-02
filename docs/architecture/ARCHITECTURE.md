@@ -48,7 +48,7 @@ flowchart LR
 
 `env.conf` is an INI file. The section name is the host, for example `localhost:3000`. The section holds the MySQL user, password, host, and database name. The first request for a host opens a pool. Later requests for that host reuse it. An unknown host gets `404 Tenant not found`.
 
-`.env` `DATABASE_URL` is for the Prisma CLI and the seed script. `prisma.config.ts` loads that file. Request handling uses the `env.conf` fields. Each host gets a Prisma 7.10.1 client that connects through the MariaDB driver, with a pool of 20 connections.
+`.env` `DATABASE_URL` is for the Prisma CLI and `yarn data:reset`. That command deletes every application row in that one database, then inserts sample roles, users, permissions, and articles for local testing. Skip it when the database holds data you need to keep. A production database stops after `yarn prisma migrate deploy`. `prisma.config.ts` loads `.env`. Request handling uses the `env.conf` fields. Each host gets a Prisma 7.10.1 client that connects through the MariaDB driver, with a pool of 20 connections.
 
 ## 4. Authentication guards
 
@@ -79,7 +79,7 @@ flowchart TD
 
 `CustomJwtGuard` is what protected controllers use. It reads the signed auth cookie, then a Bearer token. It rejects the token when the signature is invalid, `tokenUse` is not `access`, `tenant` is not this host, or the `sid` row is missing, revoked, or expired. It then loads the user's current role names onto the profile. That profile is what the later guards read.
 
-`POST /auth/logout` revokes the session in the presented access or refresh token and clears both cookies. `POST /auth/logout-all` revokes every active session for the caller. `POST /admin/users/:id/sessions/revoke` does that for a chosen user. Admin routes still require `ADMIN` or `SUPER ADMIN`. A database reset deletes the session rows, so tokens issued before the reset stop working and the user has to log in again.
+`POST /auth/logout` revokes the session in the presented access or refresh token and clears both cookies. `POST /auth/logout-all` revokes every active session for the caller. `POST /admin/users/:id/sessions/revoke` does that for a chosen user. Admin routes still require `ADMIN` or `SUPER ADMIN`. `yarn data:reset` deletes the session rows in the `DATABASE_URL` database, so tokens issued before that reset stop working and the user has to log in again.
 
 `POST /auth/signup` creates a user with a bcrypt password and no role. Login works afterward. Protected controllers still reject that user until a role is assigned. When an administrator sets a new password, that update also revokes every active session for the user. A token from before the change is rejected.
 
@@ -100,7 +100,7 @@ Roles are the user's current role names, compared as strings:
 @Roles({ OR: ['ADMIN', 'SUPER ADMIN'] })
 ```
 
-The seed creates those two names. `SUPER ADMIN` receives every Article flag. `ADMIN` receives `Article.view`.
+The sample reset creates those two names. `SUPER ADMIN` receives every Article flag. `ADMIN` receives `Article.view`. The user ids in that sample stay `SUPERADMIN` and `ADMIN`. Change the sample usernames and passwords in `prisma/seeding-helpers/user.seed.ts` if you use those accounts. Skip the reset when the database holds production data.
 
 Permissions are rows in `ResourcePermission`: a resource name plus `create`, `view`, `update`, and `delete`. The permission guard loads the rows for the caller's current role names on each request. `CustomJwtGuard` loads those names from `UserRole` on each request, so a role or permission change applies on the next request. The access token still carries the roles from login; authorization does not use that copy.
 
@@ -125,7 +125,7 @@ The service is the only layer that queries MySQL. It receives the tenant client 
 
 `User` reaches a role only through `UserRole`. Permissions belong to a role. Foreign keys use `ON DELETE RESTRICT`.
 
-Primary keys are `CHAR(40)` strings. Prisma Client fills a new row with a UUID version 7 when the create call leaves the id out. That value sorts by time and is unique across processes, so the API does not generate ids itself. `autoincrement()` is not used: these ids are returned to callers, and the seed uses the same `ADMIN` and `SUPERADMIN` ids in every tenant database. `UserRefreshToken.userRefreshTokenId` is the exception. Login sets it to 40 random hex characters, and the column has no default, because that id is the session key inside the JWT. Existing rows keep the ids they already have. A UUID version 7 is 36 characters, so it fits the same column.
+Primary keys are `CHAR(40)` strings. Prisma Client fills a new row with a UUID version 7 when the create call leaves the id out. That value sorts by time and is unique across processes, so the API does not generate ids itself. `autoincrement()` is not used: these ids are returned to callers, and the sample reset uses the same `ADMIN` and `SUPERADMIN` ids in every tenant database it is pointed at. `UserRefreshToken.userRefreshTokenId` is the exception. Login sets it to 40 random hex characters, and the column has no default, because that id is the session key inside the JWT. Existing rows keep the ids they already have. A UUID version 7 is 36 characters, so it fits the same column.
 
 `prisma migrate dev` writes a SQL file under `prisma/migrations` when the schema changes. `prisma migrate deploy` applies the files that have not run yet. Prisma records each applied file in the `_prisma_migrations` table in that MySQL database, and the next deploy skips those rows. The CLI reads `.env` `DATABASE_URL`, so point that URL at the tenant database you are updating.
 

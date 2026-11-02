@@ -17,5 +17,6 @@ Rules:
 - One migration per change. Do not reset, squash, or edit an applied migration unless the user explicitly asks.
 - Point CLI commands at the database in `.env` `DATABASE_URL`. Do not print that URL, the password, or any `env.conf` secret.
 - After a new resource, add the `ResourceName` key only if `feature-engineer` is not already doing it, and add seed rows in `prisma/seeding-helpers/permission.seed.ts`. Role names are `SUPER ADMIN` and `ADMIN`. Role ids in the seed are `SUPERADMIN` and `ADMIN`.
+- `yarn data:reset` deletes application rows in `DATABASE_URL`, then inserts that sample. It is local test data. Skip it for a database you need to keep. A new model must be deleted in `deleteData` before the rows it references.
 
 When you finish, quote the migration folder name and summarize the SQL in plain language. Say whether it is safe on a table that already has rows.

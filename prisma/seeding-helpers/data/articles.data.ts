@@ -1,5 +1,6 @@
 import { Prisma } from '../../../src/generated/prisma/client';
 
+/// Sample article rows for the local test reset. Not production content.
 export const articleData: Prisma.ArticleUncheckedCreateInput[] = [
   {
     body: 'This is the body of the first article. It contains detailed information and insights on the topic discussed.',

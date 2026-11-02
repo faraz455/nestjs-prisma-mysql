@@ -1,38 +1,65 @@
-import { Gender, Prisma, PrismaClient } from '../../src/generated/prisma/client';
+import {
+  Gender,
+  Prisma,
+  PrismaClient,
+} from '../../src/generated/prisma/client';
 import * as bcrypt from 'bcrypt';
 
-/// Seeds the default users and their roles into the database
+/**
+ * Sample logins for local testing. Change `username` and `password` here
+ * before you use the accounts. Keep the user ids. The reset attaches
+ * `SUPERADMIN` and `ADMIN` to the roles in `role.seed.ts`.
+ *
+ * These rows are inserted only by the sample reset (`yarn data:reset`).
+ * Skip that command when the database holds production data, and create
+ * your own users instead.
+ */
+const sampleUsers: Array<
+  Pick<
+    Prisma.UserUncheckedCreateInput,
+    'userId' | 'username' | 'firstName' | 'fullName'
+  > & { password: string }
+> = [
+  {
+    userId: 'SUPERADMIN',
+    username: 'superAdmin',
+    password: 'SuperAdmin@1',
+    firstName: 'Super Admin',
+    fullName: 'Super Admin',
+  },
+  {
+    userId: 'ADMIN',
+    username: 'admin',
+    password: 'Admin@1',
+    firstName: 'Admin',
+    fullName: 'Admin',
+  },
+];
+
+/// Inserts the sample users and their role links. Called after the reset deletes existing rows.
 export async function seedUsers(prisma: PrismaClient) {
-  console.log('Seeding Users !!!');
+  console.log('Inserting sample users.');
 
   const salt = await bcrypt.genSalt();
 
-  const userData: Prisma.UserUncheckedCreateInput[] = [
-    {
-      userId: 'SUPERADMIN',
-      username: 'superAdmin',
-      password: await bcrypt.hash('SuperAdmin@1', salt),
-      firstName: 'Super Admin',
-      fullName: 'Super Admin',
+  const userData: Prisma.UserUncheckedCreateInput[] = [];
+  for (const sampleUser of sampleUsers) {
+    userData.push({
+      userId: sampleUser.userId,
+      username: sampleUser.username,
+      password: await bcrypt.hash(sampleUser.password, salt),
+      firstName: sampleUser.firstName,
+      fullName: sampleUser.fullName,
       birthDateString: new Date().toDateString(),
       gender: Gender.MALE,
-    },
-    {
-      userId: 'ADMIN',
-      username: 'admin',
-      password: await bcrypt.hash('Admin@1', salt),
-      firstName: 'Admin',
-      fullName: 'Admin',
-      birthDateString: new Date().toDateString(),
-      gender: Gender.MALE,
-    },
-  ];
+    });
+  }
 
-  const records = await prisma.user.createMany({
+  await prisma.user.createMany({
     data: userData,
   });
 
-  const recordsV2 = await prisma.userRole.createMany({
+  await prisma.userRole.createMany({
     data: [
       {
         roleId: 'ADMIN',
@@ -45,6 +72,5 @@ export async function seedUsers(prisma: PrismaClient) {
     ],
   });
 
-  console.log('Users seeding done !!!');
-  console.log('-----------------------------');
+  console.log('Sample users inserted.');
 }

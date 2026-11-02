@@ -1,7 +1,8 @@
 import { Prisma, PrismaClient } from '../../src/generated/prisma/client';
 
+/// Sample Article flags for the local test reset. Not applied in production unless you run the reset.
 export async function seedPermissions(prisma: PrismaClient) {
-  console.log('Seeding Resource Permissions !!!');
+  console.log('Inserting sample permissions.');
 
   const permissionsData: Prisma.ResourcePermissionUncheckedCreateInput[] = [];
   permissionsData.push({
@@ -19,10 +20,9 @@ export async function seedPermissions(prisma: PrismaClient) {
     view: true,
   });
 
-  const records = await prisma.resourcePermission.createMany({
+  await prisma.resourcePermission.createMany({
     data: permissionsData,
   });
 
-  console.log('Resource Permissions seeding done !!!');
-  console.log('-----------------------------');
+  console.log('Sample permissions inserted.');
 }

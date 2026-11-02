@@ -42,6 +42,7 @@ Feel free to clone this repository and use it as a starting point for your NestJ
   - [Setting up Environment Variables](#setting-up-environment-variables)
     - [Basic Environment](#basic-environment)
     - [Tenant Configuration](#tenant-configuration)
+- [Reset sample data](#reset-sample-data)
 - [Running the App](#running-the-app)
 
 ### Prisma ORM
@@ -168,22 +169,24 @@ $ yarn prisma generate
 $ yarn prisma migrate deploy
 ```
 
-### 5. Seed Sample Data
+### 5. Reset sample data
 
-To seed the database with sample roles, permissions, users, and articles, run:
+`yarn data:reset` is for a local test database. It deletes every application row in the single database named by `DATABASE_URL`, then inserts the sample again. The schema and migration history stay. Other databases listed in `env.conf` are not touched.
+
+Skip this command when that database holds data you need to keep. A production database only needs `yarn prisma migrate deploy`. Create your own users there, and leave this sample out.
 
 ```bash
-yarn run data:seed
+yarn data:reset
 ```
 
-This will create:
+The sample it inserts:
 
-- Roles: SUPERADMIN, ADMIN
-- Users: superAdmin (password: SuperAdmin@1), admin (password: Admin@1)
-- Permissions: Full permissions for SUPERADMIN, view permission for ADMIN
-- Sample articles
+- Roles: id `SUPERADMIN` named `SUPER ADMIN`, and id `ADMIN` named `ADMIN`. Guards compare the names.
+- Users: `superAdmin` (password: `SuperAdmin@1`), `admin` (password: `Admin@1`). These are test logins. Change the usernames and passwords in `prisma/seeding-helpers/user.seed.ts` before you use the accounts.
+- Permissions: `SUPER ADMIN` can create, view, update, and delete Article. `ADMIN` can view Article.
+- Ten sample articles.
 
-You can modify the seed scripts in `prisma/seeding-helpers/` to customize the initial data.
+`yarn prisma db seed` runs the same file. `yarn prisma migrate reset` is a different command: it drops the database, reapplies migrations, and then runs this sample reset. Do not point either command at production data.
 
 ### 6. Start the Server
 
@@ -243,7 +246,7 @@ JWT_SECRET=secret
 AUTH_COOKIE_SECRET=mycookiesecret
 ```
 
-Remember, the `DATABASE_URL` environment variable should refer to your dev database and is only present for use with the Prisma CLI. To see how to configure the database(s) you wish to use when running the server, see Tenant Configuration below.
+Remember, the `DATABASE_URL` environment variable should refer to your dev database. It is only for the Prisma CLI and `yarn data:reset`. That command deletes every application row in that database and inserts sample test data, so skip it when the database holds data you need to keep. To see how to configure the database(s) the server uses, see Tenant Configuration below.
 
 ### Tenant Configuration
 
@@ -281,22 +284,24 @@ Copy paste the above as many times as you wish to serve multiple tenants. Make s
 
 For more detailed information on multi-tenancy, please visit - [docs - multitendancy](./docs/prisma//MULTI_TENANCY.md)
 
-## Seed Sample Data
+## Reset sample data
 
-To seed the database with sample roles, permissions, users, and articles, run:
+`yarn data:reset` deletes every application row in the database named by `.env` `DATABASE_URL`, then inserts sample roles, permissions, users, and articles for local testing. It does not change the schema, and it does not update the other tenant databases in `env.conf`.
+
+Skip it for production data. Migrate with `yarn prisma migrate deploy`, then create your own users. The sample usernames and passwords are test logins. Change them in `prisma/seeding-helpers/user.seed.ts` if you use those accounts.
 
 ```bash
-yarn run data:seed
+yarn data:reset
 ```
 
-This will create:
+The sample it inserts:
 
-- Roles: SUPERADMIN, ADMIN
-- Users: superAdmin (password: SuperAdmin@1), admin (password: Admin@1)
-- Permissions: Full permissions for SUPERADMIN, view permission for ADMIN
-- Sample articles
+- Roles: id `SUPERADMIN` named `SUPER ADMIN`, and id `ADMIN` named `ADMIN`. Guards compare the names.
+- Users: `superAdmin` (password: `SuperAdmin@1`), `admin` (password: `Admin@1`).
+- Permissions: `SUPER ADMIN` can create, view, update, and delete Article. `ADMIN` can view Article.
+- Ten sample articles.
 
-You can modify the seed scripts in `prisma/seeding-helpers/` to customize the initial data.
+`yarn prisma db seed` runs the same reset. `yarn prisma migrate reset` drops the database before it runs. Do not point either command at data you need to keep. The same steps are in [Rapid Deployment](#5-reset-sample-data).
 
 ## Running the app
 

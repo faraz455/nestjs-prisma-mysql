@@ -18,4 +18,5 @@ Services omit that id. Prisma Client fills a UUID version 7. Do not use `autoinc
 - On a populated table, add a required column as nullable, backfill every row, then set `NOT NULL` in that same file.
 - Keep one migration per change. Do not reset or squash unless the user asks.
 - Seed permissions with role id `SUPERADMIN` or `ADMIN`. Role names are `SUPER ADMIN` and `ADMIN`.
+- `yarn data:reset` deletes application rows in `DATABASE_URL`, then inserts the sample. It is local test data. Skip it for a database you need to keep. It is not `prisma migrate reset`.
 - Do not print `DATABASE_URL` or `env.conf` secrets.

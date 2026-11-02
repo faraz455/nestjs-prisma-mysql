@@ -1,9 +1,8 @@
 import { Prisma, PrismaClient } from '../../src/generated/prisma/client';
 
-/// Seeds the default roles into the database
+/// Sample roles for the local test reset. Ids stay fixed. Guards compare the names.
 export async function seedRoles(prisma: PrismaClient) {
-  console.log('-----------------------------');
-  console.log('Seeding Roles !!!');
+  console.log('Inserting sample roles.');
   const roleData: Prisma.RoleUncheckedCreateInput[] = [
     {
       roleId: 'SUPERADMIN',
@@ -15,10 +14,9 @@ export async function seedRoles(prisma: PrismaClient) {
     },
   ];
 
-  const records = await prisma.role.createMany({
+  await prisma.role.createMany({
     data: roleData,
   });
 
-  console.log('Roles seeding done !!!');
-  console.log('-----------------------------');
+  console.log('Sample roles inserted.');
 }

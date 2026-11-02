@@ -17,3 +17,9 @@ In cloud computing, multi-tenancy means that multiple clients use the same compu
 1. **Security and Compliance:** Some industries face regulatory constraints that prohibit storing data on shared infrastructure. Additionally, rare security breaches or data corruption could affect multiple tenants if the infrastructure isn't properly configured.
 
 2. **Performance Impact:** Excessive resource consumption by one tenant can degrade performance for others. Proper infrastructure management by the cloud provider is essential to prevent this issue.
+
+## This repository
+
+Each host section in `env.conf` names that tenant's MySQL database. The running API reads `env.conf`. `.env` `DATABASE_URL` is for the Prisma CLI and `yarn data:reset` only.
+
+`yarn data:reset` deletes every application row in that one database, then inserts sample roles, users, permissions, and articles for local testing. It does not walk `env.conf`, so other tenants stay as they are. Skip the command when the database holds data you need to keep. Point `DATABASE_URL` at a tenant and run `yarn prisma migrate deploy` for each database you want to update, then create your own users. Sample usernames and passwords are test logins in `prisma/seeding-helpers/user.seed.ts`. Change them there if you use those accounts.

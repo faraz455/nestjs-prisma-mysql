@@ -30,6 +30,16 @@ $ yarn prisma generate
 
 By following these steps, you'll successfully set up Prisma and its client, enabling you to seamlessly interact with your MySQL database within the project.
 
+### Sample data reset
+
+`yarn data:reset` runs `prisma/seed.ts` against the one database in `.env` `DATABASE_URL`. It is local test data.
+
+The file deletes every application row, then inserts sample roles, permissions, users, and articles. The schema and `_prisma_migrations` stay. Tenant databases named only in `env.conf` are not updated.
+
+Skip the command when that database holds data you need to keep. Production setup is `yarn prisma migrate deploy` and users you create yourself. The sample usernames and passwords are in `prisma/seeding-helpers/user.seed.ts`. Change them if you use those accounts.
+
+`yarn prisma db seed` runs the same file. `yarn prisma migrate reset` drops the database, reapplies migrations, and then runs it. Do not point either command at production data.
+
 ### Aditional Resources
 
 - [Prisma playground](https://playground.prisma.io/) - Practice your Prisma queries and migrations in an interactive environment.

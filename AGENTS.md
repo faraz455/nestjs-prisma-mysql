@@ -18,7 +18,7 @@ New behavior enters at the layer that already owns it. Controllers stay thin. Se
 
 ## Tenancy
 
-`.env` `DATABASE_URL` is for the Prisma CLI and `yarn data:seed`. Request handling uses the `env.conf` section whose name is the host, for example `localhost:3000`. An unknown host is `404 Tenant not found`.
+`.env` `DATABASE_URL` is for the Prisma CLI and `yarn data:reset`. That command deletes every application row in that one database, then inserts sample test data. Skip it when the database holds data you need to keep. Request handling uses the `env.conf` section whose name is the host, for example `localhost:3000`. An unknown host is `404 Tenant not found`.
 
 Services inject `@Inject(PRISMA_SERVICE)`. They do not construct `PrismaClient` and they do not read `DATABASE_URL` at request time.
 

@@ -37,7 +37,7 @@ When a user logs in:
 
 - **Validation**: The custom JWT guard validates the access token for requests to protected endpoints.
 - **Tenant**: The token's `tenant` claim must match the request host. A token issued for one tenant is rejected on another.
-- **Session**: The token's `sid` must be an active `UserRefreshToken` row in that tenant's database. A missing, revoked, or expired row is unauthorized. Resetting the database removes those rows, so old tokens stop working.
+- **Session**: The token's `sid` must be an active `UserRefreshToken` row in that tenant's database. A missing, revoked, or expired row is unauthorized. `yarn data:reset` deletes those rows in the database named by `DATABASE_URL`, so tokens issued before the reset stop working. Skip that command when the database holds production data.
 - **Current roles**: After the session is active, the guard loads the user's current role names from MySQL and puts them on the request profile. A role change applies on the next request.
 - **Token Expiry**: Call `POST /auth/refresh-token` with a valid refresh token to issue a new session. The previous session row is revoked.
 

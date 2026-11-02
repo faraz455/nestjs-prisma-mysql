@@ -27,14 +27,6 @@ export function getPages(count: number, per_page: number) {
 
 export function getHost(req: Request) {
   let host: string = req.headers.host!;
-  if (req.originalUrl.includes('private/apis')) {
-    // @ts-expect-error header-host is a string set by the private API caller
-    host = req.headers['header-host'];
-    if (!host) {
-      return 'impossiblestring';
-    }
-  }
-
   // check 127.0.0.1 to support tests
   return host.includes('127.0.0.1:') ? 'localhost:3000' : host;
 }

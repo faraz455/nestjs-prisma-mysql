@@ -27,7 +27,7 @@ An HTTP test boots `AppModule` through `createTestApp()` in `test/support/create
 
 ## Seeded callers
 
-`seedTenant` in `test/support/seed.ts` resets the in-memory rows and inserts four users. The password for every one of them is `password`.
+`seedTenant` in `test/support/seed.ts` resets the in-memory rows and inserts four users. The password for every one of them is `password`. This harness is not `yarn data:reset`. That command talks to MySQL, deletes the application rows in `DATABASE_URL`, and inserts the local sample. Tests never run it.
 
 | Username | Role | Article flags |
 | --- | --- | --- |
