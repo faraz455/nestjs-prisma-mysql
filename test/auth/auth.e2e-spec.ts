@@ -6,10 +6,13 @@ import {
 import {
   call,
   cookieHeader,
+  cookiePair,
   errorText,
   http,
   loginAs,
+  refreshCookieHeader,
   tokenPayload,
+  unsignedCookie,
 } from '../support/http';
 import { AUTH_ATTEMPT_LIMIT } from 'src/auth/auth-rate-limit';
 import {
@@ -19,7 +22,6 @@ import {
   signupBody,
   usernames,
 } from '../support/seed';
-import request from 'supertest';
 
 describe('Auth HTTP', () => {
   let ctx: TestApp;
@@ -53,11 +55,20 @@ describe('Auth HTTP', () => {
       update: true,
       delete: true,
     });
-    expect(cookieHeader(response)).toContain('Authentication=');
-    expect(cookieHeader(response)).toContain('Refresh=');
+    expect(body).not.toHaveProperty('refreshToken');
+    const cookies = cookieHeader(response);
+    expect(cookies).toContain('HttpOnly');
+    expect(cookies).toContain('Secure');
+    expect(cookies).toContain('SameSite=Lax');
+    expect(cookies).toContain('Path=/');
+    expect(cookies).toContain('Authentication=');
+    expect(cookies).toContain('Max-Age=86400');
+    expect(cookies).toContain('Refresh=');
+    expect(cookies).toContain('Max-Age=90000');
 
     const access = tokenPayload(body.authToken);
-    const refresh = tokenPayload(body.refreshToken);
+    const refreshToken = unsignedCookie(response, 'Refresh');
+    const refresh = tokenPayload(refreshToken);
     expect(access).toMatchObject({
       tenant: 'localhost:3000',
       tokenUse: 'access',
@@ -70,7 +81,7 @@ describe('Auth HTTP', () => {
       sid: access.sid,
     });
     expect(ctx.prisma.sessions).toHaveLength(1);
-    expect(ctx.prisma.sessions[0].refreshToken).not.toBe(body.refreshToken);
+    expect(ctx.prisma.sessions[0].refreshToken).not.toBe(refreshToken);
   });
 
   it('returns view-only flags for the admin role', async () => {
@@ -111,13 +122,14 @@ describe('Auth HTTP', () => {
       .expect(401);
   });
 
-  it('rotates a refresh token and revokes every session when the old token is presented again', async () => {
+  it('rotates a refresh cookie and revokes every session when the old cookie is presented again', async () => {
     const first = await loginAs(ctx.app, usernames.super);
     const second = await http(ctx.app)
       .post('/auth/refresh-token')
-      .send({ refreshToken: first.refreshToken })
+      .set('Cookie', first.refreshCookie)
       .expect(200);
-    expect(second.body.refreshToken).not.toBe(first.refreshToken);
+    expect(second.body).not.toHaveProperty('refreshToken');
+    expect(unsignedCookie(second, 'Refresh')).not.toBe(first.refreshToken);
     expect(second.body.user).not.toHaveProperty('password');
 
     await call(ctx.app, 'get', '/auth/me', first.authToken).expect(401);
@@ -125,21 +137,21 @@ describe('Auth HTTP', () => {
 
     await http(ctx.app)
       .post('/auth/refresh-token')
-      .send({ refreshToken: first.refreshToken })
+      .set('Cookie', first.refreshCookie)
       .expect(401);
     await call(ctx.app, 'get', '/auth/me', second.body.authToken).expect(401);
   });
 
   it('rejects a missing, forged, expired, or access token used to refresh', async () => {
-    await http(ctx.app).post('/auth/refresh-token').send({}).expect(400);
+    await http(ctx.app).post('/auth/refresh-token').expect(401);
     const issued = await loginAs(ctx.app, usernames.plain);
     await http(ctx.app)
       .post('/auth/refresh-token')
-      .send({ refreshToken: 'not-a-token' })
+      .set('Cookie', 'Refresh=not-a-token')
       .expect(401);
     await http(ctx.app)
       .post('/auth/refresh-token')
-      .send({ refreshToken: issued.authToken })
+      .set('Cookie', refreshCookieHeader(issued.authToken))
       .expect(401);
 
     ctx.prisma.sessions.forEach((session) => {
@@ -147,7 +159,7 @@ describe('Auth HTTP', () => {
     });
     await http(ctx.app)
       .post('/auth/refresh-token')
-      .send({ refreshToken: issued.refreshToken })
+      .set('Cookie', issued.refreshCookie)
       .expect(401);
     await call(ctx.app, 'get', '/auth/me', issued.authToken).expect(401);
   });
@@ -176,13 +188,20 @@ describe('Auth HTTP', () => {
   });
 
   it('returns 429 after ten attempts to login, signup, or refresh', async () => {
-    for (const path of ['/auth/login', '/auth/signup', '/auth/refresh-token']) {
+    for (const path of ['/auth/login', '/auth/signup']) {
       for (let attempt = 0; attempt < AUTH_ATTEMPT_LIMIT; attempt += 1) {
         await http(ctx.app).post(path).send({}).expect(400);
       }
       const limited = await http(ctx.app).post(path).send({}).expect(429);
       expect(errorText(limited.body)).toMatch(/Too many attempts/);
     }
+    for (let attempt = 0; attempt < AUTH_ATTEMPT_LIMIT; attempt += 1) {
+      await http(ctx.app).post('/auth/refresh-token').expect(401);
+    }
+    const limitedRefresh = await http(ctx.app)
+      .post('/auth/refresh-token')
+      .expect(429);
+    expect(errorText(limitedRefresh.body)).toMatch(/Too many attempts/);
   });
 
   it('signs a visitor up without a role and rejects a duplicate username', async () => {
@@ -231,12 +250,10 @@ describe('Auth HTTP', () => {
     await call(ctx.app, 'get', '/auth/me', issued.refreshToken).expect(401);
     await call(ctx.app, 'get', '/auth/me').expect(401);
 
-    const agent = request.agent(ctx.app.getHttpServer());
-    await agent
-      .post('/auth/login')
-      .send({ username: usernames.admin, password: PASSWORD })
+    const cookieUser = await http(ctx.app)
+      .get('/auth/me')
+      .set('Cookie', issued.authCookie)
       .expect(200);
-    const cookieUser = await agent.get('/auth/me').expect(200);
     expect(cookieUser.body.userId).toBe(ids.adminUser);
   });
 
@@ -253,13 +270,22 @@ describe('Auth HTTP', () => {
   });
 
   it('revokes the presented session on logout and every session on logout-all', async () => {
-    const agent = request.agent(ctx.app.getHttpServer());
-    const loggedIn = await agent
+    const loggedIn = await http(ctx.app)
       .post('/auth/login')
       .send({ username: usernames.super, password: PASSWORD })
       .expect(200);
-    await agent.post('/auth/logout').expect(200);
-    await agent.get('/auth/me').expect(401);
+    const loggedOut = await http(ctx.app)
+      .post('/auth/logout')
+      .set(
+        'Cookie',
+        `${cookiePair(loggedIn, 'Authentication')}; ${cookiePair(loggedIn, 'Refresh')}`,
+      )
+      .expect(200);
+    const cleared = cookieHeader(loggedOut);
+    expect(cleared).toContain('Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+    expect(cleared).toContain('HttpOnly');
+    expect(cleared).toContain('Secure');
+    expect(cleared).toContain('SameSite=Lax');
     await call(ctx.app, 'get', '/auth/me', loggedIn.body.authToken).expect(401);
 
     await http(ctx.app).post('/auth/logout').expect(200);

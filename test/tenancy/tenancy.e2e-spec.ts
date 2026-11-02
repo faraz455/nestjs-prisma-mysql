@@ -59,7 +59,7 @@ describe('tenancy and process edges', () => {
     await http(ctx.app)
       .post('/auth/refresh-token')
       .set('Host', OTHER_HOST)
-      .send({ refreshToken: issued.refreshToken })
+      .set('Cookie', issued.refreshCookie)
       .expect(401);
     expect(ctx.otherPrisma.sessions).toHaveLength(0);
     await http(ctx.app)

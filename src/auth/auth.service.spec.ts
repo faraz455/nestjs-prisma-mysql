@@ -150,6 +150,19 @@ describe('AuthService sessions', () => {
     });
   });
 
+  it('refuses refresh when the signed cookie is missing', async () => {
+    const { prisma } = prismaForLogin();
+    const service = serviceWith(prisma);
+    await expect(
+      service.refreshFromCookie({
+        headers: { host: 'localhost:3000' },
+        originalUrl: '/auth/refresh-token',
+        signedCookies: {},
+      } as unknown as Request),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+    expect(prisma.userRefreshToken.findUnique).not.toHaveBeenCalled();
+  });
+
   it('signs refresh tokens as refresh credentials', async () => {
     const { prisma } = prismaForLogin();
     const issued = await serviceWith(prisma).login(user(), 'localhost:3000');

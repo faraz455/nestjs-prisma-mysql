@@ -60,7 +60,7 @@ flowchart TD
   which -->|"POST /auth/login"| login["LoginGuard"]
   login --> bcrypt["AuthService checks username and bcrypt"]
   bcrypt --> issue["Issue tenant-bound access JWT 24h and refresh JWT 25h"]
-  issue --> cookies["Signed cookies and the same tokens in the JSON body"]
+  issue --> cookies["HttpOnly cookies. Access token also in JSON"]
   which -->|"Protected controllers"| jwt["CustomJwtGuard"]
   jwt --> read["Signed auth cookie, otherwise Authorization Bearer"]
   read --> user["Session must belong to this host"]
@@ -71,11 +71,11 @@ flowchart TD
 
 `POST /auth/login`, `POST /auth/signup`, and `POST /auth/refresh-token` allow 10 attempts per minute for each connecting address. The three routes have separate counts. The limit lives in this process, so each process keeps its own window, and it uses the socket address rather than a forwarded header.
 
-`login()` puts the user's current `roleName` list on a profile and opens one session row in `UserRefreshToken`. The access token is signed for 24 hours (`86400s` in `JwtModule`) and carries `sub`, `sid`, `tenant`, and `tokenUse: access`. The refresh token is signed for 25 hours with `tokenUse: refresh`. The row stores the SHA-256 of the refresh token. `sid` is a random 40-character id. Both tokens are returned in the body and set as signed cookies. Cookie names come from the tenant section: `AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`.
+`login()` puts the user's current `roleName` list on a profile and opens one session row in `UserRefreshToken`. The access token is signed for 24 hours (`86400s` in `JwtModule`) and carries `sub`, `sid`, `tenant`, and `tokenUse: access`. The refresh token is signed for 25 hours with `tokenUse: refresh`. The row stores the SHA-256 of the refresh token. `sid` is a random 40-character id. The JSON body returns the access token for bearer clients and does not return the refresh token. Both tokens are also set as cookies named by the tenant section, `AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`. Those cookies are signed, `HttpOnly`, `SameSite=Lax`, and `Path=/`, with `Max-Age` matching the token lifetime. `Secure` is set when `PRODUCTION` is not `0`, so a local `PRODUCTION=0` process can still store them over HTTP.
 
 `tenant` is the request host, normalized the same way the tenant middleware chooses a database. A token from one host is rejected on another host. Seeded user ids are the same in every tenant database (`ADMIN`, `SUPERADMIN`), so the host claim and the session row are what keep a login inside the tenant that created it.
 
-`POST /auth/refresh-token` checks the refresh token's signature, `tenant`, and hash. A matching active row is revoked and a new session is issued. Presenting a refresh token whose row is already revoked revokes every active session for that user.
+`POST /auth/refresh-token` reads the signed refresh cookie. It checks that token's signature, `tenant`, and hash. A matching active row is revoked and a new session is issued, including a new refresh cookie. Presenting a refresh token whose row is already revoked revokes every active session for that user.
 
 `CustomJwtGuard` is what protected controllers use. It reads the signed auth cookie, then a Bearer token. It rejects the token when the signature is invalid, `tokenUse` is not `access`, `tenant` is not this host, or the `sid` row is missing, revoked, or expired. It then loads the user's current role names onto the profile. That profile is what the later guards read.
 

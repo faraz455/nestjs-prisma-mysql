@@ -33,6 +33,6 @@ Per route:
 
 ## Cookies and passwords
 
-`LoginGuard` is for `POST /auth/login`. `AuthRateLimitGuard` runs first on login, signup, and refresh: 10 attempts per minute for each connecting address and route. Passwords are bcrypt hashes. Stored passwords are 8 characters to 72 bytes. Login rejects a longer password before `bcrypt.compare`. Access and refresh tokens are signed, returned in the body, and stored as signed cookies whose names come from the tenant's `env.conf` section. Each login inserts one `UserRefreshToken` row for that host. The raw refresh token is not stored.
+`LoginGuard` is for `POST /auth/login`. `AuthRateLimitGuard` runs first on login, signup, and refresh: 10 attempts per minute for each connecting address and route. Passwords are bcrypt hashes. Stored passwords are 8 characters to 72 bytes. Login rejects a longer password before `bcrypt.compare`. The access token is returned in the JSON body for bearer clients. The refresh token is not returned in JSON. Both tokens are stored as cookies named by the tenant's `env.conf` section. The cookies are signed, `HttpOnly`, `SameSite=Lax`, and `Path=/`, with `Max-Age` equal to the token lifetime. `Secure` is set when `PRODUCTION` is not `0`. `POST /auth/refresh-token` reads the refresh cookie. Each login inserts one `UserRefreshToken` row for that host. The raw refresh token is not stored.
 
 Do not log passwords, refresh tokens, or `Authorization` headers in new code.

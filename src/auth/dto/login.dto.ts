@@ -25,11 +25,3 @@ export class LoginDto {
   // })
   // enc_password: string;
 }
-
-export class RefreshTokenDto {
-  @ApiProperty({
-    required: true,
-  })
-  @IsCustomString()
-  refreshToken: string;
-}

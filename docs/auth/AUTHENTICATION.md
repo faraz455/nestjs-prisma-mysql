@@ -17,8 +17,8 @@ When a user logs in:
 
 - **Credentials**: The user must provide a valid username and password.
 - **Validation**: User credentials are validated against the stored username and hashed password.
-- **Token Generation**: Upon successful validation, an access token and a refresh token are generated.
-- **Cookie Management**: The generated tokens are set in cookies (`AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`) to validate the user where JWT guard is applied.
+- **Token Generation**: Upon successful validation, an access token and a refresh token are generated. The JSON body includes the access token and omits the refresh token.
+- **Cookie Management**: Both tokens are set as cookies (`AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`). The cookies are signed, `HttpOnly`, `SameSite=Lax`, and `Path=/`. `Max-Age` is 24 hours for the access cookie and 25 hours for the refresh cookie. `Secure` is set when `PRODUCTION` is not `0`.
 
 ## Login Guard and Strategy
 
@@ -27,11 +27,11 @@ When a user logs in:
 ## Token Management
 
 - **Access Token**: Used for authentication in subsequent requests to protected endpoints.
-- **Refresh Token**: Allows users to obtain a new access token without re-entering credentials if the access token expires.
+- **Refresh Token**: `POST /auth/refresh-token` reads the signed refresh cookie and issues a new session. The refresh token is not accepted from the JSON body and is not returned in the JSON body.
 
 ## Cookie Management
 
-- Upon successful login, the access token and refresh token are set in cookies with specific names (`AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`).
+- Upon successful login, the access token and refresh token are set in `HttpOnly` cookies (`AUTH_COOKIE_NAME` and `REFRESH_COOKIE_NAME`). JavaScript on the page cannot read them. Logout clears both cookies with the same `Path`, `SameSite`, and `Secure` flags.
 
 ## Custom JWT Guard
 
@@ -39,7 +39,7 @@ When a user logs in:
 - **Tenant**: The token's `tenant` claim must match the request host. A token issued for one tenant is rejected on another.
 - **Session**: The token's `sid` must be an active `UserRefreshToken` row in that tenant's database. A missing, revoked, or expired row is unauthorized. `yarn data:reset` deletes those rows in the database named by `DATABASE_URL`, so tokens issued before the reset stop working. Skip that command when the database holds production data.
 - **Current roles**: After the session is active, the guard loads the user's current role names from MySQL and puts them on the request profile. A role change applies on the next request.
-- **Token Expiry**: Call `POST /auth/refresh-token` with a valid refresh token to issue a new session. The previous session row is revoked.
+- **Token Expiry**: Call `POST /auth/refresh-token` with the refresh cookie to issue a new session. The previous session row is revoked.
 
 ## Sessions
 

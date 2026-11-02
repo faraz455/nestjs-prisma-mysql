@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { Request, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 
 import { TenantConfig } from '../multi-tenant/multi-tenant.config';
 import { TENANT_CONFIG } from '../multi-tenant/multi-tenant.module';
@@ -27,7 +27,7 @@ import { CustomJwtGuard, ReqUserObj } from './guards/custom-jwt.guard';
 
 import { IDDto } from 'src/common/dto';
 import { LoginEntity, RevokedSessionsEntity } from './entities';
-import { LoginDto, RefreshTokenDto, SignupDto } from './dto';
+import { LoginDto, SignupDto } from './dto';
 import { User } from '../generated/prisma/client';
 
 @Controller('auth')
@@ -50,7 +50,7 @@ export class AuthController {
   ) {
     const payload = await this.authService.login(user, getHost(req));
     this.setAuthCookies(res, payload.authToken, payload.refreshToken);
-    return payload;
+    return this.sessionBody(payload);
   }
 
   @ApiOkResponse({ type: LoginEntity })
@@ -59,15 +59,11 @@ export class AuthController {
   @Post('refresh-token')
   async refreshToken(
     @Req() req: Request,
-    @Body() data: RefreshTokenDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const payload = await this.authService.refreshToken(
-      data.refreshToken,
-      getHost(req),
-    );
+    const payload = await this.authService.refreshFromCookie(req);
     this.setAuthCookies(res, payload.authToken, payload.refreshToken);
-    return payload;
+    return this.sessionBody(payload);
   }
 
   @ApiOkResponse({ type: IDDto })
@@ -108,19 +104,52 @@ export class AuthController {
     return user;
   }
 
+  private sessionBody(
+    payload: LoginEntity & { refreshToken: string },
+  ): LoginEntity {
+    return {
+      user: payload.user,
+      profile: payload.profile,
+      permissions: payload.permissions,
+      authToken: payload.authToken,
+    };
+  }
+
   private setAuthCookies(
     res: Response,
     authToken: string,
     refreshToken: string,
   ) {
-    res.cookie(this.tConfig.AUTH_COOKIE_NAME, authToken, { signed: true });
-    res.cookie(this.tConfig.REFRESH_COOKIE_NAME, refreshToken, {
-      signed: true,
-    });
+    res.cookie(
+      this.tConfig.AUTH_COOKIE_NAME,
+      authToken,
+      authCookieOptions(ACCESS_COOKIE_MAX_AGE_MS),
+    );
+    res.cookie(
+      this.tConfig.REFRESH_COOKIE_NAME,
+      refreshToken,
+      authCookieOptions(REFRESH_COOKIE_MAX_AGE_MS),
+    );
   }
 
   private clearAuthCookies(res: Response) {
-    res.clearCookie(this.tConfig.AUTH_COOKIE_NAME, { signed: true });
-    res.clearCookie(this.tConfig.REFRESH_COOKIE_NAME, { signed: true });
+    const options = authCookieOptions(0);
+    delete options.maxAge;
+    res.clearCookie(this.tConfig.AUTH_COOKIE_NAME, options);
+    res.clearCookie(this.tConfig.REFRESH_COOKIE_NAME, options);
   }
+}
+
+const ACCESS_COOKIE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const REFRESH_COOKIE_MAX_AGE_MS = 25 * 60 * 60 * 1000;
+
+function authCookieOptions(maxAge: number): CookieOptions {
+  return {
+    signed: true,
+    httpOnly: true,
+    secure: process.env.PRODUCTION !== '0',
+    sameSite: 'lax',
+    path: '/',
+    maxAge,
+  };
 }

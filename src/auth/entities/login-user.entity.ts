@@ -55,7 +55,4 @@ export class LoginEntity {
 
   @ApiProperty({ required: true })
   authToken: string;
-
-  @ApiProperty({ required: true })
-  refreshToken: string;
 }

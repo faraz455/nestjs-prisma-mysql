@@ -150,6 +150,14 @@ export class AuthService {
     return this.issueSession(this.prisma, user, tenant);
   }
 
+  async refreshFromCookie(req: Request) {
+    const refreshToken = this.readRefreshCookie(req);
+    if (!refreshToken) {
+      throw new UnauthorizedException(INVALID_REFRESH);
+    }
+    return this.refreshToken(refreshToken, getHost(req));
+  }
+
   async refreshToken(refreshToken: string, tenant: string) {
     const claims = await this.readRefreshClaims(refreshToken, tenant);
     const session = await this.prisma.userRefreshToken.findUnique({
