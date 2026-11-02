@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { Prisma } from '../generated/prisma/client';
 import { AdminService } from './admin.service';
 
 function prisma() {
@@ -19,6 +20,7 @@ function prisma() {
     },
     userRefreshToken: {
       updateMany: jest.fn(),
+      deleteMany: jest.fn(),
     },
     role: {
       findMany: jest.fn(),
@@ -144,14 +146,58 @@ describe('AdminService', () => {
     });
   });
 
-  it('deletes a user through the public select', async () => {
+  it('deletes role links and sessions before the user, or the foreign key rejects the delete', async () => {
     const db = prisma();
-    await new AdminService(db as never).deleteUser('user-1');
-    expect(db.user.delete).toHaveBeenCalledWith({
-      where: { userId: 'user-1' },
-      select: expect.objectContaining({ username: true }),
+    const links = [{ userId: 'user-1', roleId: 'role-1' }];
+    const sessions = [{ userId: 'user-1' }];
+
+    db.userRole.deleteMany.mockImplementation(async ({ where }) => {
+      const before = links.length;
+      const remaining = links.filter((link) => link.userId !== where.userId);
+      links.splice(0, links.length, ...remaining);
+      return { count: before - links.length };
     });
-    expect(db.user.delete.mock.calls[0][0].select.password).toBeUndefined();
+    db.userRefreshToken.deleteMany.mockImplementation(async ({ where }) => {
+      const before = sessions.length;
+      const remaining = sessions.filter(
+        (session) => session.userId !== where.userId,
+      );
+      sessions.splice(0, sessions.length, ...remaining);
+      return { count: before - sessions.length };
+    });
+    db.user.delete.mockImplementation(async ({ where, select }) => {
+      if (
+        links.some((link) => link.userId === where.userId) ||
+        sessions.some((session) => session.userId === where.userId)
+      ) {
+        throw new Prisma.PrismaClientKnownRequestError(
+          'Foreign key constraint failed',
+          {
+            code: 'P2003',
+            clientVersion: 'test',
+            meta: { field_name: 'userId' },
+          },
+        );
+      }
+      return { userId: where.userId, username: 'ada' };
+    });
+
+    await expect(
+      db.user.delete({
+        where: { userId: 'user-1' },
+        select: { username: true },
+      }),
+    ).rejects.toMatchObject({ code: 'P2003' });
+    expect(links).toHaveLength(1);
+    expect(sessions).toHaveLength(1);
+
+    const removed = await new AdminService(db as never).deleteUser('user-1');
+    expect(removed).toMatchObject({ userId: 'user-1', username: 'ada' });
+    expect(links).toEqual([]);
+    expect(sessions).toEqual([]);
+    const serviceDelete = db.user.delete.mock.calls[1][0];
+    expect(serviceDelete.select.username).toBe(true);
+    expect(serviceDelete.select.password).toBeUndefined();
   });
 
   it('creates role permissions inside the transaction and can omit them', async () => {

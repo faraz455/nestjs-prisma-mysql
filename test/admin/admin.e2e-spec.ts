@@ -172,33 +172,37 @@ describe('Admin HTTP', () => {
     expect(duplicate.body.message).toBe('email is already used');
   });
 
-  it('refuses to delete a user who still has a role or a session', async () => {
+  it('deletes a user who has a role and a session', async () => {
     const token = await adminToken();
-    await loginAs(ctx.app, usernames.plain);
-    const blocked = await call(
+    const editor = await loginAs(ctx.app, usernames.editor);
+    const removed = await call(
       ctx.app,
       'delete',
-      `/admin/users/${ids.plainUser}`,
+      `/admin/users/${ids.editorUser}`,
       token,
-    ).expect(409);
-    expect(blocked.body.message).toBe('userId cannot be changed!');
+    ).expect(200);
+    expect(removed.body).toMatchObject({
+      userId: ids.editorUser,
+      username: usernames.editor,
+    });
+    expect(removed.body).not.toHaveProperty('password');
+    await call(ctx.app, 'get', `/admin/users/${ids.editorUser}`, token).expect(
+      404,
+    );
+    await call(ctx.app, 'get', '/auth/me', editor.authToken).expect(401);
 
     const created = await call(ctx.app, 'post', '/admin/users', token)
       .send(userBody('temporary'))
       .expect(201);
-    const removed = await call(
+    await call(
       ctx.app,
       'delete',
       `/admin/users/${created.body.userId}`,
       token,
     ).expect(200);
-    expect(removed.body).not.toHaveProperty('password');
-    await call(
-      ctx.app,
-      'get',
-      `/admin/users/${created.body.userId}`,
-      token,
-    ).expect(404);
+    await call(ctx.app, 'delete', '/admin/users/missing-user', token).expect(
+      404,
+    );
   });
 
   it('revokes every active session for a user', async () => {

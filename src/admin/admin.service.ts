@@ -111,9 +111,13 @@ export class AdminService {
   }
 
   async deleteUser(id: string): Promise<UserEntity> {
-    return await this.prisma.user.delete({
-      where: { userId: id },
-      select: userPublicSelect,
+    return await this.prisma.$transaction(async (tx) => {
+      await tx.userRefreshToken.deleteMany({ where: { userId: id } });
+      await tx.userRole.deleteMany({ where: { userId: id } });
+      return tx.user.delete({
+        where: { userId: id },
+        select: userPublicSelect,
+      });
     });
   }
 

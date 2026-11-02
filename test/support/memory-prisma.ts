@@ -441,6 +441,13 @@ export function createMemoryPrisma(): MemoryPrisma {
         }
         return { count };
       },
+      async deleteMany(args: { where: { userId?: string } }) {
+        const before = state.sessions.length;
+        state.sessions = state.sessions.filter(
+          (session) => session.userId !== args.where.userId,
+        );
+        return { count: before - state.sessions.length };
+      },
     },
     role: {
       async findMany() {

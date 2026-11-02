@@ -123,7 +123,7 @@ The service is the only layer that queries MySQL. It receives the tenant client 
 - `User`, `UserRole`, `Role`, `ResourcePermission`, `UserRefreshToken`
 - `Article`, with no user foreign key
 
-`User` reaches a role only through `UserRole`. Permissions belong to a role. Foreign keys use `ON DELETE RESTRICT`.
+`User` reaches a role only through `UserRole`. Permissions belong to a role. Foreign keys use `ON DELETE RESTRICT`. `DELETE /admin/users/:id` removes that user's `UserRefreshToken` and `UserRole` rows, then the user, in one transaction. A missing user is `404`. The foreign keys stay restrictive, so a delete that skips those child rows still fails.
 
 Primary keys are `CHAR(40)` strings. Prisma Client fills a new row with a UUID version 7 when the create call leaves the id out. That value sorts by time and is unique across processes, so the API does not generate ids itself. `autoincrement()` is not used: these ids are returned to callers, and the sample reset uses the same `ADMIN` and `SUPERADMIN` ids in every tenant database it is pointed at. `UserRefreshToken.userRefreshTokenId` is the exception. Login sets it to 40 random hex characters, and the column has no default, because that id is the session key inside the JWT. Existing rows keep the ids they already have. A UUID version 7 is 36 characters, so it fits the same column.
 
