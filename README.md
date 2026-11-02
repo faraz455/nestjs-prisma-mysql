@@ -123,7 +123,14 @@ This command will start the MySQL 8 database container.
 
 ### 2. Environment Configuration
 
-Create a `.env` file at the root directory of your project with the following content:
+Copy the examples and edit the copies. `.env` and `env.conf` are gitignored.
+
+```bash
+cp .env.example .env
+cp env.conf.example env.conf
+```
+
+`.env.example` contains:
 
 ```bash
 DATABASE_URL=mysql://root:1234@localhost:3306/nestdb
@@ -138,12 +145,15 @@ AUTH_COOKIE_SECRET=mycookiesecret
 
 ```
 
-Create an `env.conf` file at the root directory of your project with the following content:
+`env.conf.example` contains:
 
 ```
 [localhost:3000]
 
 AUTH_COOKIE_NAME=_qa_
+REFRESH_COOKIE_NAME=_refresh_
+
+DATA_STORAGE_ROOT=./storage
 
 # DATABASE
 DB_HOST_MAIN=localhost:3306
@@ -218,7 +228,7 @@ This command will handle the installation of all necessary dependencies for the 
 
 ### Basic Environment
 
-Create a `.env` file in the root directory of the repository and add the following lines:
+Copy `.env.example` to `.env`. The keys are:
 
 ```
 DATABASE_URL=mysql://<username>:<password>@<host-address:port>/<db-name>
@@ -252,12 +262,15 @@ Remember, the `DATABASE_URL` environment variable should refer to your dev datab
 
 This application is designed to be multi-tenant. That is, multiple users will use a single deployment, with the services provided being distinguished by the host address.
 
-A tenant configuration file needs to be added for this. Create `env.conf` in the root directory of the repository as follows:
+A tenant configuration file needs to be added for this. Copy `env.conf.example` to `env.conf`. The section shape is:
 
 ```
 [<host-address>]
 
 AUTH_COOKIE_NAME=<cookie-name>
+REFRESH_COOKIE_NAME=<refresh-cookie-name>
+
+DATA_STORAGE_ROOT=<storage-path>
 
 # DATABASE
 DB_HOST_MAIN=<db-host>:<db-port>
@@ -272,6 +285,9 @@ E.g.
 [localhost:3000]
 
 AUTH_COOKIE_NAME=_qa_
+REFRESH_COOKIE_NAME=_refresh_
+
+DATA_STORAGE_ROOT=./storage
 
 # DATABASE
 DB_HOST_MAIN=localhost:3306
