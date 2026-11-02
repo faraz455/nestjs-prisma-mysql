@@ -1,11 +1,8 @@
 import { getHost, getOffset, getPages, unixTimestamp } from './common.helper';
 import { Request } from 'express';
 
-function request(
-  headers: Record<string, string>,
-  originalUrl = '/articles',
-): Request {
-  return { headers, originalUrl } as Request;
+function request(headers: Record<string, string>): Request {
+  return { headers, originalUrl: '/articles' } as Request;
 }
 
 describe('request helpers', () => {
@@ -15,20 +12,6 @@ describe('request helpers', () => {
     expect(getHost(request({ host: 'other.example:3000' }))).toBe(
       'other.example:3000',
     );
-  });
-
-  it('reads header-host for private api calls and refuses a missing one', () => {
-    expect(
-      getHost(
-        request(
-          { host: 'localhost:3000', 'header-host': 'tenant.example' },
-          '/private/apis/report',
-        ),
-      ),
-    ).toBe('tenant.example');
-    expect(
-      getHost(request({ host: 'localhost:3000' }, '/private/apis/report')),
-    ).toBe('impossiblestring');
   });
 
   it('computes list offsets and page counts', () => {

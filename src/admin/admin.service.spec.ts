@@ -165,7 +165,7 @@ describe('AdminService', () => {
       sessions.splice(0, sessions.length, ...remaining);
       return { count: before - sessions.length };
     });
-    db.user.delete.mockImplementation(async ({ where, select }) => {
+    db.user.delete.mockImplementation(async ({ where }) => {
       if (
         links.some((link) => link.userId === where.userId) ||
         sessions.some((session) => session.userId === where.userId)
